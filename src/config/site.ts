@@ -1,16 +1,27 @@
 export const site = {
   name: {
-    default: "",
-    short: "",
+    default: "rec | First Robotics Scouting Application",
+    short: "rec",
   },
-  description: "",
-  creator: {
-    name: "",
-    links: "",
+  description:
+    "Scouting Application for the 2024/2025 First Robotics Challenge - Reefscape",
+  author: {
+    name: "Kevin Hou",
+    links: "https://github.com/kevinnhou",
   },
-  keywords: [""],
+  keywords: [
+    "FRC",
+    "First Robotics Challenge",
+    "Reefscape",
+    "robotics",
+    "scouting app",
+    "scouting",
+    "strategy",
+    "analysis",
+    "open source",
+  ],
   links: {
     url: "",
-    repo: "",
+    repo: "https://github.com/kevinnhou/frc-scouting",
   },
 };
