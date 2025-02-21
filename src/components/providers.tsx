@@ -18,7 +18,7 @@ export default function Providers({ children }: { children: ReactNode }) {
       attribute="class"
       enableSystem
       disableTransitionOnChange
-      defaultTheme="system"
+      defaultTheme="light"
     >
       <ToasterProvider />
       {children}

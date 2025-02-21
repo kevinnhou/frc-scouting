@@ -13,7 +13,9 @@ export default function Header() {
   return (
     <header
       className={`sticky top-0 z-50 w-full ${
-        scrolled ? "bg-white/80 backdrop-blur-sm shadow-sm" : "bg-white"
+        scrolled
+          ? "bg-white/80 dark:bg-black/80 backdrop-blur-sm shadow-sm"
+          : "bg-white dark:bg-black"
       } transition-all`}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
