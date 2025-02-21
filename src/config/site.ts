@@ -1,7 +1,7 @@
 export const site = {
   name: {
     default: "rec | First Robotics Scouting Application",
-    short: "rec",
+    short: "rec.",
   },
   description:
     "Scouting Application for the 2024/2025 First Robotics Challenge - Reefscape",
