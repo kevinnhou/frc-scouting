@@ -43,7 +43,12 @@ export function DropdownField({
           >
             <FormControl>
               <SelectTrigger>
-                <SelectValue placeholder={placeholder} />
+                <SelectValue
+                  placeholder={placeholder
+                    .split(" ")
+                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(" ")}
+                />
               </SelectTrigger>
             </FormControl>
             <SelectContent>
