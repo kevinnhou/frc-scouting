@@ -9,13 +9,21 @@ const formSchema = z.object({
   ...Object.fromEntries(autonomous.map((field) => [field.name, field.schema])),
   ...Object.fromEntries(teleop.map((field) => [field.name, field.schema])),
   ...Object.fromEntries(misc.map((field) => [field.name, field.schema])),
+  spreadsheetID: z.string().optional(),
+  sheetID: z.string().optional(),
 });
 
-export async function submit(data: z.infer<typeof formSchema>) {
+type FormData = z.infer<typeof formSchema>;
+type TFormDataKeys = keyof Omit<FormData, "spreadsheetID" | "sheetID">;
+
+export async function submit(data: FormData) {
   const validatedData = formSchema.parse(data);
 
-  const spreadsheetID = "";
-  const sheetID = "";
+  const { spreadsheetID, sheetID, ...formData } = validatedData;
+
+  if (!spreadsheetID || !sheetID) {
+    throw new Error("Spreadsheet details are missing.");
+  }
 
   try {
     const auth = new google.auth.GoogleAuth({
@@ -34,23 +42,21 @@ export async function submit(data: z.infer<typeof formSchema>) {
     const sheets = google.sheets({ version: "v4", auth });
 
     const values = [
-      validatedData["Team Number"],
-      validatedData["Team Name"],
-      validatedData["Qualification Number"],
-      validatedData["Starting Position"],
-      validatedData["Preload"],
-      JSON.stringify(validatedData["Autonomous Cycles"]),
-      JSON.stringify(validatedData["Teleop Cycles"]),
-      validatedData["Cage Level"],
-      JSON.stringify(validatedData["Cage Time"]),
-      validatedData["Drive Team Ability"],
-      validatedData["Penalties"],
-      validatedData["Defense"],
-      validatedData["Scoring Behind Reef"],
-      JSON.stringify(validatedData["Extra Notes"]),
+      formData["Team Number" as TFormDataKeys],
+      formData["Team Name" as TFormDataKeys],
+      formData["Qualification Number" as TFormDataKeys],
+      formData["Starting Position" as TFormDataKeys],
+      formData["Preload" as TFormDataKeys],
+      JSON.stringify(formData["Autonomous Cycles" as TFormDataKeys]),
+      JSON.stringify(formData["Teleop Cycles" as TFormDataKeys]),
+      formData["Cage Level" as TFormDataKeys],
+      JSON.stringify(formData["Cage Time" as TFormDataKeys]),
+      formData["Drive Team Ability" as TFormDataKeys],
+      formData["Penalties" as TFormDataKeys],
+      formData["Defense" as TFormDataKeys],
+      formData["Scoring Behind Reef" as TFormDataKeys],
+      JSON.stringify(formData["Extra Notes" as TFormDataKeys]),
     ];
-
-    console.log(values);
 
     await sheets.spreadsheets.values.append({
       spreadsheetId: spreadsheetID,
