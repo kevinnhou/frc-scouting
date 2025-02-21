@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { useFormContext } from "react-hook-form";
 
@@ -96,7 +96,7 @@ export function NotesField({ name, label }: TNotesFieldProps) {
           <FormControl>
             <div className="space-y-2">
               <Textarea
-                placeholder="Enter your notes here..."
+                placeholder="Notes..."
                 value={value.text}
                 onChange={handleTextChange}
               />

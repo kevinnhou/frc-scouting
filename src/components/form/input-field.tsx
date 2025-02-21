@@ -33,7 +33,10 @@ export function InputField({
           <FormLabel>{label}</FormLabel>
           <FormControl>
             <Input
-              placeholder={placeholder}
+              placeholder={placeholder
+                .split(" ")
+                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(" ")}
               type={type}
               {...field}
               onChange={(e) => {
