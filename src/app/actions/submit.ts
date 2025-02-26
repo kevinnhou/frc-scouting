@@ -41,21 +41,48 @@ export async function submit(data: FormData) {
 
     const sheets = google.sheets({ version: "v4", auth });
 
+    console.log(validatedData);
+
+    const autoCycles = Object.values(
+      formData["Autonomous Cycles" as TFormDataKeys]
+    ).slice(0, -1);
+
+    const teleopCycles = Object.values(
+      formData["Teleop Cycles" as TFormDataKeys]
+    ).slice(0, -1);
+
+    const notes = Object.values(formData["Extra Notes" as TFormDataKeys]);
+
     const values = [
       formData["Team Number" as TFormDataKeys],
       formData["Team Name" as TFormDataKeys],
       formData["Qualification Number" as TFormDataKeys],
       formData["Starting Position" as TFormDataKeys],
       formData["Preload" as TFormDataKeys],
-      JSON.stringify(formData["Autonomous Cycles" as TFormDataKeys]),
-      JSON.stringify(formData["Teleop Cycles" as TFormDataKeys]),
+      formData["Route" as TFormDataKeys],
+      autoCycles[0],
+      autoCycles[1],
+      autoCycles[2],
+      autoCycles[3],
+      autoCycles[4],
+      autoCycles[5],
+      JSON.stringify(
+        formData["Autonomous Cycles" as TFormDataKeys]["Cycle Times"]
+      ),
+      teleopCycles[0],
+      teleopCycles[1],
+      teleopCycles[2],
+      teleopCycles[3],
+      teleopCycles[4],
+      teleopCycles[5],
+      JSON.stringify(formData["Teleop Cycles" as TFormDataKeys]["Cycle Times"]),
       formData["Cage Level" as TFormDataKeys],
       JSON.stringify(formData["Cage Time" as TFormDataKeys]),
       formData["Drive Team Ability" as TFormDataKeys],
       formData["Penalties" as TFormDataKeys],
       formData["Defense" as TFormDataKeys],
       formData["Scoring Behind Reef" as TFormDataKeys],
-      JSON.stringify(formData["Extra Notes" as TFormDataKeys]),
+      notes[0],
     ];
 
     await sheets.spreadsheets.values.append({
