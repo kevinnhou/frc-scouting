@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+"use client";
 
-import { useState, useEffect } from "react";
-
+import { useState, useEffect, useRef } from "react";
 import { useFormContext } from "react-hook-form";
-
 import { Pause, Play, Save, Trash2, X } from "lucide-react";
 
 import { Button } from "~/button";
@@ -19,23 +17,58 @@ import { Input } from "~/input";
 type TStopwatchFieldProps = {
   name: string;
   label: string;
+  section: "autonomous" | "teleop" | "misc";
 };
 
-export function StopwatchField({ name, label }: TStopwatchFieldProps) {
+export function StopwatchField({ name, label, section }: TStopwatchFieldProps) {
   const { control, setValue, watch } = useFormContext();
   const [time, setTime] = useState<number>(0);
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const savedTimes = watch(name) || [];
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
     if (isRunning) {
-      interval = setInterval(() => {
+      intervalRef.current = setInterval(() => {
         setTime((prevTime) => prevTime + 0.01);
       }, 10);
     }
-    return () => clearInterval(interval);
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
   }, [isRunning]);
+
+  useEffect(() => {
+    if (!window.stopwatchRegistry) {
+      window.stopwatchRegistry = {};
+    }
+
+    if (!window.stopwatchRegistry[section]) {
+      window.stopwatchRegistry[section] = [];
+    }
+
+    const controls = {
+      start: handleStart,
+      pause: handlePause,
+      reset: handleReset,
+      save: handleSave,
+      isRunning: () => isRunning,
+      hasTime: () => time > 0,
+    };
+
+    window.stopwatchRegistry[section].push(controls);
+
+    return () => {
+      if (window.stopwatchRegistry && window.stopwatchRegistry[section]) {
+        window.stopwatchRegistry[section] = window.stopwatchRegistry[
+          section
+        ].filter((c: unknown) => c !== controls);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [section, isRunning, time]);
 
   function handleStart() {
     setIsRunning(true);
@@ -66,6 +99,7 @@ export function StopwatchField({ name, label }: TStopwatchFieldProps) {
     <FormField
       control={control}
       name={name}
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       render={({ field }) => (
         <FormItem>
           <FormLabel>{label}</FormLabel>
@@ -151,4 +185,18 @@ export function StopwatchField({ name, label }: TStopwatchFieldProps) {
       )}
     />
   );
+}
+declare global {
+  interface Window {
+    stopwatchRegistry?: {
+      [section: string]: {
+        start: () => void;
+        pause: () => void;
+        reset: () => void;
+        save: () => void;
+        isRunning: () => boolean;
+        hasTime: () => boolean;
+      }[];
+    };
+  }
 }

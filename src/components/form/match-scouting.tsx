@@ -139,6 +139,53 @@ export function MatchScoutingForm() {
     "autonomous" | "teleop" | "misc" | string
   >("autonomous");
 
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (
+        document.activeElement instanceof HTMLInputElement ||
+        document.activeElement instanceof HTMLTextAreaElement
+      ) {
+        return;
+      }
+
+      const stopwatches = window.stopwatchRegistry?.[activeTab] || [];
+
+      if (stopwatches.length === 0) return;
+
+      switch (e.key) {
+        case " ":
+          e.preventDefault();
+          stopwatches.forEach((stopwatch) => {
+            if (stopwatch.isRunning()) {
+              stopwatch.pause();
+            } else {
+              stopwatch.start();
+            }
+          });
+          break;
+        case "s":
+        case "S":
+          stopwatches.forEach((stopwatch) => {
+            if (stopwatch.isRunning() || stopwatch.hasTime()) {
+              stopwatch.save();
+            }
+          });
+          break;
+        case "r":
+        case "R":
+          stopwatches.forEach((stopwatch) => {
+            stopwatch.reset();
+          });
+          break;
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [activeTab]);
+
   async function onSubmit(data: FormData) {
     setIsSubmitting(true);
 
@@ -179,6 +226,15 @@ export function MatchScoutingForm() {
   }
 
   function renderCycleFields(fieldName: string) {
+    let section: "autonomous" | "teleop" | "misc";
+    if (fieldName === "Autonomous Cycles") {
+      section = "autonomous";
+    } else if (fieldName === "Teleop Cycles") {
+      section = "teleop";
+    } else {
+      section = "misc";
+    }
+
     return (
       <>
         <h4 className="text-sm font-semibold">Coral</h4>
@@ -195,6 +251,7 @@ export function MatchScoutingForm() {
           <StopwatchField
             name={`${fieldName}.Cycle Times`}
             label="Cycle Times"
+            section={section}
           />
         </div>
       </>
@@ -215,7 +272,13 @@ export function MatchScoutingForm() {
       case "cycles":
         return renderCycleFields(field.name);
       case "stopwatch":
-        return <StopwatchField name={field.name} label={field.name} />;
+        return (
+          <StopwatchField
+            name={field.name}
+            label={field.name}
+            section={activeTab as "autonomous" | "teleop" | "misc"}
+          />
+        );
       default:
         if (Array.isArray(field.type)) {
           return (
