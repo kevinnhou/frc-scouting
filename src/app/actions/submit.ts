@@ -41,8 +41,6 @@ export async function submit(data: FormData) {
 
     const sheets = google.sheets({ version: "v4", auth });
 
-    console.log(validatedData);
-
     const autoCycles = Object.values(
       formData["Autonomous Cycles" as TFormDataKeys]
     ).slice(0, -1);
@@ -55,7 +53,6 @@ export async function submit(data: FormData) {
 
     const values = [
       formData["Team Number" as TFormDataKeys],
-      formData["Team Name" as TFormDataKeys],
       formData["Qualification Number" as TFormDataKeys],
       formData["Starting Position" as TFormDataKeys],
       formData["Preload" as TFormDataKeys],

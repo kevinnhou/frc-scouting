@@ -12,7 +12,7 @@ export const autonomous = [
   {
     name: "Team Name",
     type: "input",
-    schema: requiredString,
+    schema: z.string(),
   },
   {
     name: "Team Number",
