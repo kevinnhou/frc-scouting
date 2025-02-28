@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 
+import { toast } from "sonner";
+import { useDropzone } from "react-dropzone";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useDropzone } from "react-dropzone";
 
 import { autonomous, teleop, misc } from "@/lib/match-scouting";
 import { submit } from "@/app/actions/submit";
@@ -109,6 +110,7 @@ export function MatchScoutingForm() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [teams, setTeams] = useState({});
   const [JSONInput, setJSONInput] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const storedSpreadsheetID = localStorage.getItem("spreadsheetID");
@@ -130,6 +132,7 @@ export function MatchScoutingForm() {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: initialFormData,
+    mode: "onTouched",
   });
 
   const [activeTab, setActiveTab] = useState<
@@ -137,22 +140,38 @@ export function MatchScoutingForm() {
   >("autonomous");
 
   async function onSubmit(data: FormData) {
-    try {
-      const result = await submit({
+    setIsSubmitting(true);
+
+    toast.promise(
+      submit({
         ...data,
         spreadsheetID,
         sheetID,
-      });
-      if (result.success) {
-        console.log("Form submitted successfully.");
-        resetForm();
+      }),
+      {
+        loading: "Submitting form...",
+        success: (result) => {
+          if (result.success) {
+            resetForm();
+            return "Form submitted successfully";
+          } else {
+            throw new Error("Form submission failed");
+          }
+        },
+        error: (error) => {
+          console.error(
+            "Form submission failed:",
+            error instanceof Error ? error.message : "Unknown error occurred."
+          );
+          return error instanceof Error
+            ? error.message
+            : "Unknown error occurred";
+        },
+        finally: () => {
+          setIsSubmitting(false);
+        },
       }
-    } catch (error) {
-      console.error(
-        "Form submission failed:",
-        error instanceof Error ? error.message : "Unknown error occurred."
-      );
-    }
+    );
   }
 
   function resetForm() {
@@ -314,7 +333,9 @@ export function MatchScoutingForm() {
                 Reset Form
               </Button>
             </div>
-            <Button type="submit">Submit</Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Submitting..." : "Submit"}
+            </Button>
           </div>
         </form>
       </Form>
