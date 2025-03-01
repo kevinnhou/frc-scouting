@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect } from "react";
+
 import { useFormContext } from "react-hook-form";
 
 import { Plus } from "lucide-react";
@@ -15,9 +19,14 @@ import {
 type TCycleFieldProps = {
   name: string;
   label: string;
+  section?: "autonomous" | "teleop" | "misc";
 };
 
-export function CycleField({ name, label }: TCycleFieldProps) {
+export function CycleField({
+  name,
+  label,
+  section = "misc",
+}: TCycleFieldProps) {
   const { control, setValue, watch } = useFormContext();
   const value = watch(name) || 0;
 
@@ -25,6 +34,27 @@ export function CycleField({ name, label }: TCycleFieldProps) {
     const newValue = value + 1;
     setValue(name, newValue);
   }
+
+  useEffect(() => {
+    if (!window.cycleRegistry) {
+      window.cycleRegistry = {};
+    }
+
+    if (!window.cycleRegistry[section]) {
+      window.cycleRegistry[section] = {};
+    }
+
+    const fieldIdentifier = name.split(".").pop() || "";
+
+    window.cycleRegistry[section][fieldIdentifier] = increment;
+
+    return () => {
+      if (window.cycleRegistry && window.cycleRegistry[section]) {
+        delete window.cycleRegistry[section][fieldIdentifier];
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [name, section, value]);
 
   return (
     <FormField
@@ -64,4 +94,14 @@ export function CycleField({ name, label }: TCycleFieldProps) {
       )}
     />
   );
+}
+
+declare global {
+  interface Window {
+    cycleRegistry?: {
+      [section: string]: {
+        [fieldIdentifier: string]: () => void;
+      };
+    };
+  }
 }
