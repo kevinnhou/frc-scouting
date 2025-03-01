@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+
 import { useFormContext } from "react-hook-form";
+
 import { Pause, Play, Save, Trash2, X } from "lucide-react";
 
 import { Button } from "~/button";
@@ -186,6 +188,7 @@ export function StopwatchField({ name, label, section }: TStopwatchFieldProps) {
     />
   );
 }
+
 declare global {
   interface Window {
     stopwatchRegistry?: {
