@@ -149,34 +149,50 @@ export function MatchScoutingForm() {
       }
 
       const stopwatches = window.stopwatchRegistry?.[activeTab] || [];
+      const cycleFields = window.cycleRegistry?.[activeTab] || {};
 
-      if (stopwatches.length === 0) return;
+      if (stopwatches.length > 0) {
+        switch (e.key) {
+          case " ":
+            e.preventDefault();
+            stopwatches.forEach((stopwatch) => {
+              if (stopwatch.isRunning()) {
+                stopwatch.pause();
+              } else {
+                stopwatch.start();
+              }
+            });
+            break;
+          case "s":
+          case "S":
+            stopwatches.forEach((stopwatch) => {
+              if (stopwatch.isRunning() || stopwatch.hasTime()) {
+                stopwatch.save();
+              }
+            });
+            break;
+          case "r":
+          case "R":
+            stopwatches.forEach((stopwatch) => {
+              stopwatch.reset();
+            });
+            break;
+        }
+      }
 
-      switch (e.key) {
-        case " ":
-          e.preventDefault();
-          stopwatches.forEach((stopwatch) => {
-            if (stopwatch.isRunning()) {
-              stopwatch.pause();
-            } else {
-              stopwatch.start();
-            }
-          });
-          break;
-        case "s":
-        case "S":
-          stopwatches.forEach((stopwatch) => {
-            if (stopwatch.isRunning() || stopwatch.hasTime()) {
-              stopwatch.save();
-            }
-          });
-          break;
-        case "r":
-        case "R":
-          stopwatches.forEach((stopwatch) => {
-            stopwatch.reset();
-          });
-          break;
+      if (e.key >= "1" && e.key <= "4") {
+        const fieldName = `Coral Level ${e.key}`;
+        if (cycleFields[fieldName]) {
+          cycleFields[fieldName]();
+        }
+      } else if (e.key === "p" || e.key === "P") {
+        if (cycleFields["Algae Processor"]) {
+          cycleFields["Algae Processor"]();
+        }
+      } else if (e.key === "n" || e.key === "N") {
+        if (cycleFields["Algae Net"]) {
+          cycleFields["Algae Net"]();
+        }
       }
     }
 
@@ -239,15 +255,39 @@ export function MatchScoutingForm() {
       <>
         <h4 className="text-sm font-semibold">Coral</h4>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4">
-          <CycleField name={`${fieldName}.Coral Level 1`} label="Level 1" />
-          <CycleField name={`${fieldName}.Coral Level 2`} label="Level 2" />
-          <CycleField name={`${fieldName}.Coral Level 3`} label="Level 3" />
-          <CycleField name={`${fieldName}.Coral Level 4`} label="Level 4" />
+          <CycleField
+            name={`${fieldName}.Coral Level 1`}
+            label="Level 1"
+            section={section}
+          />
+          <CycleField
+            name={`${fieldName}.Coral Level 2`}
+            label="Level 2"
+            section={section}
+          />
+          <CycleField
+            name={`${fieldName}.Coral Level 3`}
+            label="Level 3"
+            section={section}
+          />
+          <CycleField
+            name={`${fieldName}.Coral Level 4`}
+            label="Level 4"
+            section={section}
+          />
         </div>
         <h4 className="text-sm font-semibold mt-4">Algae</h4>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-4">
-          <CycleField name={`${fieldName}.Algae Processor`} label="Processor" />
-          <CycleField name={`${fieldName}.Algae Net`} label="Net" />
+          <CycleField
+            name={`${fieldName}.Algae Processor`}
+            label="Processor"
+            section={section}
+          />
+          <CycleField
+            name={`${fieldName}.Algae Net`}
+            label="Net"
+            section={section}
+          />
           <StopwatchField
             name={`${fieldName}.Cycle Times`}
             label="Cycle Times"
