@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 
+import { toast } from "sonner";
 import { useFormContext } from "react-hook-form";
 
 import { Plus } from "lucide-react";
@@ -33,6 +34,7 @@ export function CycleField({
   function increment() {
     const newValue = value + 1;
     setValue(name, newValue);
+    toast.success(`${label} incremented to ${newValue}`);
   }
 
   useEffect(() => {
