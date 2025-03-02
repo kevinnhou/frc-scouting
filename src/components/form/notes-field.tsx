@@ -1,8 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
+"use client";
+
+import type React from "react";
 import { useEffect, useState } from "react";
 
 import { useFormContext } from "react-hook-form";
+import { toast } from "sonner";
 
 import {
   FormControl,
@@ -41,23 +45,29 @@ export function NotesField({ name, label }: TNotesFieldProps) {
 
     if (penalties === "Yes" && !hasPenalties) {
       newTags.push("Penalties");
+      toast.success("Added 'Penalties' tag");
     } else if (penalties !== "Yes" && hasPenalties) {
       const index = newTags.indexOf("Penalties");
       newTags.splice(index, 1);
+      toast.error("Removed 'Penalties' tag");
     }
 
     if (defense === "Yes" && !hasDefense) {
       newTags.push("Defense");
+      toast.success("Added 'Defense' tag");
     } else if (defense !== "Yes" && hasDefense) {
       const index = newTags.indexOf("Defense");
       newTags.splice(index, 1);
+      toast.error("Removed 'Defense' tag");
     }
 
     if (scoringBehindReef === "Yes" && !hasScoringBehindReef) {
       newTags.push("Scoring Behind Reef");
+      toast.success("Added 'Scoring Behind Reef' tag");
     } else if (scoringBehindReef !== "Yes" && hasScoringBehindReef) {
       const index = newTags.indexOf("Scoring Behind Reef");
       newTags.splice(index, 1);
+      toast.error("Removed 'Scoring Behind Reef' tag");
     }
 
     if (JSON.stringify(newTags) !== JSON.stringify(value.tags)) {
@@ -67,10 +77,17 @@ export function NotesField({ name, label }: TNotesFieldProps) {
 
   function handleTextChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
     setValue(name, { ...value, text: e.target.value });
+    toast.info("Notes updated");
   }
 
   function handleTagsChange(tags: string[]) {
+    const addedTags = tags.filter((tag) => !value.tags.includes(tag));
+    const removedTags = value.tags.filter((tag: string) => !tags.includes(tag));
+
     setValue(name, { ...value, tags });
+
+    addedTags.forEach((tag) => toast.success(`Added '${tag}' tag`));
+    removedTags.forEach((tag: string) => toast.error(`Removed '${tag}' tag`));
 
     const hasPenalties = tags.includes("Penalties");
     const hasDefense = tags.includes("Defense");
@@ -83,6 +100,7 @@ export function NotesField({ name, label }: TNotesFieldProps) {
   function createTag(inputValue: string): string {
     const newTag = inputValue;
     setAvailableTags([...availableTags, newTag]);
+    toast.success(`Created new tag: '${newTag}'`);
     return newTag;
   }
 

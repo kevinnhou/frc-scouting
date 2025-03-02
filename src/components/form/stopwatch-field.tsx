@@ -1,7 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import type React from "react";
+import { useEffect, useState, useRef } from "react";
+
 import { useFormContext } from "react-hook-form";
+import { toast } from "sonner";
+
 import { Pause, Play, Save, Trash2, X } from "lucide-react";
 
 import { Button } from "~/button";
@@ -72,15 +76,35 @@ export function StopwatchField({ name, label, section }: TStopwatchFieldProps) {
 
   function handleStart() {
     setIsRunning(true);
+    toast.promise(
+      new Promise<React.ReactNode>((resolve, reject) => {
+        window.currentStopwatchPromise = { resolve, reject };
+      }),
+      {
+        loading: `${label} timer started`,
+        success: (message) => message as string,
+        error: (message) => message as string,
+      }
+    );
   }
 
   function handlePause() {
     setIsRunning(false);
+    if (window.currentStopwatchPromise) {
+      window.currentStopwatchPromise.reject(`${label} timer paused`);
+      window.currentStopwatchPromise = undefined;
+    }
   }
 
   function handleReset() {
     setIsRunning(false);
     setTime(0);
+    if (window.currentStopwatchPromise) {
+      window.currentStopwatchPromise.reject(`${label} timer canceled`);
+      window.currentStopwatchPromise = undefined;
+    } else {
+      toast.warning(`${label} timer reset`);
+    }
   }
 
   function handleSave() {
@@ -88,6 +112,14 @@ export function StopwatchField({ name, label, section }: TStopwatchFieldProps) {
     setValue(name, [...savedTimes, newTime]);
     setTime(0);
     setIsRunning(false);
+    if (window.currentStopwatchPromise) {
+      window.currentStopwatchPromise.resolve(
+        `${label} time saved: ${newTime.toFixed(2)}s`
+      );
+      window.currentStopwatchPromise = undefined;
+    } else {
+      toast.success(`${label} time saved: ${newTime.toFixed(2)}s`);
+    }
   }
 
   function handleRemove(index: number) {
@@ -186,6 +218,7 @@ export function StopwatchField({ name, label, section }: TStopwatchFieldProps) {
     />
   );
 }
+
 declare global {
   interface Window {
     stopwatchRegistry?: {
@@ -197,6 +230,10 @@ declare global {
         isRunning: () => boolean;
         hasTime: () => boolean;
       }[];
+    };
+    currentStopwatchPromise?: {
+      resolve: (value: React.ReactNode | PromiseLike<React.ReactNode>) => void;
+      reject: (reason?: unknown) => void;
     };
   }
 }
