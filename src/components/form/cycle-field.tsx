@@ -34,7 +34,17 @@ export function CycleField({
   function increment() {
     const newValue = value + 1;
     setValue(name, newValue);
-    toast.success(`${label} incremented to ${newValue}`);
+    toast.success(`${label} incremented to ${newValue}`, {
+      action: {
+        label: "Undo",
+        onClick: () => decrement(),
+      },
+    });
+  }
+
+  function decrement() {
+    const newValue = Math.max(0, value - 1);
+    setValue(name, newValue);
   }
 
   useEffect(() => {
