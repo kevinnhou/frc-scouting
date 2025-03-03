@@ -77,7 +77,6 @@ export function NotesField({ name, label }: TNotesFieldProps) {
 
   function handleTextChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
     setValue(name, { ...value, text: e.target.value });
-    toast.info("Notes updated");
   }
 
   function handleTagsChange(tags: string[]) {
