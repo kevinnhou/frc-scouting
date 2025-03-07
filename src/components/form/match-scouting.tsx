@@ -403,7 +403,7 @@ export function MatchScoutingForm() {
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <div className="hidden md:block">
+          <div className="block">
             <Tabs
               defaultValue="autonomous"
               className="w-full mb-4"
