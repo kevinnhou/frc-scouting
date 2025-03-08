@@ -1,72 +1,60 @@
-"use client";
+"use client"
 
-import { useEffect } from "react";
+import { useEffect } from "react"
 
-import { toast } from "sonner";
-import { useFormContext } from "react-hook-form";
+import { toast } from "sonner"
+import { useFormContext } from "react-hook-form"
 
-import { Plus } from "lucide-react";
+import { Plus } from "lucide-react"
 
-import { Button } from "~/button";
-import { Input } from "~/input";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "~/form";
+import { Button } from "~/button"
+import { Input } from "~/input"
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/form"
 
 type TCycleFieldProps = {
-  name: string;
-  label: string;
-  section?: "autonomous" | "teleop" | "misc";
-};
+  name: string
+  label: string
+  section?: "autonomous" | "teleop" | "misc"
+}
 
-export function CycleField({
-  name,
-  label,
-  section = "misc",
-}: TCycleFieldProps) {
-  const { control, setValue, watch } = useFormContext();
-  const value = watch(name) || 0;
+export function CycleField({ name, label, section = "misc" }: TCycleFieldProps) {
+  const { control, setValue, watch } = useFormContext()
+  const value = watch(name) || 0
 
   function increment() {
-    const newValue = value + 1;
-    setValue(name, newValue);
+    const newValue = value + 1
+    setValue(name, newValue)
     toast.success(`${label} incremented to ${newValue}`, {
       action: {
         label: "Undo",
-        onClick: () => decrement(),
+        onClick: () => {
+          const currentValue = watch(name) || 0
+          setValue(name, Math.max(0, currentValue - 1))
+        },
       },
-    });
-  }
-
-  function decrement() {
-    const newValue = Math.max(0, value - 1);
-    setValue(name, newValue);
+    })
   }
 
   useEffect(() => {
     if (!window.cycleRegistry) {
-      window.cycleRegistry = {};
+      window.cycleRegistry = {}
     }
 
     if (!window.cycleRegistry[section]) {
-      window.cycleRegistry[section] = {};
+      window.cycleRegistry[section] = {}
     }
 
-    const fieldIdentifier = name.split(".").pop() || "";
+    const fieldIdentifier = name.split(".").pop() || ""
 
-    window.cycleRegistry[section][fieldIdentifier] = increment;
+    window.cycleRegistry[section][fieldIdentifier] = increment
 
     return () => {
       if (window.cycleRegistry && window.cycleRegistry[section]) {
-        delete window.cycleRegistry[section][fieldIdentifier];
+        delete window.cycleRegistry[section][fieldIdentifier]
       }
-    };
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [name, section, value]);
+  }, [name, section, value])
 
   return (
     <FormField
@@ -82,21 +70,12 @@ export function CycleField({
                 {...field}
                 value={field.value || 0}
                 onChange={(e) => {
-                  const value = Math.max(
-                    0,
-                    Number.parseInt(e.target.value) || 0
-                  );
-                  field.onChange(value);
+                  const value = Math.max(0, Number.parseInt(e.target.value) || 0)
+                  field.onChange(value)
                 }}
                 className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               />
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                onClick={increment}
-                className="shrink-0"
-              >
+              <Button type="button" variant="outline" size="icon" onClick={increment} className="shrink-0">
                 <Plus className="h-4 w-4" />
               </Button>
             </div>
@@ -105,15 +84,16 @@ export function CycleField({
         </FormItem>
       )}
     />
-  );
+  )
 }
 
 declare global {
   interface Window {
     cycleRegistry?: {
       [section: string]: {
-        [fieldIdentifier: string]: () => void;
-      };
-    };
+        [fieldIdentifier: string]: () => void
+      }
+    }
   }
 }
+
