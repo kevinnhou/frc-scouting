@@ -1,20 +1,38 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 import { toast } from "sonner";
 import { useDropzone } from "react-dropzone";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { QRCodeSVG } from "qrcode.react";
 
 import { autonomous, teleop, misc } from "@/lib/match-scouting";
 import { submit } from "@/app/actions/submit";
 
-import { FileTextIcon, Settings, Upload } from "lucide-react";
+import { FileTextIcon, Settings, Upload, QrCode, Trash2 } from "lucide-react";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "~/alert-dialog";
 import { Button } from "~/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "~/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "~/dialog";
 import { Form } from "~/form";
 import { Input } from "~/input";
 import { Label } from "~/label";
@@ -105,12 +123,45 @@ function Dropzone({
 
 export function MatchScoutingForm() {
   const [showSpreadsheetIDDialog, setShowSpreadsheetIDDialog] = useState(false);
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [showClearDataDialog, setShowClearDataDialog] = useState(false);
   const [spreadsheetID, setSpreadsheetID] = useState("");
   const [sheetID, setSheetID] = useState("");
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [teams, setTeams] = useState({});
   const [JSONInput, setJSONInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [QRCodeData, setQRCodeData] = useState("");
+  const [QRBgColour, setQRBgColour] = useState("#ffffff");
+  const [QRFgColour, setQRFgColour] = useState("#000000");
+  const [storedSubmissions, setStoredSubmissions] = useState<FormData[]>([]);
+
+  const updateQRColours = useCallback(() => {
+    const root = document.documentElement;
+    const computedStyle = getComputedStyle(root);
+    const bg = computedStyle.getPropertyValue("--background") || "#ffffff";
+    const fg = computedStyle.getPropertyValue("--foreground") || "#000000";
+
+    setQRBgColour(bg.startsWith("hsl") ? bg : "#ffffff");
+    setQRFgColour(fg.startsWith("hsl") ? fg : "#000000");
+  }, []);
+
+  const loadSubmissions = useCallback(() => {
+    try {
+      const savedData = localStorage.getItem("formSubmissions");
+      if (savedData) {
+        const parsedData = JSON.parse(savedData);
+        if (Array.isArray(parsedData)) {
+          setStoredSubmissions(parsedData);
+          return parsedData;
+        }
+      }
+      return [];
+    } catch (error) {
+      console.error("Error loading stored submissions:", error);
+      return [];
+    }
+  }, []);
 
   useEffect(() => {
     const storedSpreadsheetID = localStorage.getItem("spreadsheetID");
@@ -127,7 +178,10 @@ export function MatchScoutingForm() {
     if (storedSheetID) {
       setSheetID(storedSheetID);
     }
-  }, []);
+
+    loadSubmissions();
+    updateQRColours();
+  }, [updateQRColours, loadSubmissions]);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -202,20 +256,11 @@ export function MatchScoutingForm() {
     };
   }, [activeTab]);
 
-  useEffect(() => {
-    const savedFormData = localStorage.getItem("data");
-    if (savedFormData) {
-      try {
-        const parsedData = JSON.parse(savedFormData);
-        form.reset({ ...initialFormData, ...parsedData });
-      } catch (error) {
-        console.error("Error loading saved form data:", error);
-      }
-    }
-  }, [form]);
-
   async function onSubmit(data: FormData) {
-    localStorage.setItem("data", JSON.stringify(data));
+    const currentSubmissions = loadSubmissions();
+    const updatedSubmissions = [...currentSubmissions, data];
+    localStorage.setItem("formSubmissions", JSON.stringify(updatedSubmissions));
+    setStoredSubmissions(updatedSubmissions);
 
     setIsSubmitting(true);
 
@@ -253,7 +298,36 @@ export function MatchScoutingForm() {
 
   function resetForm() {
     form.reset(initialFormData);
-    localStorage.removeItem("matchScoutingFormData");
+  }
+
+  function handleExportQRCode() {
+    if (storedSubmissions.length === 0) {
+      toast.error("No data to export");
+      return;
+    }
+
+    updateQRColours();
+    setQRCodeData(JSON.stringify(storedSubmissions));
+
+    toast.promise(new Promise((resolve) => setTimeout(resolve, 500)), {
+      loading: "Generating QR Code...",
+      success: () => {
+        setShowQRModal(true);
+        return "QR Code Generated";
+      },
+      error: "Failed to Generate QR Code",
+    });
+  }
+
+  function handleClearData() {
+    setShowClearDataDialog(true);
+  }
+
+  function confirmClearData() {
+    localStorage.removeItem("formSubmissions");
+    setStoredSubmissions([]);
+    setShowClearDataDialog(false);
+    toast.success("All stored submissions cleared");
   }
 
   function renderCycleFields(fieldName: string) {
@@ -447,13 +521,36 @@ export function MatchScoutingForm() {
               >
                 <Settings className="h-4 w-4" />
               </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleExportQRCode}
+                size="icon"
+                disabled={storedSubmissions.length === 0}
+              >
+                <QrCode className="h-4 w-4" />
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleClearData}
+                size="icon"
+                disabled={storedSubmissions.length === 0}
+              >
+                <Trash2 className="h-4 w-4 text-destructive" />
+              </Button>
               <Button type="reset" variant="outline" onClick={resetForm}>
                 Reset Form
               </Button>
             </div>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Submitting..." : "Submit"}
-            </Button>
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-muted-foreground">
+                Stored submissions: {storedSubmissions.length}
+              </span>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Submitting..." : "Submit"}
+              </Button>
+            </div>
           </div>
         </form>
       </Form>
@@ -509,6 +606,56 @@ export function MatchScoutingForm() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={showQRModal} onOpenChange={setShowQRModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>QR Code</DialogTitle>
+            <DialogDescription>
+              Scan to access {storedSubmissions.length} form submission
+              {storedSubmissions.length !== 1 ? "s" : ""}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex items-center justify-center py-6">
+            <QRCodeSVG
+              value={QRCodeData}
+              bgColor={QRBgColour}
+              fgColor={QRFgColour}
+              size={256}
+              level="M"
+            />
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setShowQRModal(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog
+        open={showClearDataDialog}
+        onOpenChange={setShowClearDataDialog}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Clear All Submissions</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to clear all {storedSubmissions.length}{" "}
+              stored submission
+              {storedSubmissions.length !== 1 ? "s" : ""}? This action cannot be
+              undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmClearData}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Clear All Data
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
