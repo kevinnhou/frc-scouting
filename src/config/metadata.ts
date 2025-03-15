@@ -3,7 +3,7 @@ import { type Metadata } from "next";
 import { site } from "@/config/site";
 
 export const metadata: Metadata = {
-  // metadataBase: new URL(""),
+  metadataBase: new URL("https://frc-scouting.vercel.app/"),
   alternates: {
     canonical: "/",
   },
