@@ -202,7 +202,21 @@ export function MatchScoutingForm() {
     };
   }, [activeTab]);
 
+  useEffect(() => {
+    const savedFormData = localStorage.getItem("data");
+    if (savedFormData) {
+      try {
+        const parsedData = JSON.parse(savedFormData);
+        form.reset({ ...initialFormData, ...parsedData });
+      } catch (error) {
+        console.error("Error loading saved form data:", error);
+      }
+    }
+  }, [form]);
+
   async function onSubmit(data: FormData) {
+    localStorage.setItem("data", JSON.stringify(data));
+
     setIsSubmitting(true);
 
     toast.promise(
@@ -239,6 +253,7 @@ export function MatchScoutingForm() {
 
   function resetForm() {
     form.reset(initialFormData);
+    localStorage.removeItem("matchScoutingFormData");
   }
 
   function renderCycleFields(fieldName: string) {
