@@ -122,21 +122,25 @@ export default function Home() {
           <p className="text-sm text-foreground/50 mb-2">Powered by</p>
           <div className="flex items-center gap-8">
             <div className="h-6">
-              <Image
-                src="/vercel-logo.svg"
-                alt="Vercel"
-                width={90}
-                height={18}
-                className="dark:invert"
-              />
+              <Link href="https://vercel.com" target="_blank">
+                <Image
+                  src="/vercel-logo.svg"
+                  alt="Vercel"
+                  width={90}
+                  height={18}
+                  className="dark:invert"
+                />
+              </Link>
             </div>
             <div className="h-6">
-              <Image
-                src="/google-logo.svg"
-                alt="Google"
-                width={90}
-                height={18}
-              />
+              <Link href="https://about.google" target="_blank">
+                <Image
+                  src="/google-logo.svg"
+                  alt="Google"
+                  width={90}
+                  height={18}
+                />
+              </Link>
             </div>
           </div>
         </div>
