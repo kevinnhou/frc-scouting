@@ -22,7 +22,11 @@ export async function submit(data: FormData) {
   const { spreadsheetID, sheetID, ...formData } = validatedData;
 
   if (!spreadsheetID || !sheetID) {
-    throw new Error("Spreadsheet details are missing.");
+    return {
+      success: false,
+      message:
+        "Spreadsheet details are missing. Please add your spreadsheet ID and sheet ID in settings.",
+    };
   }
 
   try {
