@@ -1,6 +1,6 @@
 import "./globals.css";
 
-import { Poppins } from "next/font/google";
+import { JetBrains_Mono } from "next/font/google";
 
 import Providers from "@/components/providers";
 import Header from "@/components/header";
@@ -9,11 +9,11 @@ import { metadata } from "@/config/metadata";
 
 export { metadata };
 
-const poppins = Poppins({
+const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-poppins",
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800"],
 });
 
 export default function RootLayout({
@@ -22,8 +22,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" dir="ltr" suppressHydrationWarning>
-      <body className={poppins.className}>
+    <html
+      lang="en"
+      dir="ltr"
+      suppressHydrationWarning
+      className={jetbrainsMono.className}
+    >
+      <body>
         <Providers>
           <Header />
           {children}
