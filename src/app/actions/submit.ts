@@ -25,7 +25,8 @@ export async function submit(data: FormData) {
     return {
       success: false,
       message:
-        "Spreadsheet details are missing. Please add your spreadsheet ID and sheet ID in settings.",
+        "Spreadsheet details are missing. Please configure your spreadsheet ID and sheet ID in settings.",
+      localSuccess: true,
     };
   }
 

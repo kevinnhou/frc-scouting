@@ -276,8 +276,11 @@ export function MatchScoutingForm() {
           if (result.success) {
             resetForm();
             return "Form submitted successfully";
+          } else if (result.localSuccess) {
+            resetForm();
+            return "Data saved locally. " + result.message;
           } else {
-            throw new Error("Form submission failed");
+            throw new Error(result.message || "Form submission failed");
           }
         },
         error: (error) => {
