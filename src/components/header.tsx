@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { site } from "@/config/site";
 import { useScroll } from "@/hooks/use-scroll";
@@ -9,6 +10,11 @@ import { useScroll } from "@/hooks/use-scroll";
 
 export default function Header() {
   const scrolled = useScroll(50);
+  const pathname = usePathname();
+
+  if (pathname === "/") {
+    return null;
+  }
 
   return (
     <header
