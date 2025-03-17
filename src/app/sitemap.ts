@@ -7,6 +7,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: site.links.url,
       lastModified: new Date(),
+      priority: 1,
+    },
+    {
+      url: `${site.links.url}/match`,
+      lastModified: new Date(),
+      priority: 0.8,
     },
   ];
 }
