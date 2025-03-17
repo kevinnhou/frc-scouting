@@ -1,49 +1,33 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 
 import { toast } from "sonner";
-import { useDropzone } from "react-dropzone";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { QRCodeSVG } from "qrcode.react";
 
 import { autonomous, teleop, misc } from "@/lib/match-scouting";
 import { submit } from "@/app/actions/submit";
 
-import { FileTextIcon, Settings, Upload, QrCode, Trash2 } from "lucide-react";
+import { Settings, Trash2, Upload } from "lucide-react";
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "~/alert-dialog";
 import { Button } from "~/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "~/dialog";
 import { Form } from "~/form";
-import { Input } from "~/input";
-import { Label } from "~/label";
 import { Tabs, TabsList, TabsTrigger } from "~/tabs";
-import { Textarea } from "~/textarea";
 
 import { CycleField } from "./cycle-field";
 import { DropdownField } from "./dropdown-field";
 import { InputField } from "./input-field";
 import { NotesField } from "./notes-field";
 import { StopwatchField } from "./stopwatch-field";
+
+import { Config } from "@/components/dialogs/config";
+import { ClearData } from "@/components/dialogs/clear-data";
+import { ExportData } from "@/components/dialogs/export-data";
+import { QRCode } from "@/components/dialogs/qrcode";
 
 const formSchema = z.object({
   ...Object.fromEntries(autonomous.map((field) => [field.name, field.schema])),
@@ -93,41 +77,12 @@ const initialFormData: Partial<FormData> = {
   "Extra Notes": { text: "", tags: [] },
 };
 
-function Dropzone({
-  onDrop,
-  accept,
-}: {
-  onDrop: (acceptedFiles: File[]) => void;
-  accept: { [key: string]: string[] };
-}) {
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept,
-  });
-
-  return (
-    <div
-      {...getRootProps()}
-      className="col-span-4 border-2 border-dashed border-gray-300 rounded-md p-4 text-center cursor-pointer hover:border-gray-400 transition-colors"
-    >
-      <input {...getInputProps()} />
-      <Upload className="h-8 w-8 text-gray-400 place-self-center mt-2 mb-6" />
-      {isDragActive ? (
-        <div className="font-medium">Drop your JSON file here...</div>
-      ) : (
-        <div className="font-medium">Upload a JSON file</div>
-      )}
-    </div>
-  );
-}
-
 export function MatchScoutingForm() {
   const [showSpreadsheetIDDialog, setShowSpreadsheetIDDialog] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
   const [showClearDataDialog, setShowClearDataDialog] = useState(false);
   const [spreadsheetID, setSpreadsheetID] = useState("");
   const [sheetID, setSheetID] = useState("");
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [teams, setTeams] = useState({});
   const [JSONInput, setJSONInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -135,6 +90,11 @@ export function MatchScoutingForm() {
   const [QRBgColour, setQRBgColour] = useState("#ffffff");
   const [QRFgColour, setQRFgColour] = useState("#000000");
   const [storedSubmissions, setStoredSubmissions] = useState<FormData[]>([]);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [selectedSubmissions, setSelectedSubmissions] = useState<number[]>([]);
+  const [exportMethod, setExportMethod] = useState<
+    "qrcode" | "clipboard" | "json"
+  >("qrcode");
 
   const updateQRColours = useCallback(() => {
     const root = document.documentElement;
@@ -303,34 +263,19 @@ export function MatchScoutingForm() {
     form.reset(initialFormData);
   }
 
-  function handleExportQRCode() {
+  function handleExport() {
     if (storedSubmissions.length === 0) {
       toast.error("No data to export");
       return;
     }
 
     updateQRColours();
-    setQRCodeData(JSON.stringify(storedSubmissions));
-
-    toast.promise(new Promise((resolve) => setTimeout(resolve, 500)), {
-      loading: "Generating QR Code...",
-      success: () => {
-        setShowQRModal(true);
-        return "QR Code Generated";
-      },
-      error: "Failed to Generate QR Code",
-    });
+    setSelectedSubmissions(storedSubmissions.map((_, index) => index));
+    setShowExportModal(true);
   }
 
-  function handleClearData() {
+  function handleClear() {
     setShowClearDataDialog(true);
-  }
-
-  function confirmClearData() {
-    localStorage.removeItem("formSubmissions");
-    setStoredSubmissions([]);
-    setShowClearDataDialog(false);
-    toast.success("All stored submissions cleared");
   }
 
   function renderCycleFields(fieldName: string) {
@@ -455,42 +400,6 @@ export function MatchScoutingForm() {
     );
   }
 
-  function handleConfigSave() {
-    try {
-      localStorage.setItem("spreadsheetID", spreadsheetID);
-      localStorage.setItem("sheetID", sheetID);
-      const parsedData = JSONInput ? JSON.parse(JSONInput) : null;
-      setTeams(parsedData);
-      localStorage.setItem("teams", JSON.stringify(parsedData));
-      setShowSpreadsheetIDDialog(false);
-      setJSONInput("");
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  function handleFileDrop(files: File[]) {
-    const file = files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e: ProgressEvent<FileReader>) => {
-        const content = e.target?.result as string;
-        setJSONInput(content);
-      };
-      reader.readAsText(file);
-    }
-  }
-
-  function formatJSON() {
-    try {
-      const parsedJSON = JSON.parse(JSONInput);
-      const formattedJSON = JSON.stringify(parsedJSON, null, 2);
-      setJSONInput(formattedJSON);
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
   return (
     <>
       <Form {...form}>
@@ -527,16 +436,16 @@ export function MatchScoutingForm() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={handleExportQRCode}
+                onClick={handleExport}
                 size="icon"
                 disabled={storedSubmissions.length === 0}
               >
-                <QrCode className="h-4 w-4" />
+                <Upload className="h-4 w-4" />
               </Button>
               <Button
                 type="button"
                 variant="outline"
-                onClick={handleClearData}
+                onClick={handleClear}
                 size="icon"
                 disabled={storedSubmissions.length === 0}
               >
@@ -557,108 +466,46 @@ export function MatchScoutingForm() {
           </div>
         </form>
       </Form>
-      <Dialog
+
+      <Config
         open={showSpreadsheetIDDialog}
         onOpenChange={setShowSpreadsheetIDDialog}
-      >
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Form Configuration</DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid items-center gap-4">
-              <Label className="w-full">Spreadsheet ID</Label>
-              <Input
-                value={spreadsheetID}
-                onChange={(e) => setSpreadsheetID(e.target.value)}
-                placeholder="Enter Spreadsheet ID (from Sheet URL)"
-              />
-            </div>
-            <div className="grid items-center gap-4">
-              <Label className="w-full">Sheet ID</Label>
-              <Input
-                value={sheetID}
-                onChange={(e) => setSheetID(e.target.value)}
-                placeholder="Enter Sheet ID"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="col-span-4">Teams</Label>
-              <Textarea
-                value={JSONInput}
-                onChange={(e) => setJSONInput(e.target.value)}
-                className="col-span-4"
-                rows={4}
-                placeholder='{"teamNumber":"teamName","11146":"Barker Redbacks",...}'
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="col-span-4">Upload JSON</Label>
-              <Dropzone
-                onDrop={handleFileDrop}
-                accept={{ "application/json": [".json"] }}
-              />
-            </div>
-          </div>
-          <div className="flex justify-between">
-            <Button onClick={formatJSON} variant="outline">
-              <FileTextIcon className="mr-2 h-4 w-4" />
-              Format JSON
-            </Button>
-            <Button onClick={handleConfigSave}>Save</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+        spreadsheetID={spreadsheetID}
+        setSpreadsheetID={setSpreadsheetID}
+        sheetID={sheetID}
+        setSheetID={setSheetID}
+        JSONInput={JSONInput}
+        setJSONInput={setJSONInput}
+        setTeams={setTeams}
+      />
 
-      <Dialog open={showQRModal} onOpenChange={setShowQRModal}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>QR Code</DialogTitle>
-            <DialogDescription>
-              Scan to access {storedSubmissions.length} form submission
-              {storedSubmissions.length !== 1 ? "s" : ""}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex items-center justify-center py-6">
-            <QRCodeSVG
-              value={QRCodeData}
-              bgColor={QRBgColour}
-              fgColor={QRFgColour}
-              size={256}
-              level="M"
-            />
-          </div>
-          <DialogFooter>
-            <Button onClick={() => setShowQRModal(false)}>Close</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ExportData
+        open={showExportModal}
+        onOpenChange={setShowExportModal}
+        exportMethod={exportMethod}
+        setExportMethod={setExportMethod}
+        selectedSubmissions={selectedSubmissions}
+        setSelectedSubmissions={setSelectedSubmissions}
+        storedSubmissions={storedSubmissions}
+        setQRCodeData={setQRCodeData}
+        setShowQRModal={setShowQRModal}
+      />
 
-      <AlertDialog
+      <QRCode
+        open={showQRModal}
+        onOpenChange={setShowQRModal}
+        QRCodeData={QRCodeData}
+        QRBgColour={QRBgColour}
+        QRFgColour={QRFgColour}
+        submissionsCount={storedSubmissions.length}
+      />
+
+      <ClearData
         open={showClearDataDialog}
         onOpenChange={setShowClearDataDialog}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Clear All Submissions</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to clear all {storedSubmissions.length}{" "}
-              stored submission
-              {storedSubmissions.length !== 1 ? "s" : ""}? This action cannot be
-              undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmClearData}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Clear All Data
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        submissionsCount={storedSubmissions.length}
+        setStoredSubmissions={setStoredSubmissions}
+      />
     </>
   );
 }
