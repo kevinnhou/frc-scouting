@@ -19,7 +19,7 @@ type Shortcut = {
   description: string;
 };
 
-export function HelpButton() {
+export function Helper() {
   const [open, setOpen] = useState(false);
 
   return (
