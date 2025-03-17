@@ -1,9 +1,10 @@
 import "./globals.css";
 
-import { JetBrains_Mono } from "next/font/google";
+import { JetBrains_Mono, Poppins } from "next/font/google";
 
 import Providers from "@/components/providers";
 import Header from "@/components/header";
+import { HelpButton } from "@/components/form/help";
 
 import { metadata } from "@/config/metadata";
 
@@ -14,6 +15,13 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
   variable: "--font-poppins",
   weight: ["100", "200", "300", "400", "500", "600", "700", "800"],
+});
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-poppins",
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
 
 export default function RootLayout({
@@ -28,9 +36,10 @@ export default function RootLayout({
       suppressHydrationWarning
       className={jetbrainsMono.className}
     >
-      <body>
+      <body className={`${poppins.variable}`}>
         <Providers>
           <Header />
+          <HelpButton />
           {children}
         </Providers>
       </body>
