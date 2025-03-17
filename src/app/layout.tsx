@@ -4,6 +4,7 @@ import { JetBrains_Mono, Poppins } from "next/font/google";
 
 import Providers from "@/components/providers";
 import Header from "@/components/header";
+import { HelpButton } from "@/components/form/help";
 
 import { metadata } from "@/config/metadata";
 
@@ -38,6 +39,7 @@ export default function RootLayout({
       <body className={`${poppins.variable}`}>
         <Providers>
           <Header />
+          <HelpButton />
           {children}
         </Providers>
       </body>
