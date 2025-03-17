@@ -12,7 +12,14 @@ import { QRCodeSVG } from "qrcode.react";
 import { autonomous, teleop, misc } from "@/lib/match-scouting";
 import { submit } from "@/app/actions/submit";
 
-import { FileTextIcon, Settings, Upload, QrCode, Trash2 } from "lucide-react";
+import {
+  Download,
+  FileTextIcon,
+  QrCode,
+  Settings,
+  Trash2,
+  Upload,
+} from "lucide-react";
 
 import {
   AlertDialog,
@@ -135,6 +142,11 @@ export function MatchScoutingForm() {
   const [QRBgColour, setQRBgColour] = useState("#ffffff");
   const [QRFgColour, setQRFgColour] = useState("#000000");
   const [storedSubmissions, setStoredSubmissions] = useState<FormData[]>([]);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [selectedSubmissions, setSelectedSubmissions] = useState<number[]>([]);
+  const [exportMethod, setExportMethod] = useState<
+    "qrcode" | "clipboard" | "json"
+  >("qrcode");
 
   const updateQRColours = useCallback(() => {
     const root = document.documentElement;
@@ -303,34 +315,102 @@ export function MatchScoutingForm() {
     form.reset(initialFormData);
   }
 
-  function handleExportQRCode() {
+  function handleExport() {
     if (storedSubmissions.length === 0) {
       toast.error("No data to export");
       return;
     }
 
     updateQRColours();
-    setQRCodeData(JSON.stringify(storedSubmissions));
-
-    toast.promise(new Promise((resolve) => setTimeout(resolve, 500)), {
-      loading: "Generating QR Code...",
-      success: () => {
-        setShowQRModal(true);
-        return "QR Code Generated";
-      },
-      error: "Failed to Generate QR Code",
-    });
+    setSelectedSubmissions(storedSubmissions.map((_, index) => index));
+    setShowExportModal(true);
   }
 
-  function handleClearData() {
+  function handleMethodChange(method: "qrcode" | "clipboard" | "json") {
+    setExportMethod(method);
+  }
+
+  function handleSelection(index: number) {
+    setSelectedSubmissions((prev) =>
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
+    );
+  }
+
+  function handleSelectAll() {
+    if (selectedSubmissions.length === storedSubmissions.length) {
+      setSelectedSubmissions([]);
+    } else {
+      setSelectedSubmissions(storedSubmissions.map((_, index) => index));
+    }
+  }
+
+  function handleClear() {
     setShowClearDataDialog(true);
   }
 
-  function confirmClearData() {
+  function confirmClear() {
     localStorage.removeItem("formSubmissions");
     setStoredSubmissions([]);
     setShowClearDataDialog(false);
     toast.success("All stored submissions cleared");
+  }
+
+  function getSelectedData() {
+    return selectedSubmissions
+      .sort((a, b) => a - b)
+      .map((index) => storedSubmissions[index]);
+  }
+
+  function getDataSize(data: unknown) {
+    return new Blob([JSON.stringify(data)]).size;
+  }
+
+  function exportData() {
+    const selectedData = getSelectedData();
+
+    if (selectedData.length === 0) {
+      toast.error("No submissions selected");
+      return;
+    }
+
+    const dataSize = getDataSize(selectedData);
+    const MAX_QR_SIZE = 2953;
+
+    if (exportMethod === "qrcode" && dataSize > MAX_QR_SIZE) {
+      toast.error(
+        `Data size (${dataSize} bytes) exceeds QR code capacity (${MAX_QR_SIZE} bytes). Please select fewer submissions or use another export method.`
+      );
+      return;
+    }
+
+    switch (exportMethod) {
+      case "qrcode":
+        setQRCodeData(JSON.stringify(selectedData));
+        setShowQRModal(true);
+        break;
+      case "clipboard":
+        navigator.clipboard
+          .writeText(JSON.stringify(selectedData))
+          .then(() => toast.success("Data copied to clipboard"))
+          .catch(() => toast.error("Failed to copy data to clipboard"));
+        break;
+      case "json":
+        const blob = new Blob([JSON.stringify(selectedData, null, 2)], {
+          type: "application/json",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `scouting-data-${new Date().toISOString().split("T")[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        toast.success("JSON file downloaded");
+        break;
+    }
+
+    setShowExportModal(false);
   }
 
   function renderCycleFields(fieldName: string) {
@@ -527,16 +607,16 @@ export function MatchScoutingForm() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={handleExportQRCode}
+                onClick={handleExport}
                 size="icon"
                 disabled={storedSubmissions.length === 0}
               >
-                <QrCode className="h-4 w-4" />
+                <Upload className="h-4 w-4" />
               </Button>
               <Button
                 type="button"
                 variant="outline"
-                onClick={handleClearData}
+                onClick={handleClear}
                 size="icon"
                 disabled={storedSubmissions.length === 0}
               >
@@ -641,7 +721,7 @@ export function MatchScoutingForm() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Clear All Submissions</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogDescription className="tracking-wide font-sans">
               Are you sure you want to clear all {storedSubmissions.length}{" "}
               stored submission
               {storedSubmissions.length !== 1 ? "s" : ""}? This action cannot be
@@ -651,7 +731,7 @@ export function MatchScoutingForm() {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={confirmClearData}
+              onClick={confirmClear}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Clear All Data
@@ -659,6 +739,105 @@ export function MatchScoutingForm() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <Dialog open={showExportModal} onOpenChange={setShowExportModal}>
+        <DialogContent className="sm:max-w-xl">
+          <DialogHeader>
+            <DialogTitle>Export Data</DialogTitle>
+            <DialogDescription className="tracking-wide font-sans">
+              Select submissions and export method
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <div className="mb-4">
+              <Label>Export Method</Label>
+              <div className="flex gap-2 mt-2">
+                <Button
+                  variant={exportMethod === "qrcode" ? "default" : "outline"}
+                  onClick={() => handleMethodChange("qrcode")}
+                  className="flex-1"
+                >
+                  <QrCode className="h-4 w-4 mr-2" />
+                  QR Code
+                </Button>
+                <Button
+                  variant={exportMethod === "clipboard" ? "default" : "outline"}
+                  onClick={() => handleMethodChange("clipboard")}
+                  className="flex-1"
+                >
+                  <FileTextIcon className="h-4 w-4 mr-2" />
+                  Copy to Clipboard
+                </Button>
+                <Button
+                  variant={exportMethod === "json" ? "default" : "outline"}
+                  onClick={() => handleMethodChange("json")}
+                  className="flex-1"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Download JSON
+                </Button>
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <div className="flex justify-between items-center mb-2">
+                <Label>Submissions</Label>
+                <Button variant="outline" size="sm" onClick={handleSelectAll}>
+                  {selectedSubmissions.length === storedSubmissions.length
+                    ? "Deselect All"
+                    : "Select All"}
+                </Button>
+              </div>
+              <div className="max-h-60 overflow-y-auto border rounded-md p-2">
+                {storedSubmissions.length > 0 ? (
+                  storedSubmissions.map((submission, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center space-x-2 p-2 hover:bg-accent rounded-md cursor-pointer"
+                      onClick={() => handleSelection(index)}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedSubmissions.includes(index)}
+                        onChange={() => handleSelection(index)}
+                        className="h-4 w-4"
+                      />
+                      <span>
+                        Team {String(submission["Team Number"])} - Match{" "}
+                        {String(submission["Qualification Number"])}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-4 text-muted-foreground">
+                    No submissions available
+                  </div>
+                )}
+              </div>
+              {exportMethod === "qrcode" && (
+                <div className="text-xs text-muted-foreground mt-2">
+                  QR codes have limited capacity. Select fewer submissions if
+                  export fails.
+                </div>
+              )}
+              <div className="text-sm mt-2">
+                Selected: {selectedSubmissions.length} of{" "}
+                {storedSubmissions.length} submissions
+                {selectedSubmissions.length > 0 && (
+                  <span className="ml-2">
+                    ({getDataSize(getSelectedData())} bytes)
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowExportModal(false)}>
+              Cancel
+            </Button>
+            <Button onClick={exportData}>Export</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
