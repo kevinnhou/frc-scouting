@@ -26,7 +26,8 @@ export function Helper() {
     <>
       <Button
         variant="secondary"
-        className="fixed bottom-10 right-10 h-14 w-14 rounded-full shadow-lg z-50"
+        size="icon"
+        className="fixed bottom-10 right-10 rounded-full shadow-xl z-50"
         onClick={() => setOpen(true)}
       >
         <HelpCircle />
