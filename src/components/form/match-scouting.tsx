@@ -1,5 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 
 "use client";
 
@@ -104,7 +104,7 @@ export function MatchScoutingForm() {
   const [showClearDataDialog, setShowClearDataDialog] = useState(false);
   const [spreadsheetID, setSpreadsheetID] = useState("");
   const [sheetID, setSheetID] = useState("");
-  const [teams, setTeams] = useState({});
+  const [teams, setTeams] = useState<Record<string, string>>({});
   const [JSONInput, setJSONInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [QRCodeData, setQRCodeData] = useState("");
@@ -169,6 +169,19 @@ export function MatchScoutingForm() {
     defaultValues: initialFormData,
     mode: "onSubmit",
   });
+
+  useEffect(() => {
+    const teamNumber = form.watch("Team Number");
+    if (teamNumber && teams && Object.keys(teams).length > 0) {
+      const teamName = teams[teamNumber.toString()];
+      if (teamName) {
+        form.setValue("Team Name", teamName);
+        toast.info(`Team found: ${teamName}`);
+      } else {
+        form.setValue("Team Name", "");
+      }
+    }
+  }, [form, teams, form.watch("Team Number")]);
 
   const [activeTab, setActiveTab] = useState<
     "autonomous" | "teleop" | "misc" | string
