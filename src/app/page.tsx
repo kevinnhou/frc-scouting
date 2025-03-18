@@ -124,7 +124,7 @@ export default function Home() {
             <div className="h-6">
               <Link href="https://vercel.com" target="_blank">
                 <Image
-                  src="/vercel-logo.svg"
+                  src="/logos/vercel.svg"
                   alt="Vercel"
                   width={90}
                   height={18}
@@ -135,7 +135,7 @@ export default function Home() {
             <div className="h-6">
               <Link href="https://about.google" target="_blank">
                 <Image
-                  src="/google-logo.svg"
+                  src="/logos/google.svg"
                   alt="Google"
                   width={90}
                   height={18}

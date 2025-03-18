@@ -244,6 +244,9 @@ export function MatchScoutingForm() {
           }
         },
         error: (error) => {
+          if (error instanceof Error && error.message.includes("fetch")) {
+            return "Data saved locally";
+          }
           console.error(
             "Form submission failed:",
             error instanceof Error ? error.message : "Unknown error occurred."
@@ -424,8 +427,8 @@ export function MatchScoutingForm() {
             {activeTab === "misc" && renderFields(misc)}
             <NotesField name="Extra Notes" label="Extra Notes" />
           </div>
-          <div className="flex justify-between mt-8">
-            <div className="flex space-x-4">
+          <div className="flex justify-between place-items-center pb-8">
+            <div className="flex items-center space-x-4">
               <Button
                 type="button"
                 onClick={() => setShowSpreadsheetIDDialog(true)}
@@ -455,8 +458,8 @@ export function MatchScoutingForm() {
                 Reset Form
               </Button>
             </div>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-muted-foreground">
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-muted-foreground hidden md:block">
                 Stored submissions: {storedSubmissions.length}
               </span>
               <Button type="submit" disabled={isSubmitting}>
