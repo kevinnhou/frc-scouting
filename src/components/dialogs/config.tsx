@@ -2,6 +2,8 @@
 
 import { useDropzone } from "react-dropzone";
 
+import { toast } from "sonner";
+
 import { FileTextIcon, Upload } from "lucide-react";
 
 import { Button } from "~/button";
@@ -19,7 +21,7 @@ type TConfigProps = {
   setSheetID: (id: string) => void;
   JSONInput: string;
   setJSONInput: (input: string) => void;
-  setTeams: (teams: Record<string, unknown>) => void;
+  setTeams: (teams: Record<string, string>) => void;
 };
 
 function Dropzone({
@@ -70,8 +72,22 @@ export function Config({
       localStorage.setItem("teams", JSON.stringify(parsedData));
       onOpenChange(false);
       setJSONInput("");
+      toast.success("Configuration saved successfully");
     } catch (error) {
       console.error(error);
+      toast.error("Failed to save configuration");
+    }
+  }
+
+  function formatJSON() {
+    try {
+      const parsedJSON = JSON.parse(JSONInput);
+      const formattedJSON = JSON.stringify(parsedJSON, null, 2);
+      setJSONInput(formattedJSON);
+      toast.success("JSON formatted successfully");
+    } catch (error) {
+      console.error(error);
+      toast.error("Invalid JSON format");
     }
   }
 
@@ -82,18 +98,12 @@ export function Config({
       reader.onload = (e: ProgressEvent<FileReader>) => {
         const content = e.target?.result as string;
         setJSONInput(content);
+        toast.success(`File "${file.name}" loaded successfully`);
+      };
+      reader.onerror = () => {
+        toast.error("Failed to read file");
       };
       reader.readAsText(file);
-    }
-  }
-
-  function formatJSON() {
-    try {
-      const parsedJSON = JSON.parse(JSONInput);
-      const formattedJSON = JSON.stringify(parsedJSON, null, 2);
-      setJSONInput(formattedJSON);
-    } catch (error) {
-      console.error(error);
     }
   }
 
