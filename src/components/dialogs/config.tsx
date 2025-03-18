@@ -10,7 +10,7 @@ import { Input } from "~/input";
 import { Label } from "~/label";
 import { Textarea } from "~/textarea";
 
-type ConfigProps = {
+type TConfigProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   spreadsheetID: string;
@@ -60,7 +60,7 @@ export function Config({
   JSONInput,
   setJSONInput,
   setTeams,
-}: ConfigProps) {
+}: TConfigProps) {
   function handleConfigSave() {
     try {
       localStorage.setItem("spreadsheetID", spreadsheetID);

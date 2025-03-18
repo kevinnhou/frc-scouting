@@ -16,7 +16,7 @@ import {
 } from "~/dialog";
 import { Label } from "~/label";
 
-type ExportDataProps = {
+type TExportDataProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   exportMethod: "qrcode" | "clipboard" | "json";
@@ -40,7 +40,7 @@ export function ExportData({
   storedSubmissions,
   setQRCodeData,
   setShowQRModal,
-}: ExportDataProps) {
+}: TExportDataProps) {
   function handleMethodChange(method: "qrcode" | "clipboard" | "json") {
     setExportMethod(method);
   }

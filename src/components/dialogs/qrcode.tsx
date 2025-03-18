@@ -12,7 +12,7 @@ import {
   DialogFooter,
 } from "~/dialog";
 
-type QRCodeProps = {
+type TQRCodeProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   QRCodeData: string;
@@ -28,7 +28,7 @@ export function QRCode({
   QRBgColour,
   QRFgColour,
   submissionsCount,
-}: QRCodeProps) {
+}: TQRCodeProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">

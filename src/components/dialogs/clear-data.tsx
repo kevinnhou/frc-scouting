@@ -13,7 +13,7 @@ import {
   AlertDialogTitle,
 } from "~/alert-dialog";
 
-type ClearDataProps = {
+type TClearDataProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   submissionsCount: number;
@@ -26,7 +26,7 @@ export function ClearData({
   onOpenChange,
   submissionsCount,
   setStoredSubmissions,
-}: ClearDataProps) {
+}: TClearDataProps) {
   function confirmClear() {
     localStorage.removeItem("formSubmissions");
     setStoredSubmissions([]);
