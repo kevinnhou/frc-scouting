@@ -3,6 +3,7 @@
 "use client";
 
 import { useEffect, useCallback, useState } from "react";
+import { usePathname } from "next/navigation";
 
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
@@ -78,6 +79,25 @@ const initialFormData: Partial<FormData> = {
 };
 
 export function MatchScoutingForm() {
+  const pathname = usePathname();
+  const [networkOffline, setNetworkOffline] = useState(false);
+  const isOffline = pathname?.includes("~offline") || networkOffline;
+
+  useEffect(() => {
+    setNetworkOffline(!navigator.onLine);
+
+    const handleOnline = () => setNetworkOffline(false);
+    const handleOffline = () => setNetworkOffline(true);
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+
   const [showSpreadsheetIDDialog, setShowSpreadsheetIDDialog] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
   const [showClearDataDialog, setShowClearDataDialog] = useState(false);
@@ -222,6 +242,12 @@ export function MatchScoutingForm() {
     localStorage.setItem("formSubmissions", JSON.stringify(updatedSubmissions));
     setStoredSubmissions(updatedSubmissions);
 
+    if (isOffline) {
+      toast.success("Data saved locally");
+      resetForm();
+      return;
+    }
+
     setIsSubmitting(true);
 
     toast.promise(
@@ -244,9 +270,6 @@ export function MatchScoutingForm() {
           }
         },
         error: (error) => {
-          if (error instanceof Error && error.message.includes("fetch")) {
-            return "Data saved locally";
-          }
           console.error(
             "Form submission failed:",
             error instanceof Error ? error.message : "Unknown error occurred."
@@ -463,7 +486,11 @@ export function MatchScoutingForm() {
                 Stored submissions: {storedSubmissions.length}
               </span>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Submitting..." : "Submit"}
+                {isSubmitting
+                  ? "Submitting..."
+                  : isOffline
+                    ? "Save Locally"
+                    : "Submit"}
               </Button>
             </div>
           </div>

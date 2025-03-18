@@ -1,7 +1,7 @@
 import { Helper } from "@/components/form/help";
 import { MatchScoutingForm } from "@/components/form/match-scouting";
 
-export default function MatchScouting() {
+export default function OfflineScouting() {
   return (
     <>
       <Helper />
