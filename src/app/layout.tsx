@@ -1,5 +1,7 @@
 import "./globals.css";
 
+import { type Viewport } from "next";
+
 import { Analytics } from "@vercel/analytics/next";
 import { JetBrains_Mono, Poppins } from "next/font/google";
 
@@ -9,6 +11,10 @@ import Header from "@/components/header";
 import { metadata } from "@/config/metadata";
 
 export { metadata };
+
+export const viewport: Viewport = {
+  themeColor: "#FFFFFF",
+};
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],

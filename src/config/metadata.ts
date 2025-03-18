@@ -9,6 +9,14 @@ export const metadata: Metadata = {
   },
   title: site.name.default,
   description: site.description,
+  appleWebApp: {
+    capable: true,
+    title: site.name.default,
+    statusBarStyle: "default",
+  },
+  formatDetection: {
+    telephone: false,
+  },
   applicationName: site.name.default,
   authors: [{ name: site.name.short, url: site.author.links }],
   creator: site.author.name,
