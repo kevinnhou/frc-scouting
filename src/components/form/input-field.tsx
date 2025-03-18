@@ -1,3 +1,5 @@
+"use client";
+
 import { useFormContext } from "react-hook-form";
 
 import { Input } from "~/input";
@@ -45,6 +47,10 @@ export function InputField({
                     ? Number.parseFloat(e.target.value)
                     : e.target.value;
                 field.onChange(value);
+
+                if (name === "Team Number") {
+                  field.onBlur();
+                }
               }}
               autoComplete="off"
             />
