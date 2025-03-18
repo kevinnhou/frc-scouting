@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 "use client";
@@ -13,7 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { autonomous, teleop, misc } from "@/lib/match-scouting";
 import { submit } from "@/app/actions/submit";
 
-import { Settings, Trash2, Upload } from "lucide-react";
+import { AlertCircle, Settings, Trash2, Upload } from "lucide-react";
 
 import { Button } from "~/button";
 import { Form } from "~/form";
@@ -166,7 +167,7 @@ export function MatchScoutingForm() {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: initialFormData,
-    mode: "onTouched",
+    mode: "onSubmit",
   });
 
   const [activeTab, setActiveTab] = useState<
@@ -283,6 +284,50 @@ export function MatchScoutingForm() {
         },
       }
     );
+  }
+
+  function onError(errors: any) {
+    const errorMessages = Object.entries(errors).map(
+      ([field, error]: [string, any]) => {
+        return `${field}: ${error.message}`;
+      }
+    );
+
+    toast.error(
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          <AlertCircle className="h-4 w-4" />
+          <span className="font-medium">Missing required fields</span>
+        </div>
+        <ul className="list-disc pl-5 text-sm">
+          {errorMessages.map((message, index) => (
+            <li key={index}>{message}</li>
+          ))}
+        </ul>
+      </div>
+    );
+
+    const errorFields = Object.keys(errors);
+
+    const autonomousFields = autonomous.map((field) => field.name);
+    const teleopFields = teleop.map((field) => field.name);
+    const miscFields = misc.map((field) => field.name);
+
+    const autonomousErrors = errorFields.some((field) =>
+      autonomousFields.includes(field)
+    );
+    const teleopErrors = errorFields.some((field) =>
+      teleopFields.includes(field)
+    );
+    const miscErrors = errorFields.some((field) => miscFields.includes(field));
+
+    if (autonomousErrors) {
+      setActiveTab("autonomous");
+    } else if (teleopErrors) {
+      setActiveTab("teleop");
+    } else if (miscErrors) {
+      setActiveTab("misc");
+    }
   }
 
   function resetForm() {
@@ -429,7 +474,10 @@ export function MatchScoutingForm() {
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <form
+          onSubmit={form.handleSubmit(onSubmit, onError)}
+          className="space-y-8"
+        >
           <div className="block">
             <Tabs
               defaultValue="autonomous"
