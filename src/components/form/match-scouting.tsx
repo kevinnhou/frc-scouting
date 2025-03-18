@@ -244,6 +244,9 @@ export function MatchScoutingForm() {
           }
         },
         error: (error) => {
+          if (error instanceof Error && error.message.includes("fetch")) {
+            return "Data saved locally";
+          }
           console.error(
             "Form submission failed:",
             error instanceof Error ? error.message : "Unknown error occurred."
