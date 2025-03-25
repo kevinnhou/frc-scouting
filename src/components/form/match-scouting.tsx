@@ -30,6 +30,7 @@ import { Config } from "@/components/dialogs/config";
 import { ClearData } from "@/components/dialogs/clear-data";
 import { ExportData } from "@/components/dialogs/export-data";
 import { QRCode } from "@/components/dialogs/qrcode";
+import { ViewSubmissions } from "@/components/dialogs/view-submissions";
 
 const formSchema = z.object({
   ...Object.fromEntries(autonomous.map((field) => [field.name, field.schema])),
@@ -116,6 +117,8 @@ export function MatchScoutingForm() {
   const [exportMethod, setExportMethod] = useState<
     "qrcode" | "clipboard" | "json"
   >("qrcode");
+  const [showViewSubmissionsDialog, setShowViewSubmissionsDialog] =
+    useState(false);
 
   const updateQRColours = useCallback(() => {
     const root = document.documentElement;
@@ -484,6 +487,13 @@ export function MatchScoutingForm() {
     );
   }
 
+  const loadForm = useCallback(
+    (data: FormData) => {
+      form.reset(data);
+    },
+    [form]
+  );
+
   return (
     <>
       <Form {...form}>
@@ -543,9 +553,14 @@ export function MatchScoutingForm() {
               </Button>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-muted-foreground hidden md:block">
-                Stored submissions: {storedSubmissions.length}
-              </span>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowViewSubmissionsDialog(true)}
+                className="flex items-center gap-2"
+              >
+                <span>Stored submissions: {storedSubmissions.length}</span>
+              </Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting
                   ? "Submitting..."
@@ -596,6 +611,13 @@ export function MatchScoutingForm() {
         onOpenChange={setShowClearDataDialog}
         submissionsCount={storedSubmissions.length}
         setStoredSubmissions={setStoredSubmissions}
+      />
+      <ViewSubmissions
+        open={showViewSubmissionsDialog}
+        onOpenChange={setShowViewSubmissionsDialog}
+        storedSubmissions={storedSubmissions}
+        setStoredSubmissions={setStoredSubmissions}
+        loadForm={loadForm}
       />
     </>
   );
