@@ -45,7 +45,6 @@ export function QRCode({
             bgColor={QRBgColour}
             fgColor={QRFgColour}
             size={256}
-            level="M"
           />
         </div>
         <DialogFooter>
