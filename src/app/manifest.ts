@@ -1,34 +1,34 @@
-import { type MetadataRoute } from "next";
+import type { MetadataRoute } from "next"
 
-import { site } from "@/config/site";
+import { site } from "@/config/site"
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: site.name.default,
-    short_name: site.name.short,
-    description: site.description,
-    theme_color: "#FFFFFF",
     background_color: "#FFFFFF",
-    start_url: "/",
+    description: site.description,
     display: "standalone",
-    orientation: "portrait",
     icons: [
       {
-        src: "/favicon.ico",
         sizes: "any",
+        src: "/favicon.ico",
         type: "image/x-icon",
       },
       {
-        src: "/icons/android-chrome-192x192.png",
-        sizes: "192x192",
-        type: "image/png",
         purpose: "maskable",
+        sizes: "192x192",
+        src: "/icons/android-chrome-192x192.png",
+        type: "image/png",
       },
       {
-        src: "/icons/icon-512x512.png",
         sizes: "512x512",
+        src: "/icons/icon-512x512.png",
         type: "image/png",
       },
     ],
-  };
+    name: site.name.default,
+    orientation: "portrait",
+    short_name: site.name.short,
+    start_url: "/",
+    theme_color: "#FFFFFF",
+  }
 }

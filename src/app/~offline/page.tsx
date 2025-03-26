@@ -1,5 +1,5 @@
-import { Helper } from "@/components/form/help";
-import { MatchScoutingForm } from "@/components/form/match-scouting";
+import { Helper } from "@/components/form/help"
+import { MatchScoutingForm } from "@/components/form/match-scouting"
 
 export default function OfflineScouting() {
   return (
@@ -13,5 +13,5 @@ export default function OfflineScouting() {
         <MatchScoutingForm />
       </div>
     </>
-  );
+  )
 }

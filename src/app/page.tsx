@@ -1,57 +1,54 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
-
-import { toast } from "sonner";
-
-import { site } from "@/config/site";
-
-import { Github } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
+import { site } from "@/config/site"
+import { Github } from "lucide-react"
+import Image from "next/image"
+import Link from "next/link"
+import { useEffect, useState } from "react"
+import { toast } from "sonner"
 
 export default function Home() {
   const [stats, setStats] = useState({
-    totalSubmissions: 0,
     dataStoredKB: 0,
+    totalSubmissions: 0,
     uniqueTeams: 0,
-  });
+  })
 
-  const noStats = stats.totalSubmissions === 0 && stats.uniqueTeams === 0;
+  const noStats = stats.totalSubmissions === 0 && stats.uniqueTeams === 0
 
   useEffect(() => {
     try {
-      const storedData = localStorage.getItem("formSubmissions");
+      const storedData = localStorage.getItem("formSubmissions")
       if (storedData) {
-        const dataSizeBytes = new Blob([storedData]).size;
-        const dataSizeKB = Math.round((dataSizeBytes / 1024) * 10) / 10;
+        const dataSizeBytes = new Blob([storedData]).size
+        const dataSizeKB = Math.round((dataSizeBytes / 1024) * 10) / 10
 
-        const submissions = JSON.parse(storedData);
+        const submissions = JSON.parse(storedData)
 
         if (Array.isArray(submissions)) {
-          const totalSubmissions = submissions.length;
+          const totalSubmissions = submissions.length
 
-          const uniqueTeamNumbers = new Set();
+          const uniqueTeamNumbers = new Set()
           submissions.forEach((sub) => {
             if (sub["Team Number"]) {
-              uniqueTeamNumbers.add(sub["Team Number"]);
+              uniqueTeamNumbers.add(sub["Team Number"])
             }
-          });
+          })
 
           setStats({
-            totalSubmissions,
             dataStoredKB: dataSizeKB,
+            totalSubmissions,
             uniqueTeams: uniqueTeamNumbers.size,
-          });
+          })
         }
       }
-    } catch (error) {
-      toast.error("Error calculating statistics");
-      console.error("Error calculating statistics:", error);
     }
-  }, []);
+    catch (error) {
+      toast.error("Error calculating statistics")
+      console.error("Error calculating statistics:", error)
+    }
+  }, [])
 
   return (
     <div className="h-screen">
@@ -68,11 +65,11 @@ export default function Home() {
               <Button asChild>
                 <Link href="/match">Start Scouting</Link>
               </Button>
-              <Button variant="outline" asChild>
+              <Button asChild variant="outline">
                 <Link
+                  className="flex items-center gap-2"
                   href="https://github.com/kevinnhou/frc-scouting"
                   target="_blank"
-                  className="flex items-center gap-2"
                 >
                   <Github size={16} />
                   <span>GitHub</span>
@@ -92,11 +89,11 @@ export default function Home() {
 
               <div className="grid grid-cols-3 gap-4">
                 {[
-                  { value: stats.totalSubmissions, label: "Submissions" },
-                  { value: stats.dataStoredKB, label: "KB stored" },
-                  { value: stats.uniqueTeams, label: "Teams scouted" },
+                  { label: "Submissions", value: stats.totalSubmissions },
+                  { label: "KB stored", value: stats.dataStoredKB },
+                  { label: "Teams scouted", value: stats.uniqueTeams },
                 ].map((stat, index) => (
-                  <div key={index} className={noStats ? "opacity-50" : ""}>
+                  <div className={noStats ? "opacity-50" : ""} key={index}>
                     <p className="text-2xl font-light">{stat.value}</p>
                     <p className="text-sm text-foreground/50">{stat.label}</p>
                   </div>
@@ -108,11 +105,11 @@ export default function Home() {
           <div className="lg:flex items-center justify-center hidden">
             <div className="relative w-full h-[60vh] max-h-[500px]">
               <Image
-                src="/hero-image.svg"
                 alt="FIRST Robotics Competition Banner"
+                className="object-contain"
                 fill
                 priority
-                className="object-contain"
+                src="/hero-image.svg"
               />
             </div>
           </div>
@@ -124,21 +121,21 @@ export default function Home() {
             <div className="h-6">
               <Link href="https://vercel.com" target="_blank">
                 <Image
-                  src="/logos/vercel.svg"
                   alt="Vercel"
-                  width={90}
-                  height={18}
                   className="dark:invert"
+                  height={18}
+                  src="/logos/vercel.svg"
+                  width={90}
                 />
               </Link>
             </div>
             <div className="h-6">
               <Link href="https://about.google" target="_blank">
                 <Image
-                  src="/logos/google.svg"
                   alt="Google"
-                  width={90}
                   height={18}
+                  src="/logos/google.svg"
+                  width={90}
                 />
               </Link>
             </div>
@@ -146,5 +143,5 @@ export default function Home() {
         </div>
       </div>
     </div>
-  );
+  )
 }

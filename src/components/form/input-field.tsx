@@ -1,30 +1,30 @@
-"use client";
+"use client"
 
-import { useFormContext } from "react-hook-form";
+import { useFormContext } from "react-hook-form"
 
-import { Input } from "~/input";
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "~/form";
+} from "~/form"
+import { Input } from "~/input"
 
-type TInputFieldProps = {
-  name: string;
-  label: string;
-  placeholder: string;
-  type?: string;
-};
+interface TInputFieldProps {
+  label: string
+  name: string
+  placeholder: string
+  type?: string
+}
 
 export function InputField({
-  name,
   label,
+  name,
   placeholder,
   type = "text",
 }: TInputFieldProps) {
-  const { control } = useFormContext();
+  const { control } = useFormContext()
 
   return (
     <FormField
@@ -37,27 +37,27 @@ export function InputField({
             <Input
               placeholder={placeholder
                 .split(" ")
-                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                 .join(" ")}
               type={type}
               {...field}
+              autoComplete="off"
               onChange={(e) => {
-                const value =
-                  type === "number"
+                const value
+                  = type === "number"
                     ? Number.parseFloat(e.target.value)
-                    : e.target.value;
-                field.onChange(value);
+                    : e.target.value
+                field.onChange(value)
 
                 if (name === "Team Number") {
-                  field.onBlur();
+                  field.onBlur()
                 }
               }}
-              autoComplete="off"
             />
           </FormControl>
           <FormMessage />
         </FormItem>
       )}
     />
-  );
+  )
 }

@@ -1,33 +1,33 @@
-"use server";
+/* eslint-disable node/prefer-global/process */
+"use server"
 
-import { google } from "googleapis";
-import { z } from "zod";
-
-import { autonomous, teleop, misc } from "@/lib/match-scouting";
+import { autonomous, misc, teleop } from "@/lib/match-scouting"
+import { google } from "googleapis"
+import { z } from "zod"
 
 const formSchema = z.object({
-  ...Object.fromEntries(autonomous.map((field) => [field.name, field.schema])),
-  ...Object.fromEntries(teleop.map((field) => [field.name, field.schema])),
-  ...Object.fromEntries(misc.map((field) => [field.name, field.schema])),
-  spreadsheetID: z.string().optional(),
+  ...Object.fromEntries(autonomous.map(field => [field.name, field.schema])),
+  ...Object.fromEntries(teleop.map(field => [field.name, field.schema])),
+  ...Object.fromEntries(misc.map(field => [field.name, field.schema])),
   sheetID: z.string().optional(),
-});
+  spreadsheetID: z.string().optional(),
+})
 
-type FormData = z.infer<typeof formSchema>;
-type TFormDataKeys = keyof Omit<FormData, "spreadsheetID" | "sheetID">;
+type FormData = z.infer<typeof formSchema>
+type TFormDataKeys = keyof Omit<FormData, "sheetID" | "spreadsheetID">
 
 export async function submit(data: FormData) {
-  const validatedData = formSchema.parse(data);
+  const validatedData = formSchema.parse(data)
 
-  const { spreadsheetID, sheetID, ...formData } = validatedData;
+  const { sheetID, spreadsheetID, ...formData } = validatedData
 
   if (!spreadsheetID || !sheetID) {
     return {
-      success: false,
+      localSuccess: true,
       message:
         "Spreadsheet details are missing. Please configure your spreadsheet ID and sheet ID in settings.",
-      localSuccess: true,
-    };
+      success: false,
+    }
   }
 
   try {
@@ -42,19 +42,19 @@ export async function submit(data: FormData) {
         "https://www.googleapis.com/auth/drive.file",
         "https://www.googleapis.com/auth/spreadsheets",
       ],
-    });
+    })
 
-    const sheets = google.sheets({ version: "v4", auth });
+    const sheets = google.sheets({ auth, version: "v4" })
 
     const autoCycles = Object.values(
-      formData["Autonomous Cycles" as TFormDataKeys]
-    ).slice(0, -1);
+      formData["Autonomous Cycles" as TFormDataKeys],
+    ).slice(0, -1)
 
     const teleopCycles = Object.values(
-      formData["Teleop Cycles" as TFormDataKeys]
-    ).slice(0, -1);
+      formData["Teleop Cycles" as TFormDataKeys],
+    ).slice(0, -1)
 
-    const notes = Object.values(formData["Extra Notes" as TFormDataKeys]);
+    const notes = Object.values(formData["Extra Notes" as TFormDataKeys])
 
     const values = [
       formData["Team Number" as TFormDataKeys],
@@ -69,7 +69,7 @@ export async function submit(data: FormData) {
       autoCycles[4],
       autoCycles[5],
       JSON.stringify(
-        formData["Autonomous Cycles" as TFormDataKeys]["Cycle Times"]
+        formData["Autonomous Cycles" as TFormDataKeys]["Cycle Times"],
       ),
       teleopCycles[0],
       teleopCycles[1],
@@ -85,29 +85,30 @@ export async function submit(data: FormData) {
       formData["Defense" as TFormDataKeys],
       formData["Scoring Behind Reef" as TFormDataKeys],
       notes[0],
-    ];
+    ]
 
     await sheets.spreadsheets.values.append({
-      spreadsheetId: spreadsheetID,
       range: sheetID,
-      valueInputOption: "RAW",
       requestBody: {
         values: [values],
       },
-    });
+      spreadsheetId: spreadsheetID,
+      valueInputOption: "RAW",
+    })
 
-    return { success: true, message: "Form submitted successfully." };
-  } catch (error) {
+    return { message: "Form submitted successfully.", success: true }
+  }
+  catch (error) {
     console.error(
       "Form submission failed:",
-      error instanceof Error ? error.message : "Unknown error occurred."
-    );
+      error instanceof Error ? error.message : "Unknown error occurred.",
+    )
     if (error instanceof z.ZodError) {
       const errorMessages = error.errors
-        .map((err) => `${err.path.join(".")}: ${err.message}`)
-        .join(", ");
-      return { success: false, message: `Validation failed: ${errorMessages}` };
+        .map(err => `${err.path.join(".")}: ${err.message}`)
+        .join(", ")
+      return { message: `Validation failed: ${errorMessages}`, success: false }
     }
-    return { success: false, message: "Form submission failed." };
+    return { message: "Form submission failed.", success: false }
   }
 }

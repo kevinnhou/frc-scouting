@@ -1,18 +1,18 @@
-import withSerwistInit from "@serwist/next";
+import withSerwistInit from "@serwist/next"
 
-const revision = crypto.randomUUID();
+const revision = crypto.randomUUID()
 
 const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-};
+}
 
 const withSerwist = withSerwistInit({
-  swSrc: "src/lib/sw.ts",
-  swDest: "public/sw.js",
+  additionalPrecacheEntries: [{ revision, url: "/~offline" }],
   cacheOnNavigation: true,
-  additionalPrecacheEntries: [{ url: "/~offline", revision: revision }],
-});
+  swDest: "public/sw.js",
+  swSrc: "src/lib/sw.ts",
+})
 
-export default withSerwist({ ...nextConfig });
+export default withSerwist({ ...nextConfig })
