@@ -1,52 +1,51 @@
-"use client";
+"use client"
 
-import { useState } from "react";
+import { HelpCircle, Settings } from "lucide-react"
+import { useState } from "react"
 
-import { HelpCircle, Settings } from "lucide-react";
-
-import { Button } from "~/button";
+import { Button } from "~/button"
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "~/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/tabs";
+} from "~/dialog"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/tabs"
 
-type Shortcut = {
-  key: string;
-  description: string;
-};
+interface Shortcut {
+  description: string
+  key: string
+}
 
 export function Helper() {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
 
   return (
     <>
       <Button
-        variant="secondary"
-        size="icon"
         className="fixed bottom-10 right-10 rounded-full shadow-xl z-50"
         onClick={() => setOpen(true)}
+        size="icon"
+        variant="secondary"
       >
         <HelpCircle />
       </Button>
 
-      <HelpModal open={open} onOpenChange={setOpen} />
+      <HelpModal onOpenChange={setOpen} open={open} />
     </>
-  );
+  )
 }
 
 function HelpModal({
-  open,
   onOpenChange,
+  open,
 }: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  onOpenChange: (open: boolean) => void
+  open: boolean
 }) {
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -64,34 +63,34 @@ function HelpModal({
             <TabsTrigger value="spreadsheet">Google Sheets Config</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="shortcuts" className="space-y-6 py-4">
+          <TabsContent className="space-y-6 py-4" value="shortcuts">
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <ShortcutCard
-                  title="Stopwatch Controls"
                   shortcuts={[
                     {
-                      key: "Space",
                       description: "Start/Pause active stopwatch",
+                      key: "Space",
                     },
-                    { key: "S", description: "Save current stopwatch time" },
-                    { key: "R", description: "Reset active stopwatch" },
+                    { description: "Save current stopwatch time", key: "S" },
+                    { description: "Reset active stopwatch", key: "R" },
                   ]}
+                  title="Stopwatch Controls"
                 />
 
                 <ShortcutCard
-                  title="Cycle Counters"
                   shortcuts={[
-                    { key: "1-4", description: "Increment Coral Level 1-4" },
-                    { key: "P", description: "Increment Algae Processor" },
-                    { key: "N", description: "Increment Algae Net" },
+                    { description: "Increment Coral Level 1-4", key: "1-4" },
+                    { description: "Increment Algae Processor", key: "P" },
+                    { description: "Increment Algae Net", key: "N" },
                   ]}
+                  title="Cycle Counters"
                 />
               </div>
             </div>
           </TabsContent>
 
-          <TabsContent value="spreadsheet" className="space-y-6 py-4">
+          <TabsContent className="space-y-6 py-4" value="spreadsheet">
             <div className="space-y-4">
               <div className="border rounded-md p-4 bg-muted/30">
                 <h4 className="font-medium mb-2">Spreadsheet ID:</h4>
@@ -113,7 +112,9 @@ function HelpModal({
                 <h4 className="font-medium mb-2">Sheet ID:</h4>
                 <p className="text-sm font-medium tracking-wide font-sans">
                   The name of the sheet within the spreadsheet, which defaults
-                  to {""}
+                  to
+                  {" "}
+
                   <span className="bg-primary/20 px-1 rounded">Sheet1</span>
                 </p>
               </div>
@@ -122,22 +123,22 @@ function HelpModal({
         </Tabs>
       </DialogContent>
     </Dialog>
-  );
+  )
 }
 
 function ShortcutCard({
-  title,
   shortcuts,
+  title,
 }: {
-  title: string;
-  shortcuts: Shortcut[];
+  shortcuts: Shortcut[]
+  title: string
 }) {
   return (
     <div className="border rounded-lg p-4">
       <h4 className="font-medium mb-3">{title}</h4>
       <ul className="space-y-2">
         {shortcuts.map((shortcut, index) => (
-          <li key={index} className="flex items-center justify-between text-sm">
+          <li className="flex items-center justify-between text-sm" key={index}>
             <span className="font-sans">{shortcut.description}</span>
             <kbd className="px-2 py-1 bg-muted rounded text-xs font-semibold">
               {shortcut.key}
@@ -146,5 +147,5 @@ function ShortcutCard({
         ))}
       </ul>
     </div>
-  );
+  )
 }

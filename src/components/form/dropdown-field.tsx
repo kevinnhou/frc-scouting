@@ -1,4 +1,4 @@
-import { useFormContext } from "react-hook-form";
+import { useFormContext } from "react-hook-form"
 
 import {
   FormControl,
@@ -6,29 +6,29 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "~/form";
+} from "~/form"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "~/select";
+} from "~/select"
 
-type TDropdownFieldProps = {
-  name: string;
-  label: string;
-  placeholder: string;
-  options: string[];
-};
+interface TDropdownFieldProps {
+  label: string
+  name: string
+  options: string[]
+  placeholder: string
+}
 
 export function DropdownField({
-  name,
   label,
-  placeholder,
+  name,
   options,
+  placeholder,
 }: TDropdownFieldProps) {
-  const { control } = useFormContext();
+  const { control } = useFormContext()
 
   return (
     <FormField
@@ -46,13 +46,13 @@ export function DropdownField({
                 <SelectValue
                   placeholder={placeholder
                     .split(" ")
-                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                     .join(" ")}
                 />
               </SelectTrigger>
             </FormControl>
             <SelectContent>
-              {options.map((option) => (
+              {options.map(option => (
                 <SelectItem key={option} value={option}>
                   {option}
                 </SelectItem>
@@ -63,5 +63,5 @@ export function DropdownField({
         </FormItem>
       )}
     />
-  );
+  )
 }
