@@ -1,40 +1,34 @@
-"use client"
+"use client";
 
-import { cn } from "@/lib/utils"
-import { OTPInput, OTPInputContext } from "input-otp"
-import { Minus } from "lucide-react"
-import * as React from "react"
+import { OTPInput, OTPInputContext } from "input-otp";
+import { Minus } from "lucide-react";
+import * as React from "react";
 
-const InputOTP = React.forwardRef<
-  React.ElementRef<typeof OTPInput>,
-  React.ComponentPropsWithoutRef<typeof OTPInput>
->(({ className, containerClassName, ...props }, ref) => (
-  <OTPInput
-    className={cn("disabled:cursor-not-allowed", className)}
-    containerClassName={cn(
-      "flex items-center gap-2 has-[:disabled]:opacity-50",
-      containerClassName,
-    )}
-    ref={ref}
-    {...props}
-  />
-))
-InputOTP.displayName = "InputOTP"
+import { cn } from "@/lib/utils";
 
-const InputOTPGroup = React.forwardRef<
-  React.ElementRef<"div">,
-  React.ComponentPropsWithoutRef<"div">
->(({ className, ...props }, ref) => (
-  <div className={cn("flex items-center", className)} ref={ref} {...props} />
-))
-InputOTPGroup.displayName = "InputOTPGroup"
+function InputOTP({ ref, className, containerClassName, ...props }: React.ComponentPropsWithoutRef<typeof OTPInput> & { ref?: React.RefObject<React.ElementRef<typeof OTPInput> | null> }) {
+  return (
+    <OTPInput
+      className={cn("disabled:cursor-not-allowed", className)}
+      containerClassName={cn(
+        "flex items-center gap-2 has-[:disabled]:opacity-50",
+        containerClassName,
+      )}
+      ref={ref}
+      {...props}
+    />
+  );
+}
+InputOTP.displayName = "InputOTP";
 
-const InputOTPSlot = React.forwardRef<
-  React.ElementRef<"div">,
-  React.ComponentPropsWithoutRef<"div"> & { index: number }
->(({ className, index, ...props }, ref) => {
-  const inputOTPContext = React.useContext(OTPInputContext)
-  const { char, hasFakeCaret, isActive } = inputOTPContext.slots[index]
+function InputOTPGroup({ ref, className, ...props }: React.ComponentPropsWithoutRef<"div"> & { ref?: React.RefObject<React.ElementRef<"div"> | null> }) {
+  return <div className={cn("flex items-center", className)} ref={ref} {...props} />;
+}
+InputOTPGroup.displayName = "InputOTPGroup";
+
+function InputOTPSlot({ ref, className, index, ...props }: React.ComponentPropsWithoutRef<"div"> & { index: number } & { ref?: React.RefObject<React.ElementRef<"div"> | null> }) {
+  const inputOTPContext = React.use(OTPInputContext);
+  const { char, hasFakeCaret, isActive } = inputOTPContext.slots[index];
 
   return (
     <div
@@ -53,18 +47,17 @@ const InputOTPSlot = React.forwardRef<
         </div>
       )}
     </div>
-  )
-})
-InputOTPSlot.displayName = "InputOTPSlot"
+  );
+}
+InputOTPSlot.displayName = "InputOTPSlot";
 
-const InputOTPSeparator = React.forwardRef<
-  React.ElementRef<"div">,
-  React.ComponentPropsWithoutRef<"div">
->(({ ...props }, ref) => (
-  <div ref={ref} role="separator" {...props}>
-    <Minus />
-  </div>
-))
-InputOTPSeparator.displayName = "InputOTPSeparator"
+function InputOTPSeparator({ ref, ...props }: React.ComponentPropsWithoutRef<"div"> & { ref?: React.RefObject<React.ElementRef<"div"> | null> }) {
+  return (
+    <div ref={ref} role="separator" {...props}>
+      <Minus />
+    </div>
+  );
+}
+InputOTPSeparator.displayName = "InputOTPSeparator";
 
-export { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot }
+export { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot };

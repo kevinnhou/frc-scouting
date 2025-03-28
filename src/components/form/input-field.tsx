@@ -1,6 +1,9 @@
-"use client"
+/* eslint-disable ts/ban-ts-comment */
+// @ts-nocheck
 
-import { useFormContext } from "react-hook-form"
+"use client";
+
+import { useFormContext } from "react-hook-form";
 
 import {
   FormControl,
@@ -8,8 +11,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "~/form"
-import { Input } from "~/input"
+} from "~/form";
+import { Input } from "~/input";
 
 interface TInputFieldProps {
   label: string
@@ -24,7 +27,7 @@ export function InputField({
   placeholder,
   type = "text",
 }: TInputFieldProps) {
-  const { control } = useFormContext()
+  const { control } = useFormContext();
 
   return (
     <FormField
@@ -37,7 +40,7 @@ export function InputField({
             <Input
               placeholder={placeholder
                 .split(" ")
-                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
                 .join(" ")}
               type={type}
               {...field}
@@ -46,11 +49,11 @@ export function InputField({
                 const value
                   = type === "number"
                     ? Number.parseFloat(e.target.value)
-                    : e.target.value
-                field.onChange(value)
+                    : e.target.value;
+                field.onChange(value);
 
                 if (name === "Team Number") {
-                  field.onBlur()
+                  field.onBlur();
                 }
               }}
             />
@@ -59,5 +62,5 @@ export function InputField({
         </FormItem>
       )}
     />
-  )
+  );
 }

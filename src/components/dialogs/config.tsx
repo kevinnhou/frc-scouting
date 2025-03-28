@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import { FileTextIcon, Upload } from "lucide-react"
-import { useDropzone } from "react-dropzone"
-import { toast } from "sonner"
+import { FileTextIcon, Upload } from "lucide-react";
+import { useDropzone } from "react-dropzone";
+import { toast } from "sonner";
 
-import { Button } from "~/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "~/dialog"
-import { Input } from "~/input"
-import { Label } from "~/label"
-import { Textarea } from "~/textarea"
+import { Button } from "~/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "~/dialog";
+import { Input } from "~/input";
+import { Label } from "~/label";
+import { Textarea } from "~/textarea";
 
 interface TConfigProps {
   JSONInput: string
@@ -35,47 +35,47 @@ export function Config({
 }: TConfigProps) {
   function handleConfigSave() {
     try {
-      localStorage.setItem("spreadsheetID", spreadsheetID)
-      localStorage.setItem("sheetID", sheetID)
-      const parsedData = JSONInput ? JSON.parse(JSONInput) : null
-      setTeams(parsedData)
-      localStorage.setItem("teams", JSON.stringify(parsedData))
-      onOpenChange(false)
-      setJSONInput("")
-      toast.success("Configuration saved successfully")
+      localStorage.setItem("spreadsheetID", spreadsheetID);
+      localStorage.setItem("sheetID", sheetID);
+      const parsedData = JSONInput ? JSON.parse(JSONInput) : null;
+      setTeams(parsedData);
+      localStorage.setItem("teams", JSON.stringify(parsedData));
+      onOpenChange(false);
+      setJSONInput("");
+      toast.success("Configuration saved successfully");
     }
     catch (error) {
-      console.error(error)
-      toast.error("Failed to save configuration")
+      console.error(error);
+      toast.error("Failed to save configuration");
     }
   }
 
   function formatJSON() {
     try {
-      const parsedJSON = JSON.parse(JSONInput)
-      const formattedJSON = JSON.stringify(parsedJSON, null, 2)
-      setJSONInput(formattedJSON)
-      toast.success("JSON formatted successfully")
+      const parsedJSON = JSON.parse(JSONInput);
+      const formattedJSON = JSON.stringify(parsedJSON, null, 2);
+      setJSONInput(formattedJSON);
+      toast.success("JSON formatted successfully");
     }
     catch (error) {
-      console.error(error)
-      toast.error("Invalid JSON format")
+      console.error(error);
+      toast.error("Invalid JSON format");
     }
   }
 
   function handleFileDrop(files: File[]) {
-    const file = files[0]
+    const file = files[0];
     if (file) {
-      const reader = new FileReader()
+      const reader = new FileReader();
       reader.onload = (e: ProgressEvent<FileReader>) => {
-        const content = e.target?.result as string
-        setJSONInput(content)
-        toast.success(`File "${file.name}" loaded successfully`)
-      }
+        const content = e.target?.result as string;
+        setJSONInput(content);
+        toast.success(`File "${file.name}" loaded successfully`);
+      };
       reader.onerror = () => {
-        toast.error("Failed to read file")
-      }
-      reader.readAsText(file)
+        toast.error("Failed to read file");
+      };
+      reader.readAsText(file);
     }
   }
 
@@ -89,7 +89,7 @@ export function Config({
           <div className="grid items-center gap-4">
             <Label className="w-full">Spreadsheet ID</Label>
             <Input
-              onChange={e => setSpreadsheetID(e.target.value)}
+              onChange={(e) => setSpreadsheetID(e.target.value)}
               placeholder="Enter Spreadsheet ID (from Sheet URL)"
               value={spreadsheetID}
             />
@@ -97,7 +97,7 @@ export function Config({
           <div className="grid items-center gap-4">
             <Label className="w-full">Sheet ID</Label>
             <Input
-              onChange={e => setSheetID(e.target.value)}
+              onChange={(e) => setSheetID(e.target.value)}
               placeholder="Enter Sheet ID"
               value={sheetID}
             />
@@ -106,7 +106,7 @@ export function Config({
             <Label className="col-span-4">Teams</Label>
             <Textarea
               className="col-span-4"
-              onChange={e => setJSONInput(e.target.value)}
+              onChange={(e) => setJSONInput(e.target.value)}
               placeholder='{"teamNumber":"teamName","11146":"Barker Redbacks",...}'
               rows={4}
               value={JSONInput}
@@ -129,7 +129,7 @@ export function Config({
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
 
 function Dropzone({
@@ -142,7 +142,7 @@ function Dropzone({
   const { getInputProps, getRootProps, isDragActive } = useDropzone({
     accept,
     onDrop,
-  })
+  });
 
   return (
     <div
@@ -159,5 +159,5 @@ function Dropzone({
             <div className="font-medium">Upload a JSON file</div>
           )}
     </div>
-  )
+  );
 }

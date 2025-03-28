@@ -1,6 +1,6 @@
-import type { Metadata } from "next"
+import type { Metadata } from "next";
 
-import { site } from "@/config/site"
+import { site } from "@/config/site";
 
 export const metadata: Metadata = {
   abstract: site.description,
@@ -55,4 +55,4 @@ export const metadata: Metadata = {
     images: ["/twitter-image.png"],
     title: site.name.default,
   },
-}
+};

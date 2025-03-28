@@ -1,13 +1,16 @@
-"use client"
+/* eslint-disable ts/ban-ts-comment */
+// @ts-nocheck
 
-import { Plus } from "lucide-react"
-import { useEffect } from "react"
-import { useFormContext } from "react-hook-form"
-import { toast } from "sonner"
+"use client";
 
-import { Button } from "~/button"
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/form"
-import { Input } from "~/input"
+import { Plus } from "lucide-react";
+import { useEffect } from "react";
+import { useFormContext } from "react-hook-form";
+import { toast } from "sonner";
+
+import { Button } from "~/button";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/form";
+import { Input } from "~/input";
 
 interface TCycleFieldProps {
   label: string
@@ -16,42 +19,42 @@ interface TCycleFieldProps {
 }
 
 export function CycleField({ label, name, section = "misc" }: TCycleFieldProps) {
-  const { control, setValue, watch } = useFormContext()
-  const value = watch(name) || 0
+  const { control, setValue, watch } = useFormContext();
+  const value = watch(name) || 0;
 
   function increment() {
-    const newValue = value + 1
-    setValue(name, newValue)
+    const newValue = value + 1;
+    setValue(name, newValue);
     toast.success(`${label} incremented to ${newValue}`, {
       action: {
         label: "Undo",
         onClick: () => {
-          const currentValue = watch(name) || 0
-          setValue(name, Math.max(0, currentValue - 1))
+          const currentValue = watch(name) || 0;
+          setValue(name, Math.max(0, currentValue - 1));
         },
       },
-    })
+    });
   }
 
   useEffect(() => {
     if (!window.cycleRegistry) {
-      window.cycleRegistry = {}
+      window.cycleRegistry = {};
     }
 
     if (!window.cycleRegistry[section]) {
-      window.cycleRegistry[section] = {}
+      window.cycleRegistry[section] = {};
     }
 
-    const fieldIdentifier = name.split(".").pop() || ""
+    const fieldIdentifier = name.split(".").pop() || "";
 
-    window.cycleRegistry[section][fieldIdentifier] = increment
+    window.cycleRegistry[section][fieldIdentifier] = increment;
 
     return () => {
       if (window.cycleRegistry && window.cycleRegistry[section]) {
-        delete window.cycleRegistry[section][fieldIdentifier]
+        delete window.cycleRegistry[section][fieldIdentifier];
       }
-    }
-  }, [name, section, value])
+    };
+  }, [name, section, value]);
 
   return (
     <FormField
@@ -67,8 +70,8 @@ export function CycleField({ label, name, section = "misc" }: TCycleFieldProps) 
                 {...field}
                 className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 onChange={(e) => {
-                  const value = Math.max(0, Number.parseInt(e.target.value) || 0)
-                  field.onChange(value)
+                  const value = Math.max(0, Number.parseInt(e.target.value) || 0);
+                  field.onChange(value);
                 }}
                 value={field.value || 0}
               />
@@ -81,7 +84,7 @@ export function CycleField({ label, name, section = "misc" }: TCycleFieldProps) 
         </FormItem>
       )}
     />
-  )
+  );
 }
 
 declare global {

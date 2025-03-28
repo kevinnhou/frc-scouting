@@ -1,54 +1,56 @@
-"use client"
+/* eslint-disable react-hooks-extra/no-direct-set-state-in-use-effect */
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { site } from "@/config/site"
-import { Github } from "lucide-react"
-import Image from "next/image"
-import Link from "next/link"
-import { useEffect, useState } from "react"
-import { toast } from "sonner"
+import { Github } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import { site } from "@/config/site";
 
 export default function Home() {
   const [stats, setStats] = useState({
     dataStoredKB: 0,
     totalSubmissions: 0,
     uniqueTeams: 0,
-  })
+  });
 
-  const noStats = stats.totalSubmissions === 0 && stats.uniqueTeams === 0
+  const noStats = stats.totalSubmissions === 0 && stats.uniqueTeams === 0;
 
   useEffect(() => {
     try {
-      const storedData = localStorage.getItem("formSubmissions")
+      const storedData = localStorage.getItem("formSubmissions");
       if (storedData) {
-        const dataSizeBytes = new Blob([storedData]).size
-        const dataSizeKB = Math.round((dataSizeBytes / 1024) * 10) / 10
+        const dataSizeBytes = new Blob([storedData]).size;
+        const dataSizeKB = Math.round((dataSizeBytes / 1024) * 10) / 10;
 
-        const submissions = JSON.parse(storedData)
+        const submissions = JSON.parse(storedData);
 
         if (Array.isArray(submissions)) {
-          const totalSubmissions = submissions.length
+          const totalSubmissions = submissions.length;
 
-          const uniqueTeamNumbers = new Set()
+          const uniqueTeamNumbers = new Set();
           submissions.forEach((sub) => {
             if (sub["Team Number"]) {
-              uniqueTeamNumbers.add(sub["Team Number"])
+              uniqueTeamNumbers.add(sub["Team Number"]);
             }
-          })
+          });
 
           setStats({
             dataStoredKB: dataSizeKB,
             totalSubmissions,
             uniqueTeams: uniqueTeamNumbers.size,
-          })
+          });
         }
       }
     }
     catch (error) {
-      toast.error("Error calculating statistics")
-      console.error("Error calculating statistics:", error)
+      toast.error("Error calculating statistics");
+      console.error("Error calculating statistics:", error);
     }
-  }, [])
+  }, []);
 
   return (
     <div className="h-screen">
@@ -143,5 +145,5 @@ export default function Home() {
         </div>
       </div>
     </div>
-  )
+  );
 }

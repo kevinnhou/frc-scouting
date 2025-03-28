@@ -24,4 +24,4 @@ export const site = {
     default: "rec | First Robotics Scouting Application",
     short: "rec.",
   },
-}
+};

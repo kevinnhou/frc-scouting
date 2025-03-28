@@ -1,18 +1,18 @@
-"use client"
+"use client";
 
-import { Search } from "lucide-react"
+import { Search } from "lucide-react";
 
-import { Badge } from "~/badge"
-import { Button } from "~/button"
+import { Badge } from "~/badge";
+import { Button } from "~/button";
 import {
   Card,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
-} from "~/card"
-import { DialogDescription, DialogHeader, DialogTitle } from "~/dialog"
-import { Input } from "~/input"
+} from "~/card";
+import { DialogDescription, DialogHeader, DialogTitle } from "~/dialog";
+import { Input } from "~/input";
 
 interface SubmissionCardProps {
   handleFormLoad: (index: number) => void
@@ -51,7 +51,7 @@ export function SubmissionsList({
           <Input
             autoComplete="off"
             className="pl-8"
-            onChange={e => setSearchTerm(e.target.value)}
+            onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search by Team Number, Name or Match"
             value={searchTerm}
           />
@@ -82,7 +82,7 @@ export function SubmissionsList({
             )}
       </div>
     </>
-  )
+  );
 }
 
 function SubmissionCard({
@@ -125,5 +125,5 @@ function SubmissionCard({
         </Button>
       </CardFooter>
     </Card>
-  )
+  );
 }

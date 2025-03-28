@@ -1,6 +1,6 @@
-import type { MetadataRoute } from "next"
+import type { MetadataRoute } from "next";
 
-import { site } from "@/config/site"
+import { site } from "@/config/site";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
@@ -30,5 +30,5 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: site.name.short,
     start_url: "/",
     theme_color: "#FFFFFF",
-  }
+  };
 }

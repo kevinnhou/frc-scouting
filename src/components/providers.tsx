@@ -1,9 +1,8 @@
 "use client";
 
-import { type ReactNode } from "react";
 import { JetBrains_Mono } from "next/font/google";
-
-import { useTheme, ThemeProvider } from "next-themes";
+import { ThemeProvider, useTheme } from "next-themes";
+import type { ReactNode } from "react";
 import { Toaster } from "sonner";
 
 const jetbrainsMono = JetBrains_Mono({
@@ -15,7 +14,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 function ToasterProvider() {
   const { theme } = useTheme() as {
-    theme: "light" | "dark" | "system";
+    theme: "light" | "dark" | "system"
   };
   return (
     <Toaster

@@ -1,6 +1,6 @@
-import type { MetadataRoute } from "next"
+import type { MetadataRoute } from "next";
 
-import { site } from "@/config/site"
+import { site } from "@/config/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
@@ -14,5 +14,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
       url: `${site.links.url}/match`,
     },
-  ]
+  ];
 }
