@@ -1,17 +1,17 @@
-"use client"
+"use client";
 
-import { HelpCircle, Settings } from "lucide-react"
-import { useState } from "react"
+import { HelpCircle, Settings } from "lucide-react";
+import { useState } from "react";
 
-import { Button } from "~/button"
+import { Button } from "~/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "~/dialog"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/tabs"
+} from "~/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/tabs";
 
 interface Shortcut {
   description: string
@@ -19,7 +19,7 @@ interface Shortcut {
 }
 
 export function Helper() {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
   return (
     <>
@@ -34,7 +34,7 @@ export function Helper() {
 
       <HelpModal onOpenChange={setOpen} open={open} />
     </>
-  )
+  );
 }
 
 function HelpModal({
@@ -123,7 +123,7 @@ function HelpModal({
         </Tabs>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
 
 function ShortcutCard({
@@ -147,5 +147,5 @@ function ShortcutCard({
         ))}
       </ul>
     </div>
-  )
+  );
 }

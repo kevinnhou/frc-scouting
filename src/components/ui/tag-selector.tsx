@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { cn } from "@/lib/utils"
-import { Check, ChevronsUpDown, X } from "lucide-react"
-import React, { useState } from "react"
+import { Check, ChevronsUpDown, X } from "lucide-react";
+import React, { useState } from "react";
 
-import { Button } from "~/button"
+import { cn } from "@/lib/utils";
+import { Button } from "~/button";
 import {
   Command,
   CommandEmpty,
@@ -12,8 +12,8 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "~/command"
-import { Popover, PopoverContent, PopoverTrigger } from "~/popover"
+} from "~/command";
+import { Popover, PopoverContent, PopoverTrigger } from "~/popover";
 
 interface TagSelectorProps {
   availableTags: string[]
@@ -30,29 +30,29 @@ export function TagSelector({
   onChange,
   selectedTags,
 }: TagSelectorProps) {
-  const [open, setOpen] = useState(false)
-  const [inputValue, setInputValue] = useState("")
+  const [open, setOpen] = useState(false);
+  const [inputValue, setInputValue] = useState("");
 
   const filteredTags = availableTags.filter(
-    tag =>
+    (tag) =>
       tag.toLowerCase().includes(inputValue.toLowerCase())
       && !selectedTags.includes(tag),
-  )
+  );
 
   const handleSelect = (value: string) => {
-    onChange([...selectedTags, value])
-    setInputValue("")
-  }
+    onChange([...selectedTags, value]);
+    setInputValue("");
+  };
 
   const handleCreate = () => {
-    const newTag = createTag(inputValue)
-    onChange([...selectedTags, newTag])
-    setInputValue("")
-  }
+    const newTag = createTag(inputValue);
+    onChange([...selectedTags, newTag]);
+    setInputValue("");
+  };
 
   const handleRemove = (tag: string) => {
-    onChange(selectedTags.filter(t => t !== tag))
-  }
+    onChange(selectedTags.filter((t) => t !== tag));
+  };
 
   return (
     <Popover onOpenChange={setOpen} open={open}>
@@ -65,7 +65,7 @@ export function TagSelector({
           )}
           variant="outline"
         >
-          {selectedTags.map(tag => (
+          {selectedTags.map((tag) => (
             <span
               className="flex items-center gap-1 rounded bg-secondary px-2 py-1 text-sm break-words"
               key={tag}
@@ -74,13 +74,13 @@ export function TagSelector({
               <span
                 className="cursor-pointer hover:bg-red-400/40 p-0.5 rounded transition-colors"
                 onClick={(e) => {
-                  e.stopPropagation()
-                  handleRemove(tag)
+                  e.stopPropagation();
+                  handleRemove(tag);
                 }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault()
-                    handleRemove(tag)
+                    e.preventDefault();
+                    handleRemove(tag);
                   }
                 }}
                 role="button"
@@ -99,17 +99,17 @@ export function TagSelector({
           <CommandInput
             onKeyDown={(e) => {
               if (e.key === "Enter" && inputValue.trim() !== "") {
-                handleCreate()
+                handleCreate();
               }
             }}
-            onValueChange={value => setInputValue(value)}
+            onValueChange={(value) => setInputValue(value)}
             placeholder="Enter tag..."
             value={inputValue}
           />
           <CommandList>
             <CommandEmpty>No tags found.</CommandEmpty>
             <CommandGroup heading="Tags">
-              {filteredTags.map(tag => (
+              {filteredTags.map((tag) => (
                 <CommandItem key={tag} onSelect={handleSelect} value={tag}>
                   <Check
                     className={cn(
@@ -136,5 +136,5 @@ export function TagSelector({
         </Command>
       </PopoverContent>
     </Popover>
-  )
+  );
 }

@@ -1,11 +1,11 @@
 import { z } from "zod";
 
 import {
-  requiredString,
-  requiredNumber,
-  cycleSchema,
   cageTime,
+  cycleSchema,
   notes,
+  requiredNumber,
+  requiredString,
 } from "./schema";
 
 export const autonomous = [

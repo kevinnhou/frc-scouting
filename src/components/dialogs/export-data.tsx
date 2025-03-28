@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { Download, FileTextIcon, QrCode } from "lucide-react"
-import { toast } from "sonner"
+import { Download, FileTextIcon, QrCode } from "lucide-react";
+import { toast } from "sonner";
 
-import { Button } from "~/button"
+import { Button } from "~/button";
 import {
   Dialog,
   DialogContent,
@@ -11,8 +11,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "~/dialog"
-import { Label } from "~/label"
+} from "~/dialog";
+import { Label } from "~/label";
 
 interface TExportDataProps {
   exportMethod: "clipboard" | "json" | "qrcode"
@@ -26,7 +26,7 @@ interface TExportDataProps {
   storedSubmissions: any[]
 }
 
-const MAX_QR_SIZE = 2400
+const MAX_QR_SIZE = 2400;
 
 export function ExportData({
   exportMethod,
@@ -40,51 +40,51 @@ export function ExportData({
   storedSubmissions,
 }: TExportDataProps) {
   function handleMethodChange(method: "clipboard" | "json" | "qrcode") {
-    setExportMethod(method)
+    setExportMethod(method);
   }
 
   function handleSelection(index: number) {
     setSelectedSubmissions(
       selectedSubmissions.includes(index)
-        ? selectedSubmissions.filter(i => i !== index)
+        ? selectedSubmissions.filter((i) => i !== index)
         : [...selectedSubmissions, index],
-    )
+    );
   }
 
   function handleSelectAll() {
     if (selectedSubmissions.length === storedSubmissions.length) {
-      setSelectedSubmissions([])
+      setSelectedSubmissions([]);
     }
     else {
-      setSelectedSubmissions(storedSubmissions.map((_, index) => index))
+      setSelectedSubmissions(storedSubmissions.map((_, index) => index));
     }
   }
 
   function getSelectedData() {
     return selectedSubmissions
       .sort((a, b) => a - b)
-      .map(index => storedSubmissions[index])
+      .map((index) => storedSubmissions[index]);
   }
 
   function getDataSize(data: unknown) {
-    return new Blob([JSON.stringify(data)]).size
+    return new Blob([JSON.stringify(data)]).size;
   }
 
   function exportData() {
-    const selectedData = getSelectedData()
+    const selectedData = getSelectedData();
 
     if (selectedData.length === 0) {
-      toast.error("No submissions selected")
-      return
+      toast.error("No submissions selected");
+      return;
     }
 
-    const dataSize = getDataSize(selectedData)
+    const dataSize = getDataSize(selectedData);
 
     if (exportMethod === "qrcode" && dataSize > MAX_QR_SIZE) {
       toast.error(
         `Data size (${dataSize} bytes) exceeds QR code capacity (${MAX_QR_SIZE} bytes). Please select fewer submissions or use another export method.`,
-      )
-      return
+      );
+      return;
     }
 
     switch (exportMethod) {
@@ -92,29 +92,29 @@ export function ExportData({
         navigator.clipboard
           .writeText(JSON.stringify(selectedData))
           .then(() => toast.success("Data copied to clipboard"))
-          .catch(() => toast.error("Failed to copy data to clipboard"))
-        break
+          .catch(() => toast.error("Failed to copy data to clipboard"));
+        break;
       case "json":
       { const blob = new Blob([JSON.stringify(selectedData, null, 2)], {
         type: "application/json",
-      })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement("a")
-      a.href = url
-      a.download = `rec-scouting-data.json`
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
-      toast.success("JSON file downloaded")
-      break }
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "rec-scouting-data.json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast.success("JSON file downloaded");
+      break; }
       case "qrcode":
-        setQRCodeData(JSON.stringify(selectedData))
-        setShowQRModal(true)
-        break
+        setQRCodeData(JSON.stringify(selectedData));
+        setShowQRModal(true);
+        break;
     }
 
-    onOpenChange(false)
+    onOpenChange(false);
   }
 
   return (
@@ -234,5 +234,5 @@ export function ExportData({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

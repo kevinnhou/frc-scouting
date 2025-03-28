@@ -1,22 +1,22 @@
-/* eslint-disable unused-imports/no-unused-vars */
-"use client"
+/* eslint-disable ts/no-unused-vars */
 
-import type React from "react"
+"use client";
 
-import { Pause, Play, Save, Trash2, X } from "lucide-react"
-import { useEffect, useRef, useState } from "react"
-import { useFormContext } from "react-hook-form"
-import { toast } from "sonner"
+import { Pause, Play, Save, Trash2, X } from "lucide-react";
+import type React from "react";
+import { useEffect, useRef, useState } from "react";
+import { useFormContext } from "react-hook-form";
+import { toast } from "sonner";
 
-import { Button } from "~/button"
+import { Button } from "~/button";
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "~/form"
-import { Input } from "~/input"
+} from "~/form";
+import { Input } from "~/input";
 
 interface TStopwatchFieldProps {
   label: string
@@ -25,32 +25,32 @@ interface TStopwatchFieldProps {
 }
 
 export function StopwatchField({ label, name, section }: TStopwatchFieldProps) {
-  const { control, setValue, watch } = useFormContext()
-  const [time, setTime] = useState<number>(0)
-  const [isRunning, setIsRunning] = useState<boolean>(false)
-  const savedTimes = watch(name) || []
-  const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  const { control, setValue, watch } = useFormContext();
+  const [time, setTime] = useState<number>(0);
+  const [isRunning, setIsRunning] = useState<boolean>(false);
+  const savedTimes = watch(name) || [];
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (isRunning) {
       intervalRef.current = setInterval(() => {
-        setTime(prevTime => prevTime + 0.01)
-      }, 10)
+        setTime((prevTime) => prevTime + 0.01);
+      }, 10);
     }
     return () => {
       if (intervalRef.current) {
-        clearInterval(intervalRef.current)
+        clearInterval(intervalRef.current);
       }
-    }
-  }, [isRunning])
+    };
+  }, [isRunning]);
 
   useEffect(() => {
     if (!window.stopwatchRegistry) {
-      window.stopwatchRegistry = {}
+      window.stopwatchRegistry = {};
     }
 
     if (!window.stopwatchRegistry[section]) {
-      window.stopwatchRegistry[section] = []
+      window.stopwatchRegistry[section] = [];
     }
 
     const controls = {
@@ -60,72 +60,72 @@ export function StopwatchField({ label, name, section }: TStopwatchFieldProps) {
       reset: handleReset,
       save: handleSave,
       start: handleStart,
-    }
+    };
 
-    window.stopwatchRegistry[section].push(controls)
+    window.stopwatchRegistry[section].push(controls);
 
     return () => {
       if (window.stopwatchRegistry && window.stopwatchRegistry[section]) {
         window.stopwatchRegistry[section] = window.stopwatchRegistry[
           section
-        ].filter((c: unknown) => c !== controls)
+        ].filter((c: unknown) => c !== controls);
       }
-    }
-  }, [section, isRunning, time])
+    };
+  }, [section, isRunning, time]);
 
   function handleStart() {
-    setIsRunning(true)
+    setIsRunning(true);
     toast.promise(
       new Promise<React.ReactNode>((resolve, reject) => {
-        window.currentStopwatchPromise = { reject, resolve }
+        window.currentStopwatchPromise = { reject, resolve };
       }),
       {
-        error: message => message as string,
+        error: (message) => message as string,
         loading: `${label} timer started`,
-        success: message => message as string,
+        success: (message) => message as string,
       },
-    )
+    );
   }
 
   function handlePause() {
-    setIsRunning(false)
+    setIsRunning(false);
     if (window.currentStopwatchPromise) {
-      window.currentStopwatchPromise.reject(`${label} timer paused`)
-      window.currentStopwatchPromise = undefined
+      window.currentStopwatchPromise.reject(`${label} timer paused`);
+      window.currentStopwatchPromise = undefined;
     }
   }
 
   function handleReset() {
-    setIsRunning(false)
-    setTime(0)
+    setIsRunning(false);
+    setTime(0);
     if (window.currentStopwatchPromise) {
-      window.currentStopwatchPromise.reject(`${label} timer canceled`)
-      window.currentStopwatchPromise = undefined
+      window.currentStopwatchPromise.reject(`${label} timer canceled`);
+      window.currentStopwatchPromise = undefined;
     }
     else {
-      toast.warning(`${label} timer reset`)
+      toast.warning(`${label} timer reset`);
     }
   }
 
   function handleSave() {
-    const newTime = Number(time.toFixed(2))
-    setValue(name, [...savedTimes, newTime])
-    setTime(0)
-    setIsRunning(false)
+    const newTime = Number(time.toFixed(2));
+    setValue(name, [...savedTimes, newTime]);
+    setTime(0);
+    setIsRunning(false);
     if (window.currentStopwatchPromise) {
       window.currentStopwatchPromise.resolve(
         `${label} time saved: ${newTime.toFixed(2)}s`,
-      )
-      window.currentStopwatchPromise = undefined
+      );
+      window.currentStopwatchPromise = undefined;
     }
     else {
-      toast.success(`${label} time saved: ${newTime.toFixed(2)}s`)
+      toast.success(`${label} time saved: ${newTime.toFixed(2)}s`);
     }
   }
 
   function handleRemove(index: number) {
-    const newTimes = savedTimes.filter((_: number, i: number) => i !== index)
-    setValue(name, newTimes)
+    const newTimes = savedTimes.filter((_: number, i: number) => i !== index);
+    setValue(name, newTimes);
   }
 
   return (
@@ -217,7 +217,7 @@ export function StopwatchField({ label, name, section }: TStopwatchFieldProps) {
         </FormItem>
       )}
     />
-  )
+  );
 }
 
 declare global {

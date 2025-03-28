@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { toast } from "sonner"
+import { toast } from "sonner";
 
 import {
   AlertDialog,
@@ -11,7 +11,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "~/alert-dialog"
+} from "~/alert-dialog";
 
 interface TClearDataProps {
   onOpenChange: (open: boolean) => void
@@ -27,10 +27,10 @@ export function ClearData({
   submissionsCount,
 }: TClearDataProps) {
   function confirmClear() {
-    localStorage.removeItem("formSubmissions")
-    setStoredSubmissions([])
-    onOpenChange(false)
-    toast.success("All stored submissions cleared")
+    localStorage.removeItem("formSubmissions");
+    setStoredSubmissions([]);
+    onOpenChange(false);
+    toast.success("All stored submissions cleared");
   }
 
   return (
@@ -60,5 +60,5 @@ export function ClearData({
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  )
+  );
 }

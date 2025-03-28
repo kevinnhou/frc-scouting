@@ -1,13 +1,13 @@
-import Link from "next/link"
+import Link from "next/link";
 
-import { Button } from "~/button"
+import { Button } from "~/button";
 
-const navigationLinks = [{ href: "/", label: "Home" }]
+const navigationLinks = [{ href: "/", label: "Home" }];
 
 export default function Navigation() {
   return (
     <nav className="flex items-center space-x-6">
-      {navigationLinks.map(link => (
+      {navigationLinks.map((link) => (
         <Link
           className="text-sm font-medium transition-colors hover:text-primary"
           href={link.href}
@@ -18,5 +18,5 @@ export default function Navigation() {
       ))}
       <Button variant="outline"></Button>
     </nav>
-  )
+  );
 }

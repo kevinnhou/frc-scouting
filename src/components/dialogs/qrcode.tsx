@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { QRCodeSVG } from "qrcode.react"
+import { QRCodeSVG } from "qrcode.react";
 
-import { Button } from "~/button"
+import { Button } from "~/button";
 import {
   Dialog,
   DialogContent,
@@ -10,7 +10,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "~/dialog"
+} from "~/dialog";
 
 interface TQRCodeProps {
   onOpenChange: (open: boolean) => void
@@ -56,5 +56,5 @@ export function QRCode({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

@@ -1,9 +1,5 @@
-"use client"
+"use client";
 
-import {
-  getFieldOptions,
-  validateValue,
-} from "@/components/dialogs/view-submissions"
 import {
   AlertCircle,
   ArrowUpDown,
@@ -13,27 +9,31 @@ import {
   Save,
   Search,
   X,
-} from "lucide-react"
-import { useMemo } from "react"
-import { toast } from "sonner"
+} from "lucide-react";
+import { useMemo } from "react";
+import { toast } from "sonner";
 
-import { Alert, AlertDescription, AlertTitle } from "~/alert"
-import { Button } from "~/button"
-import { DialogDescription, DialogHeader, DialogTitle } from "~/dialog"
+import {
+  getFieldOptions,
+  validateValue,
+} from "@/components/dialogs/view-submissions";
+import { Alert, AlertDescription, AlertTitle } from "~/alert";
+import { Button } from "~/button";
+import { DialogDescription, DialogHeader, DialogTitle } from "~/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "~/dropdown-menu"
-import { Input } from "~/input"
+} from "~/dropdown-menu";
+import { Input } from "~/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "~/select"
+} from "~/select";
 import {
   Table,
   TableBody,
@@ -41,7 +41,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "~/table"
+} from "~/table";
 
 interface ActionCellProps {
   editingRow: null | string
@@ -101,110 +101,110 @@ export function SubmissionDetails({
   visibleColumns,
 }: SubmissionDetailsProps) {
   function handleEdit(id: string) {
-    setEditingRow(id)
-    const row = tableData.find(row => row.id === id)
-    setEditValue(row?.value || "")
-    setValidationError(null)
+    setEditingRow(id);
+    const row = tableData.find((row) => row.id === id);
+    setEditValue(row?.value || "");
+    setValidationError(null);
   }
 
   function handleSave() {
     if (editingRow) {
-      const validation = validateValue(editingRow, editValue)
+      const validation = validateValue(editingRow, editValue);
 
       if (!validation.valid) {
-        setValidationError(validation.error || "Invalid value")
-        return
+        setValidationError(validation.error || "Invalid value");
+        return;
       }
 
-      const rowIndex = tableData.findIndex(row => row.id === editingRow)
+      const rowIndex = tableData.findIndex((row) => row.id === editingRow);
       if (rowIndex === -1)
-        return
+        return;
 
-      const newTableData = [...tableData]
-      newTableData[rowIndex].value = editValue
+      const newTableData = [...tableData];
+      newTableData[rowIndex].value = editValue;
 
       const updatedSubmission = {
         ...storedSubmissions[submissionIndex],
-      }
+      };
 
-      const keys = editingRow.split(".")
-      let current = updatedSubmission
+      const keys = editingRow.split(".");
+      let current = updatedSubmission;
 
       for (let i = 0; i < keys.length - 1; i++) {
         if (!current[keys[i]])
-          current[keys[i]] = {}
-        current = current[keys[i]]
+          current[keys[i]] = {};
+        current = current[keys[i]];
       }
 
-      const originalValue = current[keys[keys.length - 1]]
-      let newValue = editValue
+      const originalValue = current[keys[keys.length - 1]];
+      let newValue = editValue;
 
       if (typeof originalValue === "number") {
-        newValue = Number(editValue)
+        newValue = Number(editValue);
       }
       else if (typeof originalValue === "boolean") {
-        newValue = editValue === "true"
+        newValue = editValue === "true";
       }
       else if (Array.isArray(originalValue)) {
         try {
-          newValue = JSON.parse(editValue)
+          newValue = JSON.parse(editValue);
         }
         catch (error) {
-          console.error(error)
-          setValidationError("Invalid array format")
-          return
+          console.error(error);
+          setValidationError("Invalid array format");
+          return;
         }
       }
 
-      current[keys[keys.length - 1]] = newValue
+      current[keys[keys.length - 1]] = newValue;
 
-      const newSubmissions = [...storedSubmissions]
-      newSubmissions[submissionIndex] = updatedSubmission
-      setStoredSubmissions(newSubmissions)
-      localStorage.setItem("formSubmissions", JSON.stringify(newSubmissions))
+      const newSubmissions = [...storedSubmissions];
+      newSubmissions[submissionIndex] = updatedSubmission;
+      setStoredSubmissions(newSubmissions);
+      localStorage.setItem("formSubmissions", JSON.stringify(newSubmissions));
 
-      setEditingRow(null)
-      setValidationError(null)
-      toast.success("Value updated successfully")
+      setEditingRow(null);
+      setValidationError(null);
+      toast.success("Value updated successfully");
     }
   }
 
   function handleCancel() {
-    setEditingRow(null)
-    setValidationError(null)
+    setEditingRow(null);
+    setValidationError(null);
   }
 
   function handleSort(column: string) {
     if (sortColumn === column) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc")
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     }
     else {
-      setSortColumn(column)
-      setSortDirection("asc")
+      setSortColumn(column);
+      setSortDirection("asc");
     }
   }
 
   const processedTableData = useMemo(() => {
-    let data = [...tableData]
+    let data = [...tableData];
 
     if (filterValue) {
-      const lowerFilter = filterValue.toLowerCase()
+      const lowerFilter = filterValue.toLowerCase();
       data = data.filter(
-        row =>
+        (row) =>
           row.metric.toLowerCase().includes(lowerFilter)
           || String(row.value).toLowerCase().includes(lowerFilter),
-      )
+      );
     }
 
     if (sortColumn) {
       data.sort((a, b) => {
-        const aValue = a[sortColumn as keyof typeof a]
-        const bValue = b[sortColumn as keyof typeof b]
+        const aValue = a[sortColumn as keyof typeof a];
+        const bValue = b[sortColumn as keyof typeof b];
 
         if (typeof aValue === "string" && typeof bValue === "string") {
           return sortDirection === "asc"
             ? aValue.localeCompare(bValue)
-            : bValue.localeCompare(aValue)
+            : bValue.localeCompare(aValue);
         }
 
         return sortDirection === "asc"
@@ -213,12 +213,12 @@ export function SubmissionDetails({
             : -1
           : aValue < bValue
             ? 1
-            : -1
-      })
+            : -1;
+      });
     }
 
-    return data
-  }, [tableData, filterValue, sortColumn, sortDirection])
+    return data;
+  }, [tableData, filterValue, sortColumn, sortDirection]);
 
   return (
     <>
@@ -260,7 +260,7 @@ export function SubmissionDetails({
           <Input
             autoComplete="off"
             className="pl-8"
-            onChange={e => setFilterValue(e.target.value)}
+            onChange={(e) => setFilterValue(e.target.value)}
             placeholder="Filter by Metrics and Values"
             value={filterValue}
           />
@@ -309,7 +309,7 @@ export function SubmissionDetails({
           <TableBody>
             {processedTableData.length > 0
               ? (
-                  processedTableData.map(row => (
+                  processedTableData.map((row) => (
                     <TableRow key={row.id}>
                       {visibleColumns.includes("metric") && (
                         <TableCell className="font-medium">{row.metric}</TableCell>
@@ -352,7 +352,7 @@ export function SubmissionDetails({
         </Table>
       </div>
     </>
-  )
+  );
 }
 
 function ActionCell({
@@ -372,7 +372,7 @@ function ActionCell({
           <Save className="h-4 w-4" />
         </Button>
       </div>
-    )
+    );
   }
 
   return (
@@ -389,7 +389,7 @@ function ActionCell({
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }
 
 function ValueCell({
@@ -398,7 +398,7 @@ function ValueCell({
   row,
   setEditValue,
 }: ValueCellProps) {
-  const options = getFieldOptions(row.metric)
+  const options = getFieldOptions(row.metric);
 
   if (editingRow === row.id) {
     if (options) {
@@ -408,26 +408,25 @@ function ValueCell({
             <SelectValue placeholder="Select value" />
           </SelectTrigger>
           <SelectContent>
-            {options.map(option => (
+            {options.map((option) => (
               <SelectItem key={option} value={option}>
                 {option}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-      )
+      );
     }
-    else {
-      return (
-        <Input
-          autoFocus
-          className="w-full"
-          onChange={e => setEditValue(e.target.value)}
-          value={editValue}
-        />
-      )
-    }
+
+    return (
+      <Input
+        autoFocus
+        className="w-full"
+        onChange={(e) => setEditValue(e.target.value)}
+        value={editValue}
+      />
+    );
   }
 
-  return <div className="max-w-[300px] truncate">{row.value}</div>
+  return <div className="max-w-[300px] truncate">{row.value}</div>;
 }
