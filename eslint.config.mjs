@@ -1,4 +1,5 @@
 import antfu from "@antfu/eslint-config";
+import eslintConfigPrettier from "eslint-config-prettier/flat";
 import command from "eslint-plugin-command/config";
 
 const eslintIgnore = [
@@ -32,8 +33,8 @@ export default antfu(
       "import/order": [
         "warn",
         {
-          alphabetize: { caseInsensitive: true, order: "asc" },
-          groups: [
+          "alphabetize": { caseInsensitive: true, order: "asc" },
+          "groups": [
             "object",
             "builtin",
             "external",
@@ -79,7 +80,6 @@ export default antfu(
       "style/quotes": ["error", "double"],
       "style/comma-dangle": "error",
       "style/no-multiple-empty-lines": "off",
-      "style/brace-style": "off",
 
       "style/semi": ["error", "always"],
       "ts/no-explicit-any": "off",
@@ -123,6 +123,7 @@ export default antfu(
       "no-var": "off",
     },
   },
-
+  
   command(),
+  eslintConfigPrettier,
 );

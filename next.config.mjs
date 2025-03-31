@@ -13,6 +13,7 @@ const withSerwist = withSerwistInit({
   cacheOnNavigation: true,
   swDest: "public/sw.js",
   swSrc: "src/lib/sw.ts",
+  disable: process.env.NODE_ENV === "development",
 })
 
 export default withSerwist({ ...nextConfig })
