@@ -5,21 +5,24 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-function Separator({ ref, className, decorative = true, orientation = "horizontal", ...props }: React.ComponentPropsWithoutRef<typeof SeparatorPrimitive.Root> & { ref?: React.RefObject<React.ElementRef<typeof SeparatorPrimitive.Root> | null> }) {
+function Separator({
+  className,
+  orientation = "horizontal",
+  decorative = true,
+  ...props
+}: React.ComponentProps<typeof SeparatorPrimitive.Root>) {
   return (
     <SeparatorPrimitive.Root
-      className={cn(
-        "shrink-0 bg-border",
-        orientation === "horizontal" ? "h-[1px] w-full" : "h-full w-[1px]",
-        className,
-      )}
+      data-slot="separator-root"
       decorative={decorative}
       orientation={orientation}
-      ref={ref}
+      className={cn(
+        "shrink-0 bg-border data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px",
+        className,
+      )}
       {...props}
     />
   );
 }
-Separator.displayName = SeparatorPrimitive.Root.displayName;
 
 export { Separator };

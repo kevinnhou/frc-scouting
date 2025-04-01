@@ -1,42 +1,47 @@
-import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  MoreHorizontalIcon,
+} from "lucide-react";
 import * as React from "react";
 
-import type { ButtonProps } from "@/components/ui/button";
-import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import type { Button } from "~/button";
+import { buttonVariants } from "~/button";
 
 function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
   return (
     <nav
-      aria-label="pagination"
-      className={cn("mx-auto flex w-full justify-center", className)}
       role="navigation"
+      aria-label="pagination"
+      data-slot="pagination"
+      className={cn("mx-auto flex w-full justify-center", className)}
       {...props}
     />
   );
 }
-Pagination.displayName = "Pagination";
 
-function PaginationContent({ ref, className, ...props }: React.ComponentProps<"ul"> & { ref?: React.RefObject<HTMLUListElement | null> }) {
+function PaginationContent({
+  className,
+  ...props
+}: React.ComponentProps<"ul">) {
   return (
     <ul
+      data-slot="pagination-content"
       className={cn("flex flex-row items-center gap-1", className)}
-      ref={ref}
       {...props}
     />
   );
 }
-PaginationContent.displayName = "PaginationContent";
 
-function PaginationItem({ ref, className, ...props }: React.ComponentProps<"li"> & { ref?: React.RefObject<HTMLLIElement | null> }) {
-  return <li className={cn("", className)} ref={ref} {...props} />;
+function PaginationItem({ ...props }: React.ComponentProps<"li">) {
+  return <li data-slot="pagination-item" {...props} />;
 }
-PaginationItem.displayName = "PaginationItem";
 
-type PaginationLinkProps = Pick<ButtonProps, "size"> & React.ComponentProps<"a"> &
-  {
-    isActive?: boolean
-  };
+type PaginationLinkProps = {
+  isActive?: boolean;
+} & Pick<React.ComponentProps<typeof Button>, "size"> &
+  React.ComponentProps<"a">;
 
 function PaginationLink({
   className,
@@ -47,10 +52,12 @@ function PaginationLink({
   return (
     <a
       aria-current={isActive ? "page" : undefined}
+      data-slot="pagination-link"
+      data-active={isActive}
       className={cn(
         buttonVariants({
-          size,
           variant: isActive ? "outline" : "ghost",
+          size,
         }),
         className,
       )}
@@ -58,7 +65,6 @@ function PaginationLink({
     />
   );
 }
-PaginationLink.displayName = "PaginationLink";
 
 function PaginationPrevious({
   className,
@@ -67,16 +73,15 @@ function PaginationPrevious({
   return (
     <PaginationLink
       aria-label="Go to previous page"
-      className={cn("gap-1 pl-2.5", className)}
       size="default"
+      className={cn("gap-1 px-2.5 sm:pl-2.5", className)}
       {...props}
     >
-      <ChevronLeft className="h-4 w-4" />
-      <span>Previous</span>
+      <ChevronLeftIcon />
+      <span className="hidden sm:block">Previous</span>
     </PaginationLink>
   );
 }
-PaginationPrevious.displayName = "PaginationPrevious";
 
 function PaginationNext({
   className,
@@ -85,16 +90,15 @@ function PaginationNext({
   return (
     <PaginationLink
       aria-label="Go to next page"
-      className={cn("gap-1 pr-2.5", className)}
       size="default"
+      className={cn("gap-1 px-2.5 sm:pr-2.5", className)}
       {...props}
     >
-      <span>Next</span>
-      <ChevronRight className="h-4 w-4" />
+      <span className="hidden sm:block">Next</span>
+      <ChevronRightIcon />
     </PaginationLink>
   );
 }
-PaginationNext.displayName = "PaginationNext";
 
 function PaginationEllipsis({
   className,
@@ -103,15 +107,15 @@ function PaginationEllipsis({
   return (
     <span
       aria-hidden
-      className={cn("flex h-9 w-9 items-center justify-center", className)}
+      data-slot="pagination-ellipsis"
+      className={cn("flex size-9 items-center justify-center", className)}
       {...props}
     >
-      <MoreHorizontal className="h-4 w-4" />
+      <MoreHorizontalIcon className="size-4" />
       <span className="sr-only">More pages</span>
     </span>
   );
 }
-PaginationEllipsis.displayName = "PaginationEllipsis";
 
 export {
   Pagination,
