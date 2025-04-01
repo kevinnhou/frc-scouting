@@ -1,4 +1,3 @@
-
 "use server";
 
 import { google } from "googleapis";
@@ -51,11 +50,23 @@ export async function submit(data: FormData) {
       formData["Autonomous Cycles" as TFormDataKeys],
     ).slice(0, -1);
 
+    const autoMissed = Object.values(
+      formData["Autonomous Missed" as TFormDataKeys],
+    );
+
     const teleopCycles = Object.values(
       formData["Teleop Cycles" as TFormDataKeys],
     ).slice(0, -1);
 
-    const notes = Object.values(formData["Extra Notes" as TFormDataKeys]);
+    const teleopMissed = Object.values(
+      formData["Teleop Missed" as TFormDataKeys],
+    );
+
+    // Type-safe access to Extra Notes
+    const extraNotes = formData["Extra Notes" as TFormDataKeys] as {
+      tags: string[];
+      text: string;
+    };
 
     const values = [
       formData["Team Number" as TFormDataKeys],
@@ -72,6 +83,9 @@ export async function submit(data: FormData) {
       JSON.stringify(
         formData["Autonomous Cycles" as TFormDataKeys]["Cycle Times"],
       ),
+      autoMissed[0],
+      autoMissed[1],
+      autoMissed[2],
       teleopCycles[0],
       teleopCycles[1],
       teleopCycles[2],
@@ -79,13 +93,16 @@ export async function submit(data: FormData) {
       teleopCycles[4],
       teleopCycles[5],
       JSON.stringify(formData["Teleop Cycles" as TFormDataKeys]["Cycle Times"]),
+      teleopMissed[0],
+      teleopMissed[1],
+      teleopMissed[2],
       formData["Cage Level" as TFormDataKeys],
       JSON.stringify(formData["Cage Time" as TFormDataKeys]),
       formData["Drive Team Ability" as TFormDataKeys],
       formData["Penalties" as TFormDataKeys],
       formData["Defense" as TFormDataKeys],
       formData["Scoring Behind Reef" as TFormDataKeys],
-      notes[0],
+      extraNotes.text,
     ];
 
     await sheets.spreadsheets.values.append({
@@ -98,8 +115,7 @@ export async function submit(data: FormData) {
     });
 
     return { message: "Form submitted successfully.", success: true };
-  }
-  catch (error) {
+  } catch (error) {
     console.error(
       "Form submission failed:",
       error instanceof Error ? error.message : "Unknown error occurred.",

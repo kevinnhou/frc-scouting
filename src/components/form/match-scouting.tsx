@@ -12,6 +12,7 @@ import { z } from "zod";
 import { CycleField } from "./cycle-field";
 import { DropdownField } from "./dropdown-field";
 import { InputField } from "./input-field";
+import { MissedField } from "./missed-field";
 import { NotesField } from "./notes-field";
 import { StopwatchField } from "./stopwatch-field";
 
@@ -50,6 +51,11 @@ const initialFormData: Partial<FormData> = {
     "Coral Level 4": 0,
     "Cycle Times": [],
   },
+  "Autonomous Missed": {
+    Coral: 0,
+    Processor: 0,
+    Net: 0,
+  },
   "Cage Level": undefined,
   "Cage Time": [],
   Defense: undefined,
@@ -71,6 +77,11 @@ const initialFormData: Partial<FormData> = {
     "Coral Level 3": 0,
     "Coral Level 4": 0,
     "Cycle Times": [],
+  },
+  "Teleop Missed": {
+    Coral: 0,
+    Processor: 0,
+    Net: 0,
   },
 };
 
@@ -184,8 +195,8 @@ export function MatchScoutingForm() {
     "autonomous" | "misc" | "teleop" | string
   >("autonomous");
 
-  useEffect(() => {
-    function handleKeyDown(e: KeyboardEvent) {
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
       if (
         document.activeElement instanceof HTMLInputElement ||
         document.activeElement instanceof HTMLTextAreaElement
@@ -239,13 +250,16 @@ export function MatchScoutingForm() {
           cycleFields["Algae Net"]();
         }
       }
-    }
+    },
+    [activeTab, form],
+  );
 
+  useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [activeTab]);
+  }, [handleKeyDown]);
 
   async function onSubmit(data: FormData) {
     const currentSubmissions = loadSubmissions();
@@ -417,10 +431,25 @@ export function MatchScoutingForm() {
     );
   }
 
+  function renderMissedFields(fieldName: string) {
+    return (
+      <div className="mt-6">
+        <h4 className="text-sm font-semibold">Missed</h4>
+        <div className="grid grid-cols-1 gap-x-4 sm:grid-cols-3">
+          <MissedField label="Coral" name={`${fieldName}.Coral`} />
+          <MissedField label="Processor" name={`${fieldName}.Processor`} />
+          <MissedField label="Net" name={`${fieldName}.Net`} />
+        </div>
+      </div>
+    );
+  }
+
   function renderField(field: TField) {
     switch (field.type) {
       case "cycles":
         return renderCycleFields(field.name);
+      case "missed":
+        return renderMissedFields(field.name);
       case "input":
         return (
           <InputField
@@ -459,8 +488,11 @@ export function MatchScoutingForm() {
   }
 
   function renderFields(fields: TField[]) {
-    const regularFields = fields.filter((field) => field.type !== "cycles");
+    const regularFields = fields.filter(
+      (field) => field.type !== "cycles" && field.type !== "missed",
+    );
     const cycleFields = fields.filter((field) => field.type === "cycles");
+    const missedFields = fields.filter((field) => field.type === "missed");
 
     return (
       <div className="space-y-6">
@@ -474,6 +506,13 @@ export function MatchScoutingForm() {
         {cycleFields.length > 0 && (
           <div className="space-y-6">
             {cycleFields.map((field) => (
+              <div key={field.name}>{renderField(field)}</div>
+            ))}
+          </div>
+        )}
+        {missedFields.length > 0 && (
+          <div className="space-y-6">
+            {missedFields.map((field) => (
               <div key={field.name}>{renderField(field)}</div>
             ))}
           </div>
