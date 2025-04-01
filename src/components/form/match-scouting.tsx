@@ -9,7 +9,6 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-
 import { CycleField } from "./cycle-field";
 import { DropdownField } from "./dropdown-field";
 import { InputField } from "./input-field";
@@ -36,9 +35,9 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 interface TField {
-  name: string
-  schema: z.ZodTypeAny
-  type: string | string[]
+  name: string;
+  schema: z.ZodTypeAny;
+  type: string | string[];
 }
 
 const initialFormData: Partial<FormData> = {
@@ -53,13 +52,13 @@ const initialFormData: Partial<FormData> = {
   },
   "Cage Level": undefined,
   "Cage Time": [],
-  "Defense": undefined,
+  Defense: undefined,
   "Drive Team Ability": "",
   "Extra Notes": { tags: [], text: "" },
-  "Penalties": undefined,
-  "Preload": undefined,
+  Penalties: undefined,
+  Preload: undefined,
   "Qualification Number": 0,
-  "Route": "",
+  Route: "",
   "Scoring Behind Reef": undefined,
   "Starting Position": undefined,
   "Team Name": "",
@@ -112,8 +111,8 @@ export function MatchScoutingForm() {
   const [exportMethod, setExportMethod] = useState<
     "clipboard" | "json" | "qrcode"
   >("qrcode");
-  const [showViewSubmissionsDialog, setShowViewSubmissionsDialog]
-    = useState(false);
+  const [showViewSubmissionsDialog, setShowViewSubmissionsDialog] =
+    useState(false);
 
   const updateQRColours = useCallback(() => {
     const root = document.documentElement;
@@ -136,8 +135,7 @@ export function MatchScoutingForm() {
         }
       }
       return [];
-    }
-    catch (error) {
+    } catch (error) {
       console.error("Error loading stored submissions:", error);
       return [];
     }
@@ -176,8 +174,7 @@ export function MatchScoutingForm() {
       if (teamName) {
         form.setValue("Team Name", teamName);
         toast.info(`Team found: ${teamName}`);
-      }
-      else {
+      } else {
         form.setValue("Team Name", "");
       }
     }
@@ -190,8 +187,8 @@ export function MatchScoutingForm() {
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (
-        document.activeElement instanceof HTMLInputElement
-        || document.activeElement instanceof HTMLTextAreaElement
+        document.activeElement instanceof HTMLInputElement ||
+        document.activeElement instanceof HTMLTextAreaElement
       ) {
         return;
       }
@@ -206,8 +203,7 @@ export function MatchScoutingForm() {
             stopwatches.forEach((stopwatch) => {
               if (stopwatch.isRunning()) {
                 stopwatch.pause();
-              }
-              else {
+              } else {
                 stopwatch.start();
               }
             });
@@ -234,13 +230,11 @@ export function MatchScoutingForm() {
         if (cycleFields[fieldName]) {
           cycleFields[fieldName]();
         }
-      }
-      else if (e.key === "p" || e.key === "P") {
+      } else if (e.key === "p" || e.key === "P") {
         if (cycleFields["Algae Processor"]) {
           cycleFields["Algae Processor"]();
         }
-      }
-      else if (e.key === "n" || e.key === "N") {
+      } else if (e.key === "n" || e.key === "N") {
         if (cycleFields["Algae Net"]) {
           cycleFields["Algae Net"]();
         }
@@ -340,11 +334,9 @@ export function MatchScoutingForm() {
 
     if (autonomousErrors) {
       setActiveTab("autonomous");
-    }
-    else if (teleopErrors) {
+    } else if (teleopErrors) {
       setActiveTab("teleop");
-    }
-    else if (miscErrors) {
+    } else if (miscErrors) {
       setActiveTab("misc");
     }
   }
@@ -372,18 +364,16 @@ export function MatchScoutingForm() {
     let section: "autonomous" | "misc" | "teleop";
     if (fieldName === "Autonomous Cycles") {
       section = "autonomous";
-    }
-    else if (fieldName === "Teleop Cycles") {
+    } else if (fieldName === "Teleop Cycles") {
       section = "teleop";
-    }
-    else {
+    } else {
       section = "misc";
     }
 
     return (
       <>
         <h4 className="text-sm font-semibold">Coral</h4>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4">
+        <div className="grid grid-cols-2 gap-x-4 lg:grid-cols-4">
           <CycleField
             label="Level 1"
             name={`${fieldName}.Coral Level 1`}
@@ -405,8 +395,8 @@ export function MatchScoutingForm() {
             section={section}
           />
         </div>
-        <h4 className="text-sm font-semibold mt-4">Algae</h4>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-4">
+        <h4 className="mt-4 text-sm font-semibold">Algae</h4>
+        <div className="grid grid-cols-1 gap-x-4 sm:grid-cols-3">
           <CycleField
             label="Processor"
             name={`${fieldName}.Algae Processor`}
@@ -456,8 +446,8 @@ export function MatchScoutingForm() {
               name={field.name}
               options={field.type}
               placeholder={
-                field.schema instanceof z.ZodEnum
-                && field.schema._def.values.join() === "Yes,No"
+                field.schema instanceof z.ZodEnum &&
+                field.schema._def.values.join() === "Yes,No"
                   ? `Select ${field.name.toLowerCase()} status`
                   : `Select ${field.name.toLowerCase()}`
               }
@@ -475,7 +465,7 @@ export function MatchScoutingForm() {
     return (
       <div className="space-y-6">
         {regularFields.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {regularFields.map((field) => (
               <div key={field.name}>{renderField(field)}</div>
             ))}
@@ -508,7 +498,7 @@ export function MatchScoutingForm() {
         >
           <div className="block">
             <Tabs
-              className="w-full mb-4"
+              className="mb-4 w-full"
               defaultValue="autonomous"
               onValueChange={setActiveTab}
               value={activeTab}
@@ -526,7 +516,7 @@ export function MatchScoutingForm() {
             {activeTab === "misc" && renderFields(misc)}
             <NotesField label="Extra Notes" name="Extra Notes" />
           </div>
-          <div className="flex justify-between place-items-center pb-8">
+          <div className="flex place-items-center justify-between pb-8">
             <div className="flex items-center space-x-4">
               <Button
                 onClick={() => setShowSpreadsheetIDDialog(true)}
@@ -564,10 +554,7 @@ export function MatchScoutingForm() {
                 type="button"
                 variant="outline"
               >
-                <span>
-                  Stored submissions:
-                  {storedSubmissions.length}
-                </span>
+                <span>Stored submissions: {storedSubmissions.length}</span>
               </Button>
               <Button disabled={isSubmitting} type="submit">
                 {isSubmitting

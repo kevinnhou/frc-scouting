@@ -2,7 +2,13 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-function Table({ ref, className, ...props }: React.HTMLAttributes<HTMLTableElement> & { ref?: React.RefObject<HTMLTableElement | null> }) {
+function Table({
+  ref,
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLTableElement> & {
+  ref?: React.RefObject<HTMLTableElement | null>;
+}) {
   return (
     <div className="relative w-full overflow-auto">
       <table
@@ -15,12 +21,26 @@ function Table({ ref, className, ...props }: React.HTMLAttributes<HTMLTableEleme
 }
 Table.displayName = "Table";
 
-function TableHeader({ ref, className, ...props }: React.HTMLAttributes<HTMLTableSectionElement> & { ref?: React.RefObject<HTMLTableSectionElement | null> }) {
-  return <thead className={cn("[&_tr]:border-b", className)} ref={ref} {...props} />;
+function TableHeader({
+  ref,
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLTableSectionElement> & {
+  ref?: React.RefObject<HTMLTableSectionElement | null>;
+}) {
+  return (
+    <thead className={cn("[&_tr]:border-b", className)} ref={ref} {...props} />
+  );
 }
 TableHeader.displayName = "TableHeader";
 
-function TableBody({ ref, className, ...props }: React.HTMLAttributes<HTMLTableSectionElement> & { ref?: React.RefObject<HTMLTableSectionElement | null> }) {
+function TableBody({
+  ref,
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLTableSectionElement> & {
+  ref?: React.RefObject<HTMLTableSectionElement | null>;
+}) {
   return (
     <tbody
       className={cn("[&_tr:last-child]:border-0", className)}
@@ -31,11 +51,17 @@ function TableBody({ ref, className, ...props }: React.HTMLAttributes<HTMLTableS
 }
 TableBody.displayName = "TableBody";
 
-function TableFooter({ ref, className, ...props }: React.HTMLAttributes<HTMLTableSectionElement> & { ref?: React.RefObject<HTMLTableSectionElement | null> }) {
+function TableFooter({
+  ref,
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLTableSectionElement> & {
+  ref?: React.RefObject<HTMLTableSectionElement | null>;
+}) {
   return (
     <tfoot
       className={cn(
-        "border-t bg-muted/50 font-medium [&>tr]:last:border-b-0",
+        "border-t bg-muted/50 font-medium last:[&>tr]:border-b-0",
         className,
       )}
       ref={ref}
@@ -45,7 +71,13 @@ function TableFooter({ ref, className, ...props }: React.HTMLAttributes<HTMLTabl
 }
 TableFooter.displayName = "TableFooter";
 
-function TableRow({ ref, className, ...props }: React.HTMLAttributes<HTMLTableRowElement> & { ref?: React.RefObject<HTMLTableRowElement | null> }) {
+function TableRow({
+  ref,
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLTableRowElement> & {
+  ref?: React.RefObject<HTMLTableRowElement | null>;
+}) {
   return (
     <tr
       className={cn(
@@ -59,7 +91,13 @@ function TableRow({ ref, className, ...props }: React.HTMLAttributes<HTMLTableRo
 }
 TableRow.displayName = "TableRow";
 
-function TableHead({ ref, className, ...props }: React.ThHTMLAttributes<HTMLTableCellElement> & { ref?: React.RefObject<HTMLTableCellElement | null> }) {
+function TableHead({
+  ref,
+  className,
+  ...props
+}: React.ThHTMLAttributes<HTMLTableCellElement> & {
+  ref?: React.RefObject<HTMLTableCellElement | null>;
+}) {
   return (
     <th
       className={cn(
@@ -73,7 +111,13 @@ function TableHead({ ref, className, ...props }: React.ThHTMLAttributes<HTMLTabl
 }
 TableHead.displayName = "TableHead";
 
-function TableCell({ ref, className, ...props }: React.TdHTMLAttributes<HTMLTableCellElement> & { ref?: React.RefObject<HTMLTableCellElement | null> }) {
+function TableCell({
+  ref,
+  className,
+  ...props
+}: React.TdHTMLAttributes<HTMLTableCellElement> & {
+  ref?: React.RefObject<HTMLTableCellElement | null>;
+}) {
   return (
     <td
       className={cn(
@@ -87,7 +131,13 @@ function TableCell({ ref, className, ...props }: React.TdHTMLAttributes<HTMLTabl
 }
 TableCell.displayName = "TableCell";
 
-function TableCaption({ ref, className, ...props }: React.HTMLAttributes<HTMLTableCaptionElement> & { ref?: React.RefObject<HTMLTableCaptionElement | null> }) {
+function TableCaption({
+  ref,
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLTableCaptionElement> & {
+  ref?: React.RefObject<HTMLTableCaptionElement | null>;
+}) {
   return (
     <caption
       className={cn("mt-4 text-sm text-muted-foreground", className)}
