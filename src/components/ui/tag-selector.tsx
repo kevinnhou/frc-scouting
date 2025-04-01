@@ -16,11 +16,11 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "~/popover";
 
 interface TagSelectorProps {
-  availableTags: string[]
-  className?: string
-  createTag: (inputValue: string) => string
-  onChange: (tags: string[]) => void
-  selectedTags: string[]
+  availableTags: string[];
+  className?: string;
+  createTag: (inputValue: string) => string;
+  onChange: (tags: string[]) => void;
+  selectedTags: string[];
 }
 
 export function TagSelector({
@@ -35,8 +35,8 @@ export function TagSelector({
 
   const filteredTags = availableTags.filter(
     (tag) =>
-      tag.toLowerCase().includes(inputValue.toLowerCase())
-      && !selectedTags.includes(tag),
+      tag.toLowerCase().includes(inputValue.toLowerCase()) &&
+      !selectedTags.includes(tag),
   );
 
   const handleSelect = (value: string) => {
@@ -59,7 +59,7 @@ export function TagSelector({
       <PopoverTrigger asChild>
         <Button
           className={cn(
-            "flex flex-wrap gap-[2px] mt-1 py-[2px] pl-[2px] pr-3 h-auto w-full text-left items-center justify-start min-h-9",
+            "mt-1 flex h-auto min-h-9 w-full flex-wrap items-center justify-start gap-[2px] py-[2px] pr-3 pl-[2px] text-left",
             className,
             selectedTags.length > 0 && "hover:bg-background",
           )}
@@ -72,7 +72,7 @@ export function TagSelector({
             >
               {tag}
               <span
-                className="cursor-pointer hover:bg-red-400/40 p-0.5 rounded transition-colors"
+                className="cursor-pointer rounded p-0.5 transition-colors hover:bg-red-400/40"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleRemove(tag);
@@ -90,7 +90,7 @@ export function TagSelector({
               </span>
             </span>
           ))}
-          <span className="flex-grow" />
+          <span className="grow" />
           <ChevronsUpDown className="h-4 w-4 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -121,17 +121,15 @@ export function TagSelector({
                 </CommandItem>
               ))}
             </CommandGroup>
-            {inputValue.trim() !== ""
-              && !availableTags.includes(inputValue.toLowerCase()) && (
-              <CommandGroup heading="Create Tag">
-                <CommandItem onSelect={handleCreate} value={inputValue}>
-                  <Check className="mr-2 h-4 w-4 opacity-100" />
-                  Create "
-                  {inputValue}
-                  "
-                </CommandItem>
-              </CommandGroup>
-            )}
+            {inputValue.trim() !== "" &&
+              !availableTags.includes(inputValue.toLowerCase()) && (
+                <CommandGroup heading="Create Tag">
+                  <CommandItem onSelect={handleCreate} value={inputValue}>
+                    <Check className="mr-2 h-4 w-4 opacity-100" />
+                    Create "{inputValue}"
+                  </CommandItem>
+                </CommandGroup>
+              )}
           </CommandList>
         </Command>
       </PopoverContent>

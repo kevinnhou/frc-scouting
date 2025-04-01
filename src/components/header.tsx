@@ -20,14 +20,14 @@ export default function Header() {
     <header
       className={`sticky top-0 z-50 w-full transition-all ${
         scrolled
-          ? "bg-background/80 backdrop-blur-sm shadow-sm"
+          ? "bg-background/80 shadow-xs backdrop-blur-xs"
           : "bg-background"
       }`}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center space-x-2">
-            <span className="font-semibold text-xl">{site.name.short}</span>
+            <span className="text-xl font-semibold">{site.name.short}</span>
           </Link>
           {/* <Navigation /> */}
         </div>
