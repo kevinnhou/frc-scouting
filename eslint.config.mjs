@@ -33,8 +33,8 @@ export default antfu(
       "import/order": [
         "warn",
         {
-          "alphabetize": { caseInsensitive: true, order: "asc" },
-          "groups": [
+          alphabetize: { caseInsensitive: true, order: "asc" },
+          groups: [
             "object",
             "builtin",
             "external",
@@ -123,7 +123,7 @@ export default antfu(
       "no-var": "off",
     },
   },
-  
-  command(),
+
+  command,
   eslintConfigPrettier,
 );
