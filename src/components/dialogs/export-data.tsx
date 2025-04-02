@@ -15,15 +15,15 @@ import {
 import { Label } from "~/label";
 
 interface TExportDataProps {
-  exportMethod: "clipboard" | "json" | "qrcode"
-  onOpenChange: (open: boolean) => void
-  open: boolean
-  selectedSubmissions: number[]
-  setExportMethod: (method: "clipboard" | "json" | "qrcode") => void
-  setQRCodeData: (data: string) => void
-  setSelectedSubmissions: (indices: number[]) => void
-  setShowQRModal: (show: boolean) => void
-  storedSubmissions: any[]
+  exportMethod: "clipboard" | "json" | "qrcode";
+  onOpenChange: (open: boolean) => void;
+  open: boolean;
+  selectedSubmissions: number[];
+  setExportMethod: (method: "clipboard" | "json" | "qrcode") => void;
+  setQRCodeData: (data: string) => void;
+  setSelectedSubmissions: (indices: number[]) => void;
+  setShowQRModal: (show: boolean) => void;
+  storedSubmissions: any[];
 }
 
 const MAX_QR_SIZE = 2400;
@@ -54,8 +54,7 @@ export function ExportData({
   function handleSelectAll() {
     if (selectedSubmissions.length === storedSubmissions.length) {
       setSelectedSubmissions([]);
-    }
-    else {
+    } else {
       setSelectedSubmissions(storedSubmissions.map((_, index) => index));
     }
   }
@@ -94,20 +93,21 @@ export function ExportData({
           .then(() => toast.success("Data copied to clipboard"))
           .catch(() => toast.error("Failed to copy data to clipboard"));
         break;
-      case "json":
-      { const blob = new Blob([JSON.stringify(selectedData, null, 2)], {
-        type: "application/json",
-      });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "rec-scouting-data.json";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      toast.success("JSON file downloaded");
-      break; }
+      case "json": {
+        const blob = new Blob([JSON.stringify(selectedData, null, 2)], {
+          type: "application/json",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "rec-scouting-data.json";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        toast.success("JSON file downloaded");
+        break;
+      }
       case "qrcode":
         setQRCodeData(JSON.stringify(selectedData));
         setShowQRModal(true);
@@ -119,23 +119,23 @@ export function ExportData({
 
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent className="sm:max-w-xl">
+      <DialogContent className="overflow-x-scroll xl:min-w-xl">
         <DialogHeader>
           <DialogTitle>Export Data</DialogTitle>
-          <DialogDescription className="tracking-wide font-sans">
+          <DialogDescription className="font-sans tracking-wide">
             Select submissions and export method
           </DialogDescription>
         </DialogHeader>
         <div className="py-4">
           <div className="mb-4">
             <Label>Export Method</Label>
-            <div className="flex gap-2 mt-2">
+            <div className="mt-2 flex gap-2">
               <Button
                 className="flex-1"
                 onClick={() => handleMethodChange("qrcode")}
                 variant={exportMethod === "qrcode" ? "default" : "outline"}
               >
-                <QrCode className="h-4 w-4 mr-2" />
+                <QrCode className="mr-2 h-4 w-4" />
                 QR Code
               </Button>
               <Button
@@ -143,7 +143,7 @@ export function ExportData({
                 onClick={() => handleMethodChange("clipboard")}
                 variant={exportMethod === "clipboard" ? "default" : "outline"}
               >
-                <FileTextIcon className="h-4 w-4 mr-2" />
+                <FileTextIcon className="mr-2 h-4 w-4" />
                 Copy to Clipboard
               </Button>
               <Button
@@ -151,14 +151,14 @@ export function ExportData({
                 onClick={() => handleMethodChange("json")}
                 variant={exportMethod === "json" ? "default" : "outline"}
               >
-                <Download className="h-4 w-4 mr-2" />
+                <Download className="mr-2 h-4 w-4" />
                 Download JSON
               </Button>
             </div>
           </div>
 
           <div className="mb-4">
-            <div className="flex justify-between items-center mb-2">
+            <div className="mb-2 flex items-center justify-between">
               <Label>Submissions</Label>
               <Button onClick={handleSelectAll} size="sm" variant="outline">
                 {selectedSubmissions.length === storedSubmissions.length
@@ -166,61 +166,44 @@ export function ExportData({
                   : "Select All"}
               </Button>
             </div>
-            <div className="max-h-60 overflow-y-auto border rounded-md p-2">
-              {storedSubmissions.length > 0
-                ? (
-                    storedSubmissions.map((submission, index) => (
-                      <div
-                        className="flex items-center space-x-2 p-2 hover:bg-accent rounded-md cursor-pointer"
-                        key={index}
-                        onClick={() => handleSelection(index)}
-                      >
-                        <input
-                          checked={selectedSubmissions.includes(index)}
-                          className="h-4 w-4"
-                          onChange={() => handleSelection(index)}
-                          type="checkbox"
-                        />
-                        <span>
-                          Team
-                          {" "}
-                          {String(submission["Team Number"])}
-                          {" "}
-                          - Match
-                          {" "}
-                          {String(submission["Qualification Number"])}
-                        </span>
-                      </div>
-                    ))
-                  )
-                : (
-                    <div className="text-center py-4 text-muted-foreground">
-                      No submissions available
-                    </div>
-                  )}
+            <div className="max-h-60 overflow-y-auto rounded-md border p-2">
+              {storedSubmissions.length > 0 ? (
+                storedSubmissions.map((submission, index) => (
+                  <div
+                    className="flex cursor-pointer items-center space-x-2 rounded-md p-2 hover:bg-accent"
+                    key={index}
+                    onClick={() => handleSelection(index)}
+                  >
+                    <input
+                      checked={selectedSubmissions.includes(index)}
+                      className="h-4 w-4"
+                      onChange={() => handleSelection(index)}
+                      type="checkbox"
+                    />
+                    <span>
+                      Team {String(submission["Team Number"])} - Match{" "}
+                      {String(submission["Qualification Number"])}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <div className="py-4 text-center text-muted-foreground">
+                  No submissions available
+                </div>
+              )}
             </div>
             {exportMethod === "qrcode" && (
-              <div className="text-xs text-muted-foreground mt-2">
+              <div className="mt-2 text-xs text-muted-foreground">
                 QR codes have limited capacity. Select fewer submissions if
                 export fails.
               </div>
             )}
-            <div className="text-sm mt-2">
-              Selected:
-              {" "}
-              {selectedSubmissions.length}
-              {" "}
-              of
-              {" "}
-              {storedSubmissions.length}
-              {" "}
-              submissions
+            <div className="mt-2 text-sm">
+              Selected: {selectedSubmissions.length} of{" "}
+              {storedSubmissions.length} submissions
               {selectedSubmissions.length > 0 && (
                 <span className="ml-2">
-                  (
-                  {getDataSize(getSelectedData())}
-                  {" "}
-                  bytes)
+                  ({getDataSize(getSelectedData())} bytes)
                 </span>
               )}
             </div>
