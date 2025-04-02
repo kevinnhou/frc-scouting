@@ -25,7 +25,7 @@ import { ViewSubmissions } from "@/components/dialogs/view-submissions";
 import { autonomous, misc, teleop } from "@/lib/match-scouting";
 import { Button } from "~/button";
 import { Form } from "~/form";
-import { Tabs, TabsList, TabsTrigger } from "~/tabs";
+import { Tabs } from "~/tabs";
 
 const formSchema = z.object({
   ...Object.fromEntries(autonomous.map((field) => [field.name, field.schema])),
@@ -410,7 +410,7 @@ export function MatchScoutingForm() {
           />
         </div>
         <h4 className="mt-4 text-sm font-semibold">Algae</h4>
-        <div className="grid grid-cols-1 gap-x-4 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-3">
           <CycleField
             label="Processor"
             name={`${fieldName}.Algae Processor`}
@@ -435,7 +435,7 @@ export function MatchScoutingForm() {
     return (
       <div className="mt-6">
         <h4 className="text-sm font-semibold">Missed</h4>
-        <div className="grid grid-cols-1 gap-x-4 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-3">
           <MissedField label="Coral" name={`${fieldName}.Coral`} />
           <MissedField label="Processor" name={`${fieldName}.Processor`} />
           <MissedField label="Net" name={`${fieldName}.Net`} />
@@ -537,17 +537,14 @@ export function MatchScoutingForm() {
         >
           <div className="block">
             <Tabs
-              className="mb-4 w-full"
-              defaultValue="autonomous"
-              onValueChange={setActiveTab}
-              value={activeTab}
-            >
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="autonomous">Autonomous</TabsTrigger>
-                <TabsTrigger value="teleop">Teleop</TabsTrigger>
-                <TabsTrigger value="misc">Misc</TabsTrigger>
-              </TabsList>
-            </Tabs>
+              tabs={[
+                { id: "autonomous", label: "Autonomous" },
+                { id: "teleop", label: "Teleop" },
+                { id: "misc", label: "Misc" },
+              ]}
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+            />
           </div>
           <div className="mt-4 space-y-4">
             {activeTab === "autonomous" && renderFields(autonomous)}
