@@ -15,18 +15,18 @@ import { DialogDescription, DialogHeader, DialogTitle } from "~/dialog";
 import { Input } from "~/input";
 
 interface SubmissionCardProps {
-  handleFormLoad: (index: number) => void
-  handleSelection: (index: number) => void
-  index: number
-  submission: any
+  handleFormLoad: (index: number) => void;
+  handleSelection: (index: number) => void;
+  index: number;
+  submission: any;
 }
 
 interface SubmissionsListProps {
-  filteredSubmissions: any[]
-  handleFormLoad: (index: number) => void
-  handleSelection: (index: number) => void
-  searchTerm: string
-  setSearchTerm: (term: string) => void
+  filteredSubmissions: any[];
+  handleFormLoad: (index: number) => void;
+  handleSelection: (index: number) => void;
+  searchTerm: string;
+  setSearchTerm: (term: string) => void;
 }
 
 export function SubmissionsList({
@@ -45,9 +45,9 @@ export function SubmissionsList({
         </DialogDescription>
       </DialogHeader>
 
-      <div className="flex items-center gap-4 my-4">
+      <div className="my-4 flex items-center gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute top-2.5 left-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             autoComplete="off"
             className="pl-8"
@@ -58,28 +58,26 @@ export function SubmissionsList({
         </div>
       </div>
 
-      <div className="overflow-y-auto flex-1 -mx-6 px-6">
-        {filteredSubmissions.length > 0
-          ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredSubmissions.map((submission, index) => (
-                  <SubmissionCard
-                    handleFormLoad={handleFormLoad}
-                    handleSelection={handleSelection}
-                    index={index}
-                    key={index}
-                    submission={submission}
-                  />
-                ))}
-              </div>
-            )
-          : (
-              <div className="text-center py-8 text-muted-foreground">
-                {searchTerm
-                  ? "No matching submissions found"
-                  : "No submissions available"}
-              </div>
-            )}
+      <div className="-mx-6 flex-1 overflow-y-auto px-6">
+        {filteredSubmissions.length > 0 ? (
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {filteredSubmissions.map((submission, index) => (
+              <SubmissionCard
+                handleFormLoad={handleFormLoad}
+                handleSelection={handleSelection}
+                index={index}
+                key={index}
+                submission={submission}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="py-8 text-center text-muted-foreground">
+            {searchTerm
+              ? "No matching submissions found"
+              : "No submissions available"}
+          </div>
+        )}
       </div>
     </>
   );
@@ -94,14 +92,10 @@ function SubmissionCard({
   return (
     <Card className="overflow-hidden">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg flex justify-between items-center">
-          Team
-          {" "}
-          {String(submission["Team Number"]).substring(0, 5)}
+        <CardTitle className="flex items-center justify-between text-lg">
+          Team {String(submission["Team Number"]).substring(0, 5)}
           <Badge variant="outline">
-            Match
-            {" "}
-            {String(submission["Qualification Number"]).substring(0, 3)}
+            Match {String(submission["Qualification Number"]).substring(0, 3)}
           </Badge>
         </CardTitle>
         <CardDescription className="truncate">
@@ -114,14 +108,14 @@ function SubmissionCard({
           size="sm"
           variant="outline"
         >
-          Load Form
+          Load
         </Button>
         <Button
           onClick={() => handleSelection(index)}
           size="sm"
           variant="default"
         >
-          View Details
+          View
         </Button>
       </CardFooter>
     </Card>
