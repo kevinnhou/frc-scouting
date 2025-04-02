@@ -14,6 +14,12 @@ export const cycleSchema = z.object({
   "Cycle Times": z.array(z.number().positive().multipleOf(0.01)),
 });
 
+export const missedSchema = z.object({
+  Coral: z.number().int().min(0).optional().default(0),
+  Processor: z.number().int().min(0).optional().default(0),
+  Net: z.number().int().min(0).optional().default(0),
+});
+
 export const cageTime = z.array(z.number().positive().multipleOf(0.01));
 
 export const notes = z.object({

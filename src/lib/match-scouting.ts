@@ -3,6 +3,7 @@ import { z } from "zod";
 import {
   cageTime,
   cycleSchema,
+  missedSchema,
   notes,
   requiredNumber,
   requiredString,
@@ -44,6 +45,11 @@ export const autonomous = [
     type: "cycles",
     schema: cycleSchema,
   },
+  {
+    name: "Autonomous Missed",
+    type: "missed",
+    schema: missedSchema,
+  },
 ];
 
 export const teleop = [
@@ -51,6 +57,11 @@ export const teleop = [
     name: "Teleop Cycles",
     type: "cycles",
     schema: cycleSchema,
+  },
+  {
+    name: "Teleop Missed",
+    type: "missed",
+    schema: missedSchema,
   },
 ];
 
