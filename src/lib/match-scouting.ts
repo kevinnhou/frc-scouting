@@ -94,7 +94,7 @@ export const misc = [
   {
     name: "Scoring Behind Reef",
     type: ["Yes", "No"],
-    schema: z.enum(["Yes", "No"]),
+    schema: z.enum(["Yes", "No"]).optional(),
   },
   {
     name: "Extra Notes",
