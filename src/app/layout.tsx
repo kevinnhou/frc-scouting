@@ -3,10 +3,11 @@ import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import type { Viewport } from "next";
 import { JetBrains_Mono, Poppins } from "next/font/google";
+import { cookies } from "next/headers";
 
-import Header from "@/components/header";
-import Providers from "@/components/providers";
+import Providers from "@/components/providers/providers";
 import { metadata } from "@/config/metadata";
+import { cn } from "@/lib/utils";
 
 export { metadata };
 
@@ -27,11 +28,13 @@ const poppins = Poppins({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const activeTheme = cookieStore.get("active_theme")?.value;
   return (
     <html
       className={jetbrainsMono.className}
@@ -39,9 +42,14 @@ export default function RootLayout({
       lang="en"
       suppressHydrationWarning
     >
-      <body className={`${poppins.variable}`}>
+      <body
+        className={cn(
+          poppins.variable,
+          "antialiased",
+          activeTheme ? `theme-${activeTheme}` : "",
+        )}
+      >
         <Providers>
-          <Header />
           {children}
           <Analytics />
         </Providers>
