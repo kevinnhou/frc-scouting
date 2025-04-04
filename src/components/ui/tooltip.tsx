@@ -1,5 +1,4 @@
-/* eslint-disable ts/ban-ts-comment */
-// @ts-nocheck
+/* eslint-disable react/no-context-provider */
 
 "use client";
 
@@ -13,7 +12,7 @@ function TooltipProvider({
   ...props
 }: React.ComponentProps<typeof TooltipPrimitive.Provider>) {
   return (
-    <TooltipPrimitive
+    <TooltipPrimitive.Provider
       data-slot="tooltip-provider"
       delayDuration={delayDuration}
       {...props}

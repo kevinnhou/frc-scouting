@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks-extra/no-direct-set-state-in-use-effect */
 /* eslint-disable react/no-unstable-context-value */
+
 "use client";
 
 import type { UseEmblaCarouselType } from "embla-carousel-react";
