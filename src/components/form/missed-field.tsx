@@ -1,6 +1,7 @@
 "use client";
 
 import { Plus } from "lucide-react";
+import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -17,9 +18,14 @@ import { Input } from "~/input";
 interface TMissedFieldProps {
   label: string;
   name: string;
+  section?: "autonomous" | "misc" | "teleop";
 }
 
-export function MissedField({ label, name }: TMissedFieldProps) {
+export function MissedField({
+  label,
+  name,
+  section = "misc",
+}: TMissedFieldProps) {
   const { control, setValue, watch } = useFormContext();
   const value = watch(name) || 0;
 
@@ -36,6 +42,26 @@ export function MissedField({ label, name }: TMissedFieldProps) {
       },
     });
   }
+
+  useEffect(() => {
+    if (!window.missedRegistry) {
+      window.missedRegistry = {};
+    }
+
+    if (!window.missedRegistry[section]) {
+      window.missedRegistry[section] = {};
+    }
+
+    const fieldIdentifier = name.split(".").pop() || "";
+
+    window.missedRegistry[section][fieldIdentifier] = increment;
+
+    return () => {
+      if (window.missedRegistry && window.missedRegistry[section]) {
+        delete window.missedRegistry[section][fieldIdentifier];
+      }
+    };
+  }, [name, section, value]);
 
   return (
     <FormField
@@ -75,4 +101,14 @@ export function MissedField({ label, name }: TMissedFieldProps) {
       )}
     />
   );
+}
+
+declare global {
+  interface Window {
+    missedRegistry?: {
+      [section: string]: {
+        [fieldIdentifier: string]: () => void;
+      };
+    };
+  }
 }

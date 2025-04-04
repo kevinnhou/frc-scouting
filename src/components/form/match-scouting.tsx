@@ -207,6 +207,7 @@ export function MatchScoutingForm() {
 
       const stopwatches = window.stopwatchRegistry?.[activeTab] || [];
       const cycleFields = window.cycleRegistry?.[activeTab] || {};
+      const missedFields = window.missedRegistry?.[activeTab] || {};
 
       if (stopwatches.length > 0) {
         switch (e.key) {
@@ -249,6 +250,18 @@ export function MatchScoutingForm() {
       } else if (e.key === "n" || e.key === "N") {
         if (cycleFields["Algae Net"]) {
           cycleFields["Algae Net"]();
+        }
+      } else if ((e.key === "1" || e.key === "!") && e.shiftKey) {
+        if (missedFields.Coral) {
+          missedFields.Coral();
+        }
+      } else if ((e.key === "2" || e.key === "@") && e.shiftKey) {
+        if (missedFields.Processor) {
+          missedFields.Processor();
+        }
+      } else if ((e.key === "3" || e.key === "#") && e.shiftKey) {
+        if (missedFields.Net) {
+          missedFields.Net();
         }
       }
     },
@@ -433,13 +446,34 @@ export function MatchScoutingForm() {
   }
 
   function renderMissedFields(fieldName: string) {
+    let section: "autonomous" | "misc" | "teleop";
+    if (fieldName === "Autonomous Missed") {
+      section = "autonomous";
+    } else if (fieldName === "Teleop Missed") {
+      section = "teleop";
+    } else {
+      section = "misc";
+    }
+
     return (
       <div className="mt-6">
         <h4 className="text-sm font-semibold">Missed</h4>
         <div className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-3">
-          <MissedField label="Coral" name={`${fieldName}.Coral`} />
-          <MissedField label="Processor" name={`${fieldName}.Processor`} />
-          <MissedField label="Net" name={`${fieldName}.Net`} />
+          <MissedField
+            label="Coral"
+            name={`${fieldName}.Coral`}
+            section={section}
+          />
+          <MissedField
+            label="Processor"
+            name={`${fieldName}.Processor`}
+            section={section}
+          />
+          <MissedField
+            label="Net"
+            name={`${fieldName}.Net`}
+            section={section}
+          />
         </div>
       </div>
     );
@@ -616,7 +650,6 @@ export function MatchScoutingForm() {
         sheetID={sheetID}
         spreadsheetID={spreadsheetID}
       />
-
       <ExportData
         exportMethod={exportMethod}
         onOpenChange={setShowExportModal}
@@ -628,7 +661,6 @@ export function MatchScoutingForm() {
         setShowQRModal={setShowQRModal}
         storedSubmissions={storedSubmissions}
       />
-
       <QRCode
         onOpenChange={setShowQRModal}
         open={showQRModal}
@@ -637,7 +669,6 @@ export function MatchScoutingForm() {
         QRFgColour={QRFgColour}
         submissionsCount={storedSubmissions.length}
       />
-
       <ClearData
         onOpenChange={setShowClearDataDialog}
         open={showClearDataDialog}
