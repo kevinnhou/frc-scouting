@@ -6,8 +6,8 @@ export default function OfflineScouting() {
     <>
       <Helper />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-bold text-center">Scouting Form</h1>
-        <p className="text-xl text-center pb-6 tracking-wide font-sans">
+        <h1 className="text-center text-3xl font-bold">Scouting Form</h1>
+        <p className="pb-6 text-center font-sans text-xl tracking-wide">
           Record and Export Data via QR Codes
         </p>
         <MatchScoutingForm />

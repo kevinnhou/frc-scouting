@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks-extra/no-direct-set-state-in-use-effect */
+
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -11,11 +12,11 @@ import { autonomous, misc, teleop } from "@/lib/match-scouting";
 import { Dialog, DialogContent } from "~/dialog";
 
 interface TViewSubmissionsProps {
-  loadForm: (data: any) => void
-  onOpenChange: (open: boolean) => void
-  open: boolean
-  setStoredSubmissions: (submissions: any[]) => void
-  storedSubmissions: any[]
+  loadForm: (data: any) => void;
+  onOpenChange: (open: boolean) => void;
+  open: boolean;
+  setStoredSubmissions: (submissions: any[]) => void;
+  storedSubmissions: any[];
 }
 
 export function getFieldOptions(fieldPath: string) {
@@ -41,8 +42,7 @@ export function getSchema(fieldPath: string) {
 
   const parentField = allFields.find((f) => f.name === parts[0]);
 
-  if (!parentField)
-    return null;
+  if (!parentField) return null;
 
   if (parts[0] === "Autonomous Cycles" || parts[0] === "Teleop Cycles") {
     if (parts[1] === "Cycle Times") {
@@ -58,11 +58,9 @@ export function getSchema(fieldPath: string) {
     if (parts[1] === "tags") {
       return z.array(z.string());
     }
-  }
-  else if (parts[0] === "Cage Time") {
+  } else if (parts[0] === "Cage Time") {
     return z.array(z.number().positive().multipleOf(0.01));
   }
-
 
   return null;
 }
@@ -70,7 +68,7 @@ export function getSchema(fieldPath: string) {
 export function validateValue(
   fieldPath: string,
   value: any,
-): { error?: string, valid: boolean } {
+): { error?: string; valid: boolean } {
   const schema = getSchema(fieldPath);
 
   if (!schema) {
@@ -83,17 +81,14 @@ export function validateValue(
     if (typeof value === "string") {
       if (schema instanceof z.ZodNumber) {
         parsedValue = Number(value);
-      }
-      else if (schema instanceof z.ZodArray) {
+      } else if (schema instanceof z.ZodArray) {
         try {
           parsedValue = JSON.parse(value);
-        }
-        catch (error) {
+        } catch (error) {
           console.error(error);
           return { error: "Invalid array format", valid: false };
         }
-      }
-      else if (schema instanceof z.ZodEnum) {
+      } else if (schema instanceof z.ZodEnum) {
         const enumValues = (schema as any)._def.values;
         if (!enumValues.includes(value)) {
           return {
@@ -101,16 +96,14 @@ export function validateValue(
             valid: false,
           };
         }
-      }
-      else if (schema instanceof z.ZodBoolean) {
+      } else if (schema instanceof z.ZodBoolean) {
         parsedValue = value === "true";
       }
     }
 
     schema.parse(parsedValue);
     return { valid: true };
-  }
-  catch (error) {
+  } catch (error) {
     if (error instanceof z.ZodError) {
       return {
         error: error.errors.map((e) => e.message).join(", "),
@@ -150,9 +143,9 @@ export function ViewSubmissions({
       );
 
       return (
-        teamNumber.includes(searchTerm)
-        || teamName.toLowerCase().includes(searchTerm.toLowerCase())
-        || matchNumber.includes(searchTerm)
+        teamNumber.includes(searchTerm) ||
+        teamName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        matchNumber.includes(searchTerm)
       );
     });
   }, [storedSubmissions, searchTerm]);
@@ -197,40 +190,38 @@ export function ViewSubmissions({
 
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
-        {!detailView
-          ? (
-              <SubmissionsList
-                filteredSubmissions={filteredSubmissions}
-                handleFormLoad={handleFormLoad}
-                handleSelection={handleSelection}
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
-              />
-            )
-          : (
-              <SubmissionDetails
-                editingRow={editingRow}
-                editValue={editValue}
-                filterValue={filterValue}
-                handleBack={handleBack}
-                setEditingRow={setEditingRow}
-                setEditValue={setEditValue}
-                setFilterValue={setFilterValue}
-                setSortColumn={setSortColumn}
-                setSortDirection={setSortDirection}
-                setStoredSubmissions={setStoredSubmissions}
-                setValidationError={setValidationError}
-                setVisibleColumns={setVisibleColumns}
-                sortColumn={sortColumn}
-                sortDirection={sortDirection}
-                storedSubmissions={storedSubmissions}
-                submissionIndex={submissionIndex!}
-                tableData={tableData}
-                validationError={validationError}
-                visibleColumns={visibleColumns}
-              />
-            )}
+      <DialogContent className="flex max-h-[90vh] flex-col overflow-hidden sm:max-w-4xl">
+        {!detailView ? (
+          <SubmissionsList
+            filteredSubmissions={filteredSubmissions}
+            handleFormLoad={handleFormLoad}
+            handleSelection={handleSelection}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+          />
+        ) : (
+          <SubmissionDetails
+            editingRow={editingRow}
+            editValue={editValue}
+            filterValue={filterValue}
+            handleBack={handleBack}
+            setEditingRow={setEditingRow}
+            setEditValue={setEditValue}
+            setFilterValue={setFilterValue}
+            setSortColumn={setSortColumn}
+            setSortDirection={setSortDirection}
+            setStoredSubmissions={setStoredSubmissions}
+            setValidationError={setValidationError}
+            setVisibleColumns={setVisibleColumns}
+            sortColumn={sortColumn}
+            sortDirection={sortDirection}
+            storedSubmissions={storedSubmissions}
+            submissionIndex={submissionIndex!}
+            tableData={tableData}
+            validationError={validationError}
+            visibleColumns={visibleColumns}
+          />
+        )}
       </DialogContent>
     </Dialog>
   );
@@ -240,13 +231,12 @@ function flattenObject(obj: any, prefix = "") {
   return Object.keys(obj).reduce((acc: any, k) => {
     const pre = prefix.length ? `${prefix}.` : "";
     if (
-      typeof obj[k] === "object"
-      && obj[k] !== null
-      && !Array.isArray(obj[k])
+      typeof obj[k] === "object" &&
+      obj[k] !== null &&
+      !Array.isArray(obj[k])
     ) {
       Object.assign(acc, flattenObject(obj[k], pre + k));
-    }
-    else {
+    } else {
       acc[pre + k] = obj[k];
     }
     return acc;
