@@ -1,8 +1,7 @@
 "use client";
 
 import { JetBrains_Mono } from "next/font/google";
-import { ThemeProvider, useTheme } from "next-themes";
-import type { ReactNode } from "react";
+import { useTheme } from "next-themes";
 import { Toaster } from "sonner";
 
 const jetbrainsMono = JetBrains_Mono({
@@ -12,9 +11,9 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800"],
 });
 
-function ToasterProvider() {
+export function ToasterProvider() {
   const { theme } = useTheme() as {
-    theme: "light" | "dark" | "system"
+    theme: "light" | "dark" | "system";
   };
   return (
     <Toaster
@@ -23,19 +22,5 @@ function ToasterProvider() {
       position="bottom-center"
       className={jetbrainsMono.className}
     />
-  );
-}
-
-export default function Providers({ children }: { children: ReactNode }) {
-  return (
-    <ThemeProvider
-      attribute="class"
-      // enableSystem
-      disableTransitionOnChange
-      defaultTheme="light"
-    >
-      <ToasterProvider />
-      {children}
-    </ThemeProvider>
   );
 }
