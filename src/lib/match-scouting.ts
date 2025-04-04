@@ -33,7 +33,7 @@ export const autonomous = [
   {
     name: "Preload",
     type: ["Yes", "No"],
-    schema: z.enum(["Yes", "No"]),
+    schema: z.enum(["Yes", "No"]).optional(),
   },
   {
     name: "Route",
