@@ -12,7 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       lastModified: new Date(),
       priority: 0.8,
-      url: `${site.links.url}/match`,
+      url: `${site.links.url}/scout`,
     },
   ];
 }
