@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks-extra/no-direct-set-state-in-use-effect */
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -532,7 +533,7 @@ export function MatchScoutingForm() {
     <>
       <Form {...form}>
         <form
-          className="space-y-8"
+          className="container mx-auto mt-10 space-y-8 px-4 sm:px-6 lg:px-8"
           onSubmit={form.handleSubmit(onSubmit, onError)}
         >
           <div className="block">
