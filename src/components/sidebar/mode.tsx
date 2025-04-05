@@ -1,22 +1,26 @@
+/* eslint-disable react-hooks-extra/no-direct-set-state-in-use-effect */
+
 "use client";
 
 import { BarChart3, ClipboardEdit } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
-import {
-  SidebarGroup,
-  SidebarGroupContent,
-  useSidebar,
-} from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
+import { SidebarGroup, SidebarGroupContent, useSidebar } from "~/sidebar";
 
 export function ModeSwitcher() {
   const router = useRouter();
   const pathname = usePathname();
   const { state } = useSidebar();
+  const [isClient, setIsClient] = useState(false);
 
-  const isCollapsed = state === "collapsed";
-  const isOffline = pathname?.includes("offline");
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  const isCollapsed = isClient ? state === "collapsed" : false;
+  const isOffline = isClient ? pathname?.includes("offline") : false;
 
   const modes = [
     {
@@ -42,7 +46,9 @@ export function ModeSwitcher() {
       <SidebarGroupContent>
         <div className="flex flex-col gap-2 px-1">
           {modes.map((mode) => {
-            const isActive = pathname?.startsWith(mode.route);
+            const isActive = isClient
+              ? pathname?.startsWith(mode.route)
+              : false;
 
             return (
               <button

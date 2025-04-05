@@ -401,7 +401,7 @@ export function MatchScoutingForm() {
     return (
       <>
         <h4 className="text-sm font-semibold">Coral</h4>
-        <div className="grid grid-cols-2 gap-x-4 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-4 lg:grid-cols-4">
           <CycleField
             label="Level 1"
             name={`${fieldName}.Coral Level 1`}
@@ -587,8 +587,8 @@ export function MatchScoutingForm() {
             {activeTab === "misc" && renderFields(misc)}
             <NotesField label="Extra Notes" name="Extra Notes" />
           </div>
-          <div className="flex place-items-center justify-between pb-8">
-            <div className="flex items-center space-x-4">
+          <div className="flex flex-col justify-between gap-y-4 pb-8 lg:flex-row">
+            <div className="flex w-full items-center justify-between lg:justify-start lg:space-x-4">
               <Button
                 onClick={() => setShowSpreadsheetIDDialog(true)}
                 size="icon"
@@ -618,7 +618,7 @@ export function MatchScoutingForm() {
                 Reset Form
               </Button>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center justify-between space-x-4 lg:justify-end">
               <Button
                 className="flex items-center gap-2"
                 onClick={() => setShowViewSubmissionsDialog(true)}
