@@ -1,9 +1,10 @@
+/* eslint-disable react-web-api/no-leaked-event-listener */
 /* eslint-disable react-hooks-extra/no-direct-set-state-in-use-effect */
 
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircle, Settings, Trash2, Upload } from "lucide-react";
+import { AlertCircle, Trash2 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -19,10 +20,6 @@ import { StopwatchField } from "./stopwatch-field";
 
 import { submit } from "@/app/actions/submit";
 import { ClearData } from "@/components/dialogs/clear-data";
-import { Config } from "@/components/dialogs/config";
-import { ExportData } from "@/components/dialogs/export-data";
-import { QRCode } from "@/components/dialogs/qrcode";
-import { ViewSubmissions } from "@/components/dialogs/view-submissions";
 import { autonomous, misc, teleop } from "@/lib/match-scouting";
 import { Button } from "~/button";
 import { Form } from "~/form";
@@ -106,35 +103,9 @@ export function MatchScoutingForm() {
     };
   }, []);
 
-  const [showSpreadsheetIDDialog, setShowSpreadsheetIDDialog] = useState(false);
-  const [showQRModal, setShowQRModal] = useState(false);
   const [showClearDataDialog, setShowClearDataDialog] = useState(false);
-  const [spreadsheetID, setSpreadsheetID] = useState("");
-  const [sheetID, setSheetID] = useState("");
-  const [teams, setTeams] = useState<Record<string, string>>({});
-  const [JSONInput, setJSONInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [QRCodeData, setQRCodeData] = useState("");
-  const [QRBgColour, setQRBgColour] = useState("#ffffff");
-  const [QRFgColour, setQRFgColour] = useState("#000000");
   const [storedSubmissions, setStoredSubmissions] = useState<FormData[]>([]);
-  const [showExportModal, setShowExportModal] = useState(false);
-  const [selectedSubmissions, setSelectedSubmissions] = useState<number[]>([]);
-  const [exportMethod, setExportMethod] = useState<
-    "clipboard" | "json" | "qrcode"
-  >("qrcode");
-  const [showViewSubmissionsDialog, setShowViewSubmissionsDialog] =
-    useState(false);
-
-  const updateQRColours = useCallback(() => {
-    const root = document.documentElement;
-    const computedStyle = getComputedStyle(root);
-    const bg = computedStyle.getPropertyValue("--background") || "#ffffff";
-    const fg = computedStyle.getPropertyValue("--foreground") || "#000000";
-
-    setQRBgColour(bg.startsWith("hsl") ? bg : "#ffffff");
-    setQRFgColour(fg.startsWith("hsl") ? fg : "#000000");
-  }, []);
 
   const loadSubmissions = useCallback(() => {
     try {
@@ -153,26 +124,6 @@ export function MatchScoutingForm() {
     }
   }, []);
 
-  useEffect(() => {
-    const storedSpreadsheetID = localStorage.getItem("spreadsheetID");
-    if (storedSpreadsheetID) {
-      setSpreadsheetID(storedSpreadsheetID);
-    }
-
-    const storedTeams = localStorage.getItem("teams");
-    if (storedTeams) {
-      setTeams(JSON.parse(storedTeams));
-    }
-
-    const storedSheetID = localStorage.getItem("sheetID");
-    if (storedSheetID) {
-      setSheetID(storedSheetID);
-    }
-
-    loadSubmissions();
-    updateQRColours();
-  }, [updateQRColours, loadSubmissions]);
-
   const form = useForm<FormData>({
     defaultValues: initialFormData,
     mode: "onSubmit",
@@ -180,17 +131,55 @@ export function MatchScoutingForm() {
   });
 
   useEffect(() => {
+    loadSubmissions();
+
+    const handleStorageEvent = (event: StorageEvent) => {
+      if (event.key === "formSubmissions") {
+        loadSubmissions();
+      }
+    };
+
+    const handleLoadFormData = (event: CustomEvent) => {
+      form.reset(event.detail);
+    };
+
+    window.addEventListener("storage", handleStorageEvent);
+    window.addEventListener(
+      "loadFormData",
+      handleLoadFormData as EventListener,
+    );
+
+    return () => {
+      window.removeEventListener("storage", handleStorageEvent);
+      window.removeEventListener(
+        "loadFormData",
+        handleLoadFormData as EventListener,
+      );
+    };
+  }, [loadSubmissions, form]);
+
+  useEffect(() => {
     const teamNumber = form.watch("Team Number");
-    if (teamNumber && teams && Object.keys(teams).length > 0) {
-      const teamName = teams[teamNumber.toString()];
-      if (teamName) {
-        form.setValue("Team Name", teamName);
-        toast.info(`Team found: ${teamName}`);
-      } else {
-        form.setValue("Team Name", "");
+    if (teamNumber) {
+      try {
+        const teamsData = localStorage.getItem("teams");
+        if (teamsData) {
+          const teams = JSON.parse(teamsData);
+          if (teams && Object.keys(teams).length > 0) {
+            const teamName = teams[teamNumber.toString()];
+            if (teamName) {
+              form.setValue("Team Name", teamName);
+              toast.info(`Team found: ${teamName}`);
+            } else {
+              form.setValue("Team Name", "");
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error parsing teams data:", error);
       }
     }
-  }, [form, teams, form.watch("Team Number")]);
+  }, [form, form.watch("Team Number")]);
 
   const [activeTab, setActiveTab] = useState<
     "autonomous" | "misc" | "teleop" | string
@@ -265,7 +254,7 @@ export function MatchScoutingForm() {
         }
       }
     },
-    [activeTab, form],
+    [activeTab],
   );
 
   useEffect(() => {
@@ -281,6 +270,13 @@ export function MatchScoutingForm() {
     localStorage.setItem("formSubmissions", JSON.stringify(updatedSubmissions));
     setStoredSubmissions(updatedSubmissions);
 
+    window.dispatchEvent(
+      new StorageEvent("storage", {
+        key: "formSubmissions",
+        newValue: JSON.stringify(updatedSubmissions),
+      }),
+    );
+
     if (isOffline) {
       toast.success("Data saved locally");
       resetForm();
@@ -292,8 +288,8 @@ export function MatchScoutingForm() {
     toast.promise(
       submit({
         ...data,
-        sheetID,
-        spreadsheetID,
+        sheetID: localStorage.getItem("sheetID") || "",
+        spreadsheetID: localStorage.getItem("spreadsheetID") || "",
       }),
       {
         error: (error) => {
@@ -371,17 +367,6 @@ export function MatchScoutingForm() {
 
   function resetForm() {
     form.reset(initialFormData);
-  }
-
-  function handleExport() {
-    if (storedSubmissions.length === 0) {
-      toast.error("No data to export");
-      return;
-    }
-
-    updateQRColours();
-    setSelectedSubmissions(storedSubmissions.map((_, index) => index));
-    setShowExportModal(true);
   }
 
   function handleClear() {
@@ -556,13 +541,6 @@ export function MatchScoutingForm() {
     );
   }
 
-  const loadForm = useCallback(
-    (data: FormData) => {
-      form.reset(data);
-    },
-    [form],
-  );
-
   return (
     <>
       <Form {...form}>
@@ -590,22 +568,6 @@ export function MatchScoutingForm() {
           <div className="flex flex-col justify-between gap-y-4 pb-8 lg:flex-row">
             <div className="flex w-full items-center justify-between lg:justify-start lg:space-x-4">
               <Button
-                onClick={() => setShowSpreadsheetIDDialog(true)}
-                size="icon"
-                type="button"
-              >
-                <Settings className="h-4 w-4" />
-              </Button>
-              <Button
-                disabled={storedSubmissions.length === 0}
-                onClick={handleExport}
-                size="icon"
-                type="button"
-                variant="outline"
-              >
-                <Upload className="h-4 w-4" />
-              </Button>
-              <Button
                 disabled={storedSubmissions.length === 0}
                 onClick={handleClear}
                 size="icon"
@@ -619,14 +581,6 @@ export function MatchScoutingForm() {
               </Button>
             </div>
             <div className="flex items-center justify-between space-x-4 lg:justify-end">
-              <Button
-                className="flex items-center gap-2"
-                onClick={() => setShowViewSubmissionsDialog(true)}
-                type="button"
-                variant="outline"
-              >
-                <span>Stored submissions: {storedSubmissions.length}</span>
-              </Button>
               <Button disabled={isSubmitting} type="submit">
                 {isSubmitting
                   ? "Submitting..."
@@ -639,48 +593,20 @@ export function MatchScoutingForm() {
         </form>
       </Form>
 
-      <Config
-        JSONInput={JSONInput}
-        onOpenChange={setShowSpreadsheetIDDialog}
-        open={showSpreadsheetIDDialog}
-        setJSONInput={setJSONInput}
-        setSheetID={setSheetID}
-        setSpreadsheetID={setSpreadsheetID}
-        setTeams={setTeams}
-        sheetID={sheetID}
-        spreadsheetID={spreadsheetID}
-      />
-      <ExportData
-        exportMethod={exportMethod}
-        onOpenChange={setShowExportModal}
-        open={showExportModal}
-        selectedSubmissions={selectedSubmissions}
-        setExportMethod={setExportMethod}
-        setQRCodeData={setQRCodeData}
-        setSelectedSubmissions={setSelectedSubmissions}
-        setShowQRModal={setShowQRModal}
-        storedSubmissions={storedSubmissions}
-      />
-      <QRCode
-        onOpenChange={setShowQRModal}
-        open={showQRModal}
-        QRBgColour={QRBgColour}
-        QRCodeData={QRCodeData}
-        QRFgColour={QRFgColour}
-        submissionsCount={storedSubmissions.length}
-      />
       <ClearData
         onOpenChange={setShowClearDataDialog}
         open={showClearDataDialog}
-        setStoredSubmissions={setStoredSubmissions}
+        setStoredSubmissions={(submissions) => {
+          localStorage.setItem("formSubmissions", JSON.stringify(submissions));
+          setStoredSubmissions(submissions);
+          window.dispatchEvent(
+            new StorageEvent("storage", {
+              key: "formSubmissions",
+              newValue: JSON.stringify(submissions),
+            }),
+          );
+        }}
         submissionsCount={storedSubmissions.length}
-      />
-      <ViewSubmissions
-        loadForm={loadForm}
-        onOpenChange={setShowViewSubmissionsDialog}
-        open={showViewSubmissionsDialog}
-        setStoredSubmissions={setStoredSubmissions}
-        storedSubmissions={storedSubmissions}
       />
     </>
   );
