@@ -62,7 +62,6 @@ export async function submit(data: FormData) {
       formData["Teleop Missed" as TFormDataKeys],
     );
 
-    // Type-safe access to Extra Notes
     const extraNotes = formData["Extra Notes" as TFormDataKeys] as {
       tags: string[];
       text: string;
