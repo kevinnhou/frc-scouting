@@ -14,5 +14,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
       url: `${site.links.url}/scout`,
     },
+    {
+      lastModified: new Date(),
+      priority: 0.8,
+      url: `${site.links.url}/dashboard`,
+    },
   ];
 }
