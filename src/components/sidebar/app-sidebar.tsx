@@ -27,9 +27,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  useSidebar,
 } from "~/sidebar";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { state } = useSidebar();
   const [showConfigDialog, setShowConfigDialog] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
   const [showViewSubmissionsDialog, setShowViewSubmissionsDialog] =
@@ -161,7 +163,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarGroup>
           <SidebarGroupLabel>Tools</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="place-items-center">
+            <SidebarMenu
+              className={state === "collapsed" ? "place-items-center" : ""}
+            >
               <SidebarMenuItem>
                 <SidebarMenuButton onClick={() => setShowConfigDialog(true)}>
                   <Settings className="h-4 w-4" />
