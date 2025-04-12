@@ -4,7 +4,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircle, Trash2 } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -19,7 +19,6 @@ import { NotesField } from "./notes-field";
 import { StopwatchField } from "./stopwatch-field";
 
 import { submit } from "@/app/actions/submit";
-import { ClearData } from "@/components/dialogs/clear-data";
 import { autonomous, misc, teleop } from "@/lib/match-scouting";
 import { Button } from "~/button";
 import { Form } from "~/form";
@@ -104,8 +103,8 @@ export function MatchScoutingForm() {
     };
   }, []);
 
-  const [showClearDataDialog, setShowClearDataDialog] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // eslint-disable-next-line ts/no-unused-vars
   const [storedSubmissions, setStoredSubmissions] = useState<FormData[]>([]);
 
   const loadSubmissions = useCallback(() => {
@@ -367,10 +366,6 @@ export function MatchScoutingForm() {
     form.reset(initialFormData);
   }
 
-  function handleClear() {
-    setShowClearDataDialog(true);
-  }
-
   function renderCycleFields(fieldName: string) {
     let section: "autonomous" | "misc" | "teleop";
     if (fieldName === "Autonomous Cycles") {
@@ -540,76 +535,48 @@ export function MatchScoutingForm() {
   }
 
   return (
-    <>
-      <Form {...form}>
-        <form
-          className="container mx-auto mt-10 space-y-8 px-4 sm:px-6 lg:px-8"
-          onSubmit={form.handleSubmit(onSubmit, onError)}
-        >
-          <div className="block">
-            <Tabs
-              tabs={[
-                { id: "autonomous", label: "Autonomous" },
-                { id: "teleop", label: "Teleop" },
-                { id: "misc", label: "Misc" },
-              ]}
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
-            />
+    <Form {...form}>
+      <form
+        className="container mx-auto mt-10 space-y-8 px-4 sm:px-6 lg:px-8"
+        onSubmit={form.handleSubmit(onSubmit, onError)}
+      >
+        <div className="block">
+          <Tabs
+            tabs={[
+              { id: "autonomous", label: "Autonomous" },
+              { id: "teleop", label: "Teleop" },
+              { id: "misc", label: "Misc" },
+            ]}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+          />
+        </div>
+        <div className="mt-4 space-y-4">
+          {activeTab === "autonomous" && renderFields(autonomous)}
+          {activeTab === "teleop" && renderFields(teleop)}
+          {activeTab === "misc" && renderFields(misc)}
+          <NotesField label="Extra Notes" name="Extra Notes" />
+        </div>
+        <div className="flex justify-between gap-y-4 pb-8 lg:flex-row">
+          <div className="flex w-full items-center"></div>
+          <div className="flex items-center justify-between space-x-4">
+            <ReleaseButton
+              onClick={resetForm}
+              type="reset"
+              aria-label="Reset form"
+            >
+              Reset Form
+            </ReleaseButton>
+            <Button disabled={isSubmitting} type="submit">
+              {isSubmitting
+                ? "Submitting..."
+                : isOffline
+                  ? "Save Locally"
+                  : "Submit"}
+            </Button>
           </div>
-          <div className="mt-4 space-y-4">
-            {activeTab === "autonomous" && renderFields(autonomous)}
-            {activeTab === "teleop" && renderFields(teleop)}
-            {activeTab === "misc" && renderFields(misc)}
-            <NotesField label="Extra Notes" name="Extra Notes" />
-          </div>
-          <div className="flex justify-between gap-y-4 pb-8 lg:flex-row">
-            <div className="flex w-full items-center">
-              <Button
-                disabled={storedSubmissions.length === 0}
-                onClick={handleClear}
-                size="icon"
-                type="button"
-                variant="outline"
-              >
-                <Trash2 className="h-4 w-4 text-destructive" />
-              </Button>
-            </div>
-            <div className="flex items-center justify-between space-x-4">
-              <ReleaseButton
-                onClick={resetForm}
-                type="reset"
-                aria-label="Reset form"
-              >
-                Reset Form
-              </ReleaseButton>
-              <Button disabled={isSubmitting} type="submit">
-                {isSubmitting
-                  ? "Submitting..."
-                  : isOffline
-                    ? "Save Locally"
-                    : "Submit"}
-              </Button>
-            </div>
-          </div>
-        </form>
-      </Form>
-
-      <ClearData
-        onOpenChange={setShowClearDataDialog}
-        open={showClearDataDialog}
-        setStoredSubmissions={(submissions) => {
-          localStorage.setItem("formSubmissions", JSON.stringify(submissions));
-          setStoredSubmissions(submissions);
-          window.dispatchEvent(
-            new StorageEvent("storage", {
-              key: "formSubmissions",
-              newValue: JSON.stringify(submissions),
-            }),
-          );
-        }}
-        submissionsCount={storedSubmissions.length}
-      />
-    </>
+        </div>
+      </form>
+    </Form>
   );
 }
