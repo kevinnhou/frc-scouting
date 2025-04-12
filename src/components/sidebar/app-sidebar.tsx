@@ -161,7 +161,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarGroup>
           <SidebarGroupLabel>Tools</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="place-items-center">
               <SidebarMenuItem>
                 <SidebarMenuButton onClick={() => setShowConfigDialog(true)}>
                   <Settings className="h-4 w-4" />
