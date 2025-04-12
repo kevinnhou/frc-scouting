@@ -18,7 +18,10 @@ export const site = {
   ],
   links: {
     repo: "https://github.com/kevinnhou/frc-scouting",
-    url: "https://frc-scouting.vercel.app/",
+    url:
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:3000"
+        : "https://frc-scouting.vercel.app",
   },
   name: {
     default: "rec | First Robotics Scouting Application",
