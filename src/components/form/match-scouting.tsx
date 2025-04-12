@@ -23,6 +23,7 @@ import { ClearData } from "@/components/dialogs/clear-data";
 import { autonomous, misc, teleop } from "@/lib/match-scouting";
 import { Button } from "~/button";
 import { Form } from "~/form";
+import { ReleaseButton } from "~/release-button";
 import { Tabs } from "~/tabs";
 
 const formSchema = z.object({
@@ -133,27 +134,24 @@ export function MatchScoutingForm() {
   useEffect(() => {
     loadSubmissions();
 
-    const handleStorageEvent = (event: StorageEvent) => {
+    function handleStorage(event: StorageEvent) {
       if (event.key === "formSubmissions") {
         loadSubmissions();
       }
-    };
+    }
 
-    const handleLoadFormData = (event: CustomEvent) => {
+    function handleLoadData(event: CustomEvent) {
       form.reset(event.detail);
-    };
+    }
 
-    window.addEventListener("storage", handleStorageEvent);
-    window.addEventListener(
-      "loadFormData",
-      handleLoadFormData as EventListener,
-    );
+    window.addEventListener("storage", handleStorage);
+    window.addEventListener("loadFormData", handleLoadData as EventListener);
 
     return () => {
-      window.removeEventListener("storage", handleStorageEvent);
+      window.removeEventListener("storage", handleStorage);
       window.removeEventListener(
         "loadFormData",
-        handleLoadFormData as EventListener,
+        handleLoadData as EventListener,
       );
     };
   }, [loadSubmissions, form]);
@@ -565,8 +563,8 @@ export function MatchScoutingForm() {
             {activeTab === "misc" && renderFields(misc)}
             <NotesField label="Extra Notes" name="Extra Notes" />
           </div>
-          <div className="flex flex-col justify-between gap-y-4 pb-8 lg:flex-row">
-            <div className="flex w-full items-center justify-between lg:justify-start lg:space-x-4">
+          <div className="flex justify-between gap-y-4 pb-8 lg:flex-row">
+            <div className="flex w-full items-center">
               <Button
                 disabled={storedSubmissions.length === 0}
                 onClick={handleClear}
@@ -576,11 +574,15 @@ export function MatchScoutingForm() {
               >
                 <Trash2 className="h-4 w-4 text-destructive" />
               </Button>
-              <Button onClick={resetForm} type="reset" variant="outline">
-                Reset Form
-              </Button>
             </div>
-            <div className="flex items-center justify-between space-x-4 lg:justify-end">
+            <div className="flex items-center justify-between space-x-4">
+              <ReleaseButton
+                onClick={resetForm}
+                type="reset"
+                aria-label="Reset form"
+              >
+                Reset Form
+              </ReleaseButton>
               <Button disabled={isSubmitting} type="submit">
                 {isSubmitting
                   ? "Submitting..."

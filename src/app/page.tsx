@@ -111,8 +111,8 @@ export default function Home() {
               <ThemedImage
                 alt="FIRST Robotics Competition Banner"
                 className="object-contain"
-                dark="/hero-dark.svg"
-                light="/hero-light.svg"
+                dark="/assets/hero-dark.svg"
+                light="/assets/hero-light.svg"
               />
             </div>
           </div>
