@@ -2,7 +2,7 @@
 
 "use client";
 
-import { Eye, Settings, Upload } from "lucide-react";
+import { Eye, Settings, Trash2, Upload } from "lucide-react";
 import type * as React from "react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { ModeSwitcher } from "./mode";
 import { ThemeSwitcher } from "./theme";
 
+import { ClearData } from "@/components/dialogs/clear-data";
 import { Config } from "@/components/dialogs/config";
 import { ExportData } from "@/components/dialogs/export-data";
 import { QRCode } from "@/components/dialogs/qrcode";
@@ -34,6 +35,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [showViewSubmissionsDialog, setShowViewSubmissionsDialog] =
     useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
+  const [showClearDataDialog, setShowClearDataDialog] = useState(false);
 
   const [spreadsheetID, setSpreadsheetID] = useState("");
   const [sheetID, setSheetID] = useState("");
@@ -117,6 +119,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     );
   }, []);
 
+  const handleClearData = useCallback(() => {
+    setShowClearDataDialog(true);
+  }, []);
+
   useEffect(() => {
     const storedSpreadsheetID = localStorage.getItem("spreadsheetID");
     if (storedSpreadsheetID) {
@@ -180,6 +186,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <span>Export Data</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  onClick={handleClearData}
+                  disabled={storedSubmissions.length === 0}
+                >
+                  <Trash2 className="h-4 w-4 text-destructive" />
+                  <span>Clear Submissions</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -224,6 +239,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         QRBgColour={QRBgColour}
         QRCodeData={QRCodeData}
         QRFgColour={QRFgColour}
+        submissionsCount={storedSubmissions.length}
+      />
+      <ClearData
+        onOpenChange={setShowClearDataDialog}
+        open={showClearDataDialog}
+        setStoredSubmissions={updateStoredSubmissions}
         submissionsCount={storedSubmissions.length}
       />
     </Sidebar>
