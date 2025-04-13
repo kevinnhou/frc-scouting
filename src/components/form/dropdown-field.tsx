@@ -16,10 +16,10 @@ import {
 } from "~/select";
 
 interface TDropdownFieldProps {
-  label: string
-  name: string
-  options: string[]
-  placeholder: string
+  label: string;
+  name: string;
+  options: string[];
+  placeholder: string;
 }
 
 export function DropdownField({

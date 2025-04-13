@@ -18,8 +18,8 @@ import { TagSelector } from "~/tag-selector";
 import { Textarea } from "~/textarea";
 
 interface TNotesFieldProps {
-  label: string
-  name: string
+  label: string;
+  name: string;
 }
 
 const predefinedTags = ["Penalties", "Defense", "Scoring Behind Reef"];
@@ -44,8 +44,7 @@ export function NotesField({ label, name }: TNotesFieldProps) {
     if (penalties === "Yes" && !hasPenalties) {
       newTags.push("Penalties");
       toast.success("Added 'Penalties' tag");
-    }
-    else if (penalties !== "Yes" && hasPenalties) {
+    } else if (penalties !== "Yes" && hasPenalties) {
       const index = newTags.indexOf("Penalties");
       newTags.splice(index, 1);
       toast.error("Removed 'Penalties' tag");
@@ -54,8 +53,7 @@ export function NotesField({ label, name }: TNotesFieldProps) {
     if (defense === "Yes" && !hasDefense) {
       newTags.push("Defense");
       toast.success("Added 'Defense' tag");
-    }
-    else if (defense !== "Yes" && hasDefense) {
+    } else if (defense !== "Yes" && hasDefense) {
       const index = newTags.indexOf("Defense");
       newTags.splice(index, 1);
       toast.error("Removed 'Defense' tag");
@@ -64,8 +62,7 @@ export function NotesField({ label, name }: TNotesFieldProps) {
     if (scoringBehindReef === "Yes" && !hasScoringBehindReef) {
       newTags.push("Scoring Behind Reef");
       toast.success("Added 'Scoring Behind Reef' tag");
-    }
-    else if (scoringBehindReef !== "Yes" && hasScoringBehindReef) {
+    } else if (scoringBehindReef !== "Yes" && hasScoringBehindReef) {
       const index = newTags.indexOf("Scoring Behind Reef");
       newTags.splice(index, 1);
       toast.error("Removed 'Scoring Behind Reef' tag");
