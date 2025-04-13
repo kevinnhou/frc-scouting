@@ -11,15 +11,15 @@ import { Label } from "~/label";
 import { Textarea } from "~/textarea";
 
 interface TConfigProps {
-  JSONInput: string
-  onOpenChange: (open: boolean) => void
-  open: boolean
-  setJSONInput: (input: string) => void
-  setSheetID: (id: string) => void
-  setSpreadsheetID: (id: string) => void
-  setTeams: (teams: Record<string, string>) => void
-  sheetID: string
-  spreadsheetID: string
+  JSONInput: string;
+  onOpenChange: (open: boolean) => void;
+  open: boolean;
+  setJSONInput: (input: string) => void;
+  setSheetID: (id: string) => void;
+  setSpreadsheetID: (id: string) => void;
+  setTeams: (teams: Record<string, string>) => void;
+  sheetID: string;
+  spreadsheetID: string;
 }
 
 export function Config({
@@ -43,8 +43,7 @@ export function Config({
       onOpenChange(false);
       setJSONInput("");
       toast.success("Configuration saved successfully");
-    }
-    catch (error) {
+    } catch (error) {
       console.error(error);
       toast.error("Failed to save configuration");
     }
@@ -56,8 +55,7 @@ export function Config({
       const formattedJSON = JSON.stringify(parsedJSON, null, 2);
       setJSONInput(formattedJSON);
       toast.success("JSON formatted successfully");
-    }
-    catch (error) {
+    } catch (error) {
       console.error(error);
       toast.error("Invalid JSON format");
     }
@@ -136,8 +134,8 @@ function Dropzone({
   accept,
   onDrop,
 }: {
-  accept: { [key: string]: string[] }
-  onDrop: (acceptedFiles: File[]) => void
+  accept: { [key: string]: string[] };
+  onDrop: (acceptedFiles: File[]) => void;
 }) {
   const { getInputProps, getRootProps, isDragActive } = useDropzone({
     accept,
@@ -147,17 +145,15 @@ function Dropzone({
   return (
     <div
       {...getRootProps()}
-      className="col-span-4 border-2 border-dashed border-gray-300 rounded-md p-4 text-center cursor-pointer hover:border-gray-400 transition-colors"
+      className="col-span-4 cursor-pointer rounded-md border-2 border-dashed border-gray-300 p-4 text-center transition-colors hover:border-gray-400"
     >
       <input {...getInputProps()} />
-      <Upload className="h-8 w-8 text-gray-400 place-self-center mt-2 mb-6" />
-      {isDragActive
-        ? (
-            <div className="font-medium">Drop your JSON file here...</div>
-          )
-        : (
-            <div className="font-medium">Upload a JSON file</div>
-          )}
+      <Upload className="mt-2 mb-6 h-8 w-8 place-self-center text-gray-400" />
+      {isDragActive ? (
+        <div className="font-medium">Drop your JSON file here...</div>
+      ) : (
+        <div className="font-medium">Upload a JSON file</div>
+      )}
     </div>
   );
 }

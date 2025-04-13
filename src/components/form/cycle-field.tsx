@@ -9,16 +9,26 @@ import { useFormContext } from "react-hook-form";
 import { toast } from "sonner";
 
 import { Button } from "~/button";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/form";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "~/form";
 import { Input } from "~/input";
 
 interface TCycleFieldProps {
-  label: string
-  name: string
-  section?: "autonomous" | "misc" | "teleop"
+  label: string;
+  name: string;
+  section?: "autonomous" | "misc" | "teleop";
 }
 
-export function CycleField({ label, name, section = "misc" }: TCycleFieldProps) {
+export function CycleField({
+  label,
+  name,
+  section = "misc",
+}: TCycleFieldProps) {
   const { control, setValue, watch } = useFormContext();
   const value = watch(name) || 0;
 
@@ -68,14 +78,23 @@ export function CycleField({ label, name, section = "misc" }: TCycleFieldProps) 
               <Input
                 type="number"
                 {...field}
-                className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                className="[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 onChange={(e) => {
-                  const value = Math.max(0, Number.parseInt(e.target.value) || 0);
+                  const value = Math.max(
+                    0,
+                    Number.parseInt(e.target.value) || 0,
+                  );
                   field.onChange(value);
                 }}
                 value={field.value || 0}
               />
-              <Button className="shrink-0" onClick={increment} size="icon" type="button" variant="outline">
+              <Button
+                className="shrink-0"
+                onClick={increment}
+                size="icon"
+                type="button"
+                variant="outline"
+              >
                 <Plus className="h-4 w-4" />
               </Button>
             </div>
@@ -91,8 +110,8 @@ declare global {
   interface Window {
     cycleRegistry?: {
       [section: string]: {
-        [fieldIdentifier: string]: () => void
-      }
-    }
+        [fieldIdentifier: string]: () => void;
+      };
+    };
   }
 }

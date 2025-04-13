@@ -13,12 +13,12 @@ import {
 } from "~/dialog";
 
 interface TQRCodeProps {
-  onOpenChange: (open: boolean) => void
-  open: boolean
-  QRBgColour: string
-  QRCodeData: string
-  QRFgColour: string
-  submissionsCount: number
+  onOpenChange: (open: boolean) => void;
+  open: boolean;
+  QRBgColour: string;
+  QRCodeData: string;
+  QRFgColour: string;
+  submissionsCount: number;
 }
 
 export function QRCode({
@@ -35,11 +35,7 @@ export function QRCode({
         <DialogHeader>
           <DialogTitle>QR Code</DialogTitle>
           <DialogDescription>
-            Scan to access
-            {" "}
-            {submissionsCount}
-            {" "}
-            form submission
+            Scan to access {submissionsCount} form submission
             {submissionsCount !== 1 ? "s" : ""}
           </DialogDescription>
         </DialogHeader>

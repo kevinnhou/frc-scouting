@@ -14,10 +14,10 @@ import {
 } from "~/alert-dialog";
 
 interface TClearDataProps {
-  onOpenChange: (open: boolean) => void
-  open: boolean
-  setStoredSubmissions: (submissions: any[]) => void
-  submissionsCount: number
+  onOpenChange: (open: boolean) => void;
+  open: boolean;
+  setStoredSubmissions: (submissions: any[]) => void;
+  submissionsCount: number;
 }
 
 export function ClearData({
@@ -38,21 +38,16 @@ export function ClearData({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Clear All Submissions</AlertDialogTitle>
-          <AlertDialogDescription className="tracking-wide font-sans">
-            Are you sure you want to clear all
-            {" "}
-            {submissionsCount}
-            {" "}
-            stored
+          <AlertDialogDescription className="font-sans tracking-wide">
+            Are you sure you want to clear all {submissionsCount} stored
             submission
-            {submissionsCount !== 1 ? "s" : ""}
-            ? This action cannot be undone.
+            {submissionsCount !== 1 ? "s" : ""}? This action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            className="text-destructive-foreground bg-destructive hover:bg-destructive/90"
             onClick={confirmClear}
           >
             Clear All Data

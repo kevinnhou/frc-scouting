@@ -15,10 +15,10 @@ import {
 import { Input } from "~/input";
 
 interface TInputFieldProps {
-  label: string
-  name: string
-  placeholder: string
-  type?: string
+  label: string;
+  name: string;
+  placeholder: string;
+  type?: string;
 }
 
 export function InputField({
@@ -46,8 +46,8 @@ export function InputField({
               {...field}
               autoComplete="off"
               onChange={(e) => {
-                const value
-                  = type === "number"
+                const value =
+                  type === "number"
                     ? Number.parseFloat(e.target.value)
                     : e.target.value;
                 field.onChange(value);

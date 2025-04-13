@@ -19,9 +19,9 @@ import {
 import { Input } from "~/input";
 
 interface TStopwatchFieldProps {
-  label: string
-  name: string
-  section: "autonomous" | "misc" | "teleop"
+  label: string;
+  name: string;
+  section: "autonomous" | "misc" | "teleop";
 }
 
 export function StopwatchField({ label, name, section }: TStopwatchFieldProps) {
@@ -101,8 +101,7 @@ export function StopwatchField({ label, name, section }: TStopwatchFieldProps) {
     if (window.currentStopwatchPromise) {
       window.currentStopwatchPromise.reject(`${label} timer canceled`);
       window.currentStopwatchPromise = undefined;
-    }
-    else {
+    } else {
       toast.warning(`${label} timer reset`);
     }
   }
@@ -117,8 +116,7 @@ export function StopwatchField({ label, name, section }: TStopwatchFieldProps) {
         `${label} time saved: ${newTime.toFixed(2)}s`,
       );
       window.currentStopwatchPromise = undefined;
-    }
-    else {
+    } else {
       toast.success(`${label} time saved: ${newTime.toFixed(2)}s`);
     }
   }
@@ -190,12 +188,11 @@ export function StopwatchField({ label, name, section }: TStopwatchFieldProps) {
                   <div className="flex flex-wrap gap-2">
                     {savedTimes.map((savedTime: number, index: number) => (
                       <div
-                        className="flex items-center bg-secondary text-secondary-foreground rounded-md px-2 py-1"
+                        className="flex items-center rounded-md bg-secondary px-2 py-1 text-secondary-foreground"
                         key={index}
                       >
-                        <span className="text-sm mr-2">
-                          {savedTime.toFixed(2)}
-                          s
+                        <span className="mr-2 text-sm">
+                          {savedTime.toFixed(2)}s
                         </span>
                         <Button
                           className="h-5 w-5 p-0"
@@ -223,18 +220,18 @@ export function StopwatchField({ label, name, section }: TStopwatchFieldProps) {
 declare global {
   interface Window {
     currentStopwatchPromise?: {
-      reject: (reason?: unknown) => void
-      resolve: (value: PromiseLike<React.ReactNode> | React.ReactNode) => void
-    }
+      reject: (reason?: unknown) => void;
+      resolve: (value: PromiseLike<React.ReactNode> | React.ReactNode) => void;
+    };
     stopwatchRegistry?: {
       [section: string]: {
-        hasTime: () => boolean
-        isRunning: () => boolean
-        pause: () => void
-        reset: () => void
-        save: () => void
-        start: () => void
-      }[]
-    }
+        hasTime: () => boolean;
+        isRunning: () => boolean;
+        pause: () => void;
+        reset: () => void;
+        save: () => void;
+        start: () => void;
+      }[];
+    };
   }
 }
