@@ -199,64 +199,68 @@ export function FormConfig({
 
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
+      <DialogContent className="flex max-h-[80vh] flex-col sm:max-w-[425px]">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle>Form Configuration</DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid items-center gap-4">
-            <Label className="w-full">Spreadsheet ID or URL</Label>
-            <Input
-              onChange={(e) => {
-                const { value } = e.target;
-                if (value.includes("docs.google.com/spreadsheets/d/")) {
-                  try {
-                    const matches = value.match(/\/d\/([\w-]+)/);
-                    if (matches && matches[1]) {
-                      setSpreadsheetID(matches[1]);
-                      toast.success("Extracted Spreadsheet ID from URL");
-                    } else {
+
+        <div className="flex-1 overflow-y-auto pr-1">
+          <div className="grid gap-4 py-4">
+            <div className="grid items-center gap-4">
+              <Label className="w-full">Spreadsheet ID or URL</Label>
+              <Input
+                onChange={(e) => {
+                  const { value } = e.target;
+                  if (value.includes("docs.google.com/spreadsheets/d/")) {
+                    try {
+                      const matches = value.match(/\/d\/([\w-]+)/);
+                      if (matches && matches[1]) {
+                        setSpreadsheetID(matches[1]);
+                        toast.success("Extracted Spreadsheet ID from URL");
+                      } else {
+                        setSpreadsheetID(value);
+                      }
+                    } catch (error) {
+                      console.error("Error extracting spreadsheet ID:", error);
                       setSpreadsheetID(value);
                     }
-                  } catch (error) {
-                    console.error("Error extracting spreadsheet ID:", error);
+                  } else {
                     setSpreadsheetID(value);
                   }
-                } else {
-                  setSpreadsheetID(value);
-                }
-              }}
-              placeholder="Enter Spreadsheet ID or Google Sheets URL"
-              value={spreadsheetID}
-            />
-          </div>
-          <div className="grid items-center gap-4">
-            <Label className="w-full">Sheet ID</Label>
-            <Input
-              onChange={(e) => setSheetID(e.target.value)}
-              placeholder="Enter Sheet ID"
-              value={sheetID}
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label className="col-span-4">Teams</Label>
-            <Textarea
-              className="col-span-4"
-              onChange={(e) => setJSONInput(e.target.value)}
-              placeholder='{"teamNumber":"teamName","11146":"Barker Redbacks",...}'
-              rows={4}
-              value={JSONInput}
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label className="col-span-4">Upload JSON</Label>
-            <Dropzone
-              accept={{ "application/json": [".json"] }}
-              onDrop={handleFileDrop}
-            />
+                }}
+                placeholder="Enter Spreadsheet ID or Google Sheets URL"
+                value={spreadsheetID}
+              />
+            </div>
+            <div className="grid items-center gap-4">
+              <Label className="w-full">Sheet ID</Label>
+              <Input
+                onChange={(e) => setSheetID(e.target.value)}
+                placeholder="Enter Sheet ID"
+                value={sheetID}
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="col-span-4">Teams</Label>
+              <Textarea
+                className="col-span-4 max-h-[200px] overflow-y-auto"
+                onChange={(e) => setJSONInput(e.target.value)}
+                placeholder='{"teamNumber":"teamName","11146":"Barker Redbacks",...}'
+                rows={4}
+                value={JSONInput}
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="col-span-4">Upload JSON</Label>
+              <Dropzone
+                accept={{ "application/json": [".json"] }}
+                onDrop={handleFileDrop}
+              />
+            </div>
           </div>
         </div>
-        <div className="flex justify-between">
+
+        <div className="mt-2 flex flex-shrink-0 justify-between border-t pt-4">
           <Button onClick={formatJSON} variant="outline">
             <FileTextIcon className="mr-2 h-4 w-4" />
             Format JSON
