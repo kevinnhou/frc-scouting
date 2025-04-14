@@ -4,20 +4,13 @@
 "use client";
 
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { MapPin } from "lucide-react";
+import { ArrowLeft, MapPin } from "lucide-react";
 import Image from "next/image";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { toast } from "sonner";
 
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "~/alert-dialog";
 import { Button } from "~/button";
 import {
   Dialog,
@@ -46,25 +39,25 @@ const LENGTH = 30;
 // considered mapping, however the coordinates do not align
 
 const coralPositions: ElementPositions[] = [
-  { id: "A", x: 216, y: 282 },
-  { id: "B", x: 216, y: 317 },
-  { id: "C", x: 235, y: 363 },
-  { id: "D", x: 268, y: 383 },
-  { id: "E", x: 335, y: 383 },
-  { id: "F", x: 368.5, y: 363 },
-  { id: "G", x: 385, y: 317 },
-  { id: "H", x: 385, y: 282 },
-  { id: "I", x: 368.5, y: 234 },
-  { id: "J", x: 335, y: 215 },
-  { id: "K", x: 267, y: 215 },
-  { id: "L", x: 234, y: 236 },
+  { id: "A", x: 225.5, y: 295 },
+  { id: "B", x: 225.5, y: 331 },
+  { id: "C", x: 245.5, y: 380 },
+  { id: "D", x: 280.5, y: 401 },
+  { id: "E", x: 350.5, y: 400.5 },
+  { id: "F", x: 385.5, y: 380 },
+  { id: "G", x: 402, y: 331 },
+  { id: "H", x: 402, y: 295 },
+  { id: "I", x: 385, y: 244.5 },
+  { id: "J", x: 350, y: 225 },
+  { id: "K", x: 279, y: 225 },
+  { id: "L", x: 244.5, y: 246 },
 ];
 
 const processorPositions: ElementPositions[] = [
-  { id: "Processor", x: 382, y: 562 },
+  { id: "Processor", x: 398, y: 588 },
 ];
 
-const bargePositions: ElementPositions[] = [{ id: "Barge", x: 540, y: 70 }];
+const bargePositions: ElementPositions[] = [{ id: "Barge", x: 564, y: 74 }];
 
 const fieldPositions: FieldPositions[] = [
   ...coralPositions.map((pos) => ({
@@ -74,19 +67,21 @@ const fieldPositions: FieldPositions[] = [
   })),
   ...processorPositions.map((pos) => ({
     ...pos,
-    width: 110,
-    height: 29,
+    width: 115,
+    height: 30,
   })),
   ...bargePositions.map((pos) => ({
     ...pos,
-    width: 70,
-    height: 235,
+    width: 72,
+    height: 244,
   })),
 ];
 
+type DialogView = "field" | "coral" | "processor" | "barge";
+
 export function FieldDialog() {
   const [open, setOpen] = useState(false);
-  const [coralDialogOpen, setCoralDialogOpen] = useState(false);
+  const [currentView, setCurrentView] = useState<DialogView>("field");
   const [selectedPosition, setSelectedPosition] = useState<string | null>(null);
   const [currentTab, setCurrentTab] = useState<
     "autonomous" | "teleop" | "misc"
@@ -94,6 +89,12 @@ export function FieldDialog() {
   const imageRef = useRef<HTMLDivElement>(null);
   const { setValue, watch } = useFormContext();
   const [imageScale, setImageScale] = useState(1);
+
+  useEffect(() => {
+    if (!open) {
+      setCurrentView("field");
+    }
+  }, [open]);
 
   useEffect(() => {
     function handleTabChange(event: CustomEvent) {
@@ -107,24 +108,36 @@ export function FieldDialog() {
     };
   }, []);
 
+  function calculateScale() {
+    if (imageRef.current) {
+      const containerWidth = imageRef.current.clientWidth;
+      const originalWidth = 1200;
+      setImageScale(containerWidth / originalWidth);
+    }
+  }
+
   useEffect(() => {
-    if (open && imageRef.current) {
-      const calculateScale = () => {
-        if (imageRef.current) {
-          const containerWidth = imageRef.current.clientWidth;
-          const originalWidth = 1200;
-          setImageScale(containerWidth / originalWidth);
-        }
-      };
+    if (currentView === "field" && open) {
+      const timer = setTimeout(() => {
+        calculateScale();
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+  }, [currentView, open]);
 
-      calculateScale();
+  useEffect(() => {
+    if (open && currentView === "field") {
       window.addEventListener("resize", calculateScale);
-
       return () => {
         window.removeEventListener("resize", calculateScale);
       };
     }
-  }, [open]);
+  }, [open, currentView]);
+
+  function handleGoBack() {
+    setCurrentView("field");
+    setTimeout(calculateScale, 0);
+  }
 
   function handleClick(e: React.MouseEvent<HTMLDivElement>) {
     if (!imageRef.current) return;
@@ -146,10 +159,67 @@ export function FieldDialog() {
         y <= scaledY + scaledHeight
       ) {
         setSelectedPosition(position.id);
-        setCoralDialogOpen(true);
+
+        if (position.id === "Processor") {
+          setCurrentView("processor");
+        } else if (position.id === "Barge") {
+          setCurrentView("barge");
+        } else {
+          setCurrentView("coral");
+        }
         return;
       }
     }
+  }
+
+  function handleProcessorSuccess() {
+    const cycleFieldName =
+      currentTab === "autonomous" ? "Autonomous Cycles" : "Teleop Cycles";
+    const currentValue = watch(`${cycleFieldName}.Algae Processor`) || 0;
+    setValue(`${cycleFieldName}.Algae Processor`, currentValue + 1);
+    toast.success(
+      `Processor Scored during ${currentTab[0].toUpperCase()}${currentTab.slice(1)}`,
+    );
+    handleGoBack();
+  }
+
+  function handleProcessorMissed() {
+    const missedFieldName =
+      currentTab === "autonomous" ? "Autonomous Missed" : "Teleop Missed";
+    const currentValue = watch(`${missedFieldName}.Processor`) || 0;
+    setValue(`${missedFieldName}.Processor`, currentValue + 1);
+    toast.error(
+      `Missed Processor incremented during ${currentTab[0].toUpperCase()}${currentTab.slice(1)}`,
+    );
+    handleGoBack();
+  }
+
+  function handleNetSuccess() {
+    const cycleFieldName =
+      currentTab === "autonomous" ? "Autonomous Cycles" : "Teleop Cycles";
+    const currentValue = watch(`${cycleFieldName}.Algae Net`) || 0;
+    setValue(`${cycleFieldName}.Algae Net`, currentValue + 1);
+    toast.success(
+      `Net Scored during ${currentTab[0].toUpperCase()}${currentTab.slice(1)}`,
+    );
+    handleGoBack();
+  }
+
+  function handleNetMissed() {
+    const missedFieldName =
+      currentTab === "autonomous" ? "Autonomous Missed" : "Teleop Missed";
+    const currentValue = watch(`${missedFieldName}.Net`) || 0;
+    setValue(`${missedFieldName}.Net`, currentValue + 1);
+    toast.error(
+      `Missed Net incremented during ${currentTab[0].toUpperCase()}${currentTab.slice(1)}`,
+    );
+    handleGoBack();
+  }
+
+  function handleCageSelection(level: "Deep" | "Shallow" | "None") {
+    setValue("Cage Level", level);
+    toast.success(`Cage Level set to ${level}`);
+    handleGoBack();
   }
 
   function handleCoralSelection(level: "1" | "2" | "3" | "4" | "missed") {
@@ -174,19 +244,128 @@ export function FieldDialog() {
       );
     }
 
-    setCoralDialogOpen(false);
+    handleGoBack();
   }
 
-  return (
-    <>
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          <Button variant="outline" className="gap-2">
-            <MapPin className="h-4 w-4" />
-            Field View
+  function getViewConfig() {
+    switch (currentView) {
+      case "coral":
+        return {
+          title: `Position ${selectedPosition} - Coral Action`,
+          buttons: [
+            ...[1, 2, 3, 4].map((level) => ({
+              label: `Level ${level}`,
+              onClick: () =>
+                handleCoralSelection(level.toString() as "1" | "2" | "3" | "4"),
+              className: "h-20 flex-1 basis-[calc(50%-0.5rem)] text-lg",
+            })),
+            {
+              label: "Missed",
+              onClick: () => handleCoralSelection("missed"),
+              className: "h-20 w-full bg-destructive text-lg text-white",
+              fullWidth: true,
+            },
+          ],
+        };
+
+      case "processor":
+        return {
+          title: "Processor Actions",
+          buttons: [
+            {
+              label: "Processor",
+              onClick: handleProcessorSuccess,
+              className: "h-20 w-full text-lg",
+              fullWidth: true,
+            },
+            {
+              label: "Missed Processor",
+              onClick: handleProcessorMissed,
+              className: "h-20 w-full bg-destructive text-lg text-white",
+              fullWidth: true,
+            },
+          ],
+        };
+
+      case "barge":
+        return {
+          title: "Barge Actions",
+          buttons: [
+            {
+              label: "Net",
+              onClick: handleNetSuccess,
+              className: "h-20 flex-1 basis-[calc(50%-0.5rem)] text-lg",
+            },
+            {
+              label: "Missed Net",
+              onClick: handleNetMissed,
+              className:
+                "h-20 flex-1 basis-[calc(50%-0.5rem)] bg-destructive text-lg text-white",
+            },
+            {
+              label: "Cage: Deep",
+              onClick: () => handleCageSelection("Deep"),
+              className:
+                "h-20 flex-1 basis-[calc(50%-0.5rem)] bg-blue-100 text-lg",
+            },
+            {
+              label: "Cage: Shallow",
+              onClick: () => handleCageSelection("Shallow"),
+              className:
+                "h-20 flex-1 basis-[calc(50%-0.5rem)] bg-blue-50 text-lg",
+            },
+            {
+              label: "Cage: None",
+              onClick: () => handleCageSelection("None"),
+              className: "h-20 flex-1 basis-[calc(50%-0.5rem)] text-lg",
+            },
+          ],
+        };
+
+      default:
+        return {
+          title: "Field Map",
+          buttons: [],
+        };
+    }
+  }
+
+  function renderActionView() {
+    const { title, buttons } = getViewConfig();
+
+    return (
+      <>
+        <DialogHeader className="flex flex-row items-center">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleGoBack}
+            className="mr-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
           </Button>
-        </DialogTrigger>
-        <DialogContent className="min-w-[1200px]">
+          <DialogTitle>{title}</DialogTitle>
+        </DialogHeader>
+        <div className="flex flex-wrap gap-4 py-4">
+          {buttons.map((button, index) => (
+            <Button
+              key={index}
+              variant="outline"
+              className={button.className}
+              onClick={button.onClick}
+            >
+              {button.label}
+            </Button>
+          ))}
+        </div>
+      </>
+    );
+  }
+
+  function renderDialogContent() {
+    if (currentView === "field") {
+      return (
+        <>
           <DialogHeader>
             <VisuallyHidden>
               <DialogTitle>Field Map</DialogTitle>
@@ -208,7 +387,7 @@ export function FieldDialog() {
             {fieldPositions.map((position, index) => (
               <div
                 key={index}
-                className="absolute border-3 border-black"
+                className="absolute border-3 border-transparent"
                 style={{
                   left: `${position.x * imageScale}px`,
                   top: `${position.y * imageScale}px`,
@@ -219,42 +398,35 @@ export function FieldDialog() {
             ))}
           </div>
           <div className="mt-2 text-center text-sm text-muted-foreground">
-            Click on any labeled positions to record scored coral
+            Record game elements by clicking on the corresponding locations on
+            the field image. <br /> Note: Always use the blue alliance's
+            perspective, regardless of which alliance you are scouting.
           </div>
-        </DialogContent>
-      </Dialog>
+        </>
+      );
+    }
 
-      <AlertDialog open={coralDialogOpen} onOpenChange={setCoralDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Position {selectedPosition}</AlertDialogTitle>
-          </AlertDialogHeader>
-          <AlertDialogDescription>Select Coral Action</AlertDialogDescription>
-          <div className="flex flex-wrap gap-4 py-4">
-            {[1, 2, 3, 4].map((level) => (
-              <Button
-                key={level}
-                variant="outline"
-                className="h-20 flex-1 basis-[calc(50%-0.5rem)] text-lg"
-                onClick={() =>
-                  handleCoralSelection(
-                    level.toString() as "1" | "2" | "3" | "4",
-                  )
-                }
-              >
-                Level {level}
-              </Button>
-            ))}
-            <Button
-              variant="outline"
-              className="h-20 w-full bg-destructive text-lg text-white"
-              onClick={() => handleCoralSelection("missed")}
-            >
-              Missed
-            </Button>
-          </div>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
+    return renderActionView();
+  }
+
+  function handleOpenChange(newOpen: boolean) {
+    setOpen(newOpen);
+    if (newOpen) {
+      setTimeout(calculateScale, 0);
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogTrigger asChild>
+        <Button variant="outline" className="gap-2">
+          <MapPin className="h-4 w-4" />
+          Field View
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="min-w-[1200px]">
+        {renderDialogContent()}
+      </DialogContent>
+    </Dialog>
   );
 }
