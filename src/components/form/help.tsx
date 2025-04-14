@@ -3,15 +3,15 @@
 import { HelpCircle, Settings } from "lucide-react";
 import { useState } from "react";
 
-import { Button } from "~/button";
+import { Button } from "~/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "~/dialog";
-import { Tabs } from "~/tabs";
+} from "~/ui/dialog";
+import { Tabs } from "~/ui/tabs";
 
 interface Shortcut {
   description: string;

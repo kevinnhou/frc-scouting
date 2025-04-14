@@ -1,5 +1,5 @@
-import { Helper } from "@/components/form/help";
-import { MatchScoutingForm } from "@/components/form/match-scouting";
+import { Helper } from "~/form/help";
+import { MatchScoutingForm } from "~/form/match-scouting";
 
 export default function MatchScouting() {
   return (

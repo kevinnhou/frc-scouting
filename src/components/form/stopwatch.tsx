@@ -8,23 +8,23 @@ import { useEffect, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { toast } from "sonner";
 
-import { Button } from "~/button";
+import { Button } from "~/ui/button";
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "~/form";
-import { Input } from "~/input";
+} from "~/ui/form";
+import { Input } from "~/ui/input";
 
-interface TStopwatchFieldProps {
+interface StopwatchFieldProps {
   label: string;
   name: string;
   section: "autonomous" | "misc" | "teleop";
 }
 
-export function StopwatchField({ label, name, section }: TStopwatchFieldProps) {
+export function StopwatchField({ label, name, section }: StopwatchFieldProps) {
   const { control, setValue, watch } = useFormContext();
   const [time, setTime] = useState<number>(0);
   const [isRunning, setIsRunning] = useState<boolean>(false);

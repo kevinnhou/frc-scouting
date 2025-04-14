@@ -10,11 +10,11 @@ import { toast } from "sonner";
 import { ModeSwitcher } from "./mode";
 import { ThemeSwitcher } from "./theme";
 
-import { ClearData } from "@/components/dialogs/clear-data";
-import { Config } from "@/components/dialogs/config";
-import { ExportData } from "@/components/dialogs/export-data";
-import { QRCode } from "@/components/dialogs/qrcode";
-import { ViewSubmissions } from "@/components/dialogs/view-submissions";
+import { ClearData } from "~/dialogs/clear-data";
+import { ExportData } from "~/dialogs/export-data";
+import { FormConfig } from "~/dialogs/form-config";
+import { QRCode } from "~/dialogs/qrcode";
+import { ViewSubmissions } from "~/dialogs/submissions-view";
 import {
   Sidebar,
   SidebarContent,
@@ -28,7 +28,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
   useSidebar,
-} from "~/sidebar";
+} from "~/ui/sidebar";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { state } = useSidebar();
@@ -208,7 +208,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarFooter>
       <SidebarRail />
 
-      <Config
+      <FormConfig
         JSONInput={JSONInput}
         onOpenChange={setShowConfigDialog}
         open={showConfigDialog}

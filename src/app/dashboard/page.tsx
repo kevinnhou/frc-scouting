@@ -1,4 +1,4 @@
-import { TextHover } from "~/text-hover";
+import { TextHover } from "~/ui/text-hover";
 
 export default function Dashboard() {
   return (

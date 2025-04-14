@@ -8,7 +8,7 @@
     "moduleResolution": "bundler",
     "paths": {
       "@/*": ["./src/*"],
-      "~/*": ["./src/components/ui/*"]
+      "~/*": ["./src/components/*"]
     },
     "resolveJsonModule": true,
     "types": ["@serwist/next/typings"],

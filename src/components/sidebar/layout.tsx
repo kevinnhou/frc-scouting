@@ -5,7 +5,7 @@ import type React from "react";
 
 import { AppSidebar } from "./app-sidebar";
 
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "~/sidebar";
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "~/ui/sidebar";
 
 export function SidebarLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

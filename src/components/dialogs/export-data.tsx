@@ -3,7 +3,7 @@
 import { Download, FileTextIcon, QrCode } from "lucide-react";
 import { toast } from "sonner";
 
-import { Button } from "~/button";
+import { Button } from "~/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -11,10 +11,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "~/dialog";
-import { Label } from "~/label";
+} from "~/ui/dialog";
+import { Label } from "~/ui/label";
 
-interface TExportDataProps {
+interface ExportDataProps {
   exportMethod: "clipboard" | "json" | "qrcode";
   onOpenChange: (open: boolean) => void;
   open: boolean;
@@ -38,7 +38,7 @@ export function ExportData({
   setSelectedSubmissions,
   setShowQRModal,
   storedSubmissions,
-}: TExportDataProps) {
+}: ExportDataProps) {
   function handleMethodChange(method: "clipboard" | "json" | "qrcode") {
     setExportMethod(method);
   }

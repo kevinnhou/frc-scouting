@@ -11,10 +11,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "~/form";
-import { Input } from "~/input";
+} from "~/ui/form";
+import { Input } from "~/ui/input";
 
-interface TInputFieldProps {
+interface InputFieldProps {
   label: string;
   name: string;
   placeholder: string;
@@ -26,7 +26,7 @@ export function InputField({
   name,
   placeholder,
   type = "text",
-}: TInputFieldProps) {
+}: InputFieldProps) {
   const { control } = useFormContext();
 
   return (

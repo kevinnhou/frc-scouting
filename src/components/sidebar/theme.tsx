@@ -3,17 +3,17 @@
 import { CheckIcon, MoonIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 
-import { useThemeConfig } from "@/components/providers/active-theme";
-import { Button } from "@/components/ui/button";
+import { baseColours } from "@/lib/colours";
+import { cn } from "@/lib/utils";
+import { useThemeConfig } from "~/providers/active-theme";
+import { Button } from "~/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useSidebar } from "@/components/ui/sidebar";
-import { baseColours } from "@/lib/colours";
-import { cn } from "@/lib/utils";
+} from "~/ui/dropdown-menu";
+import { useSidebar } from "~/ui/sidebar";
 
 export function ThemeSwitcher() {
   const { activeTheme, setActiveTheme } = useThemeConfig();

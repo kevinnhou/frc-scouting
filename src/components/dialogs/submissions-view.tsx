@@ -6,12 +6,12 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { SubmissionDetails } from "@/components/dialogs/submission-details";
-import { SubmissionsList } from "@/components/dialogs/submission-lists";
 import { autonomous, misc, teleop } from "@/lib/match-scouting";
-import { Dialog, DialogContent } from "~/dialog";
+import { SubmissionDetails } from "~/dialogs/submission-details";
+import { SubmissionsList } from "~/dialogs/submission-lists";
+import { Dialog, DialogContent } from "~/ui/dialog";
 
-interface TViewSubmissionsProps {
+interface ViewSubmissionsProps {
   loadForm: (data: any) => void;
   onOpenChange: (open: boolean) => void;
   open: boolean;
@@ -120,7 +120,7 @@ export function ViewSubmissions({
   open,
   setStoredSubmissions,
   storedSubmissions,
-}: TViewSubmissionsProps) {
+}: ViewSubmissionsProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [submissionIndex, setSubmissionIndex] = useState<null | number>(null);
   const [detailView, setDetailView] = useState(false);

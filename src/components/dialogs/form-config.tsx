@@ -4,13 +4,13 @@ import { FileTextIcon, Upload } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 
-import { Button } from "~/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "~/dialog";
-import { Input } from "~/input";
-import { Label } from "~/label";
-import { Textarea } from "~/textarea";
+import { Button } from "~/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "~/ui/dialog";
+import { Input } from "~/ui/input";
+import { Label } from "~/ui/label";
+import { Textarea } from "~/ui/textarea";
 
-interface TConfigProps {
+interface FormConfigProps {
   JSONInput: string;
   onOpenChange: (open: boolean) => void;
   open: boolean;
@@ -22,7 +22,7 @@ interface TConfigProps {
   spreadsheetID: string;
 }
 
-export function Config({
+export function FormConfig({
   JSONInput,
   onOpenChange,
   open,
@@ -32,7 +32,7 @@ export function Config({
   setTeams,
   sheetID,
   spreadsheetID,
-}: TConfigProps) {
+}: FormConfigProps) {
   function handleConfigSave() {
     try {
       localStorage.setItem("spreadsheetID", spreadsheetID);

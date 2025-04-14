@@ -11,20 +11,20 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { CycleField } from "./cycle-field";
-import { DropdownField } from "./dropdown-field";
-import { InputField } from "./input-field";
-import { MissedField } from "./missed-field";
-import { NotesField } from "./notes-field";
-import { StopwatchField } from "./stopwatch-field";
+import { CycleField } from "./cycle";
+import { DropdownField } from "./dropdown";
+import { InputField } from "./input";
+import { MissedField } from "./missed";
+import { NotesField } from "./notes";
+import { StopwatchField } from "./stopwatch";
 
 import { submit } from "@/app/actions/submit";
-import { FieldDialog } from "@/components/dialogs/field";
 import { autonomous, misc, teleop } from "@/lib/match-scouting";
-import { Button } from "~/button";
-import { Form } from "~/form";
-import { ReleaseButton } from "~/release-button";
-import { Tabs } from "~/tabs";
+import { FieldDialog } from "~/dialogs/field-view";
+import { Button } from "~/ui/button";
+import { Form } from "~/ui/form";
+import { ReleaseButton } from "~/ui/release-button";
+import { Tabs } from "~/ui/tabs";
 
 const formSchema = z.object({
   ...Object.fromEntries(autonomous.map((field) => [field.name, field.schema])),
@@ -34,7 +34,7 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-interface TField {
+interface Field {
   name: string;
   schema: z.ZodTypeAny;
   type: string | string[];
@@ -463,7 +463,7 @@ export function MatchScoutingForm() {
     );
   }
 
-  function renderField(field: TField) {
+  function renderField(field: Field) {
     switch (field.type) {
       case "cycles":
         return renderCycleFields(field.name);
@@ -506,7 +506,7 @@ export function MatchScoutingForm() {
     }
   }
 
-  function renderFields(fields: TField[]) {
+  function renderFields(fields: Field[]) {
     const regularFields = fields.filter(
       (field) => field.type !== "cycles" && field.type !== "missed",
     );

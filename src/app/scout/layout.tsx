@@ -1,6 +1,6 @@
 import type React from "react";
 
-import { SidebarLayout } from "@/components/sidebar/layout";
+import { SidebarLayout } from "~/sidebar/layout";
 
 export default function ScoutLayout({
   children,
