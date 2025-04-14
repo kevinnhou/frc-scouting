@@ -28,6 +28,34 @@ interface FormConfigProps {
   spreadsheetID: string;
 }
 
+function Dropzone({
+  accept,
+  onDrop,
+}: {
+  accept: { [key: string]: string[] };
+  onDrop: (acceptedFiles: File[]) => void;
+}) {
+  const { getInputProps, getRootProps, isDragActive } = useDropzone({
+    accept,
+    onDrop,
+  });
+
+  return (
+    <div
+      {...getRootProps()}
+      className="col-span-4 cursor-pointer rounded-md border-2 border-dashed border-gray-300 p-4 text-center transition-colors hover:border-gray-400"
+    >
+      <input {...getInputProps()} />
+      <Upload className="mt-2 mb-6 h-8 w-8 place-self-center text-gray-400" />
+      {isDragActive ? (
+        <div className="font-medium">Drop your JSON file here...</div>
+      ) : (
+        <div className="font-medium">Upload a JSON file</div>
+      )}
+    </div>
+  );
+}
+
 export function FormConfig({
   JSONInput,
   onOpenChange,
@@ -237,33 +265,5 @@ export function FormConfig({
         </div>
       </DialogContent>
     </Dialog>
-  );
-}
-
-function Dropzone({
-  accept,
-  onDrop,
-}: {
-  accept: { [key: string]: string[] };
-  onDrop: (acceptedFiles: File[]) => void;
-}) {
-  const { getInputProps, getRootProps, isDragActive } = useDropzone({
-    accept,
-    onDrop,
-  });
-
-  return (
-    <div
-      {...getRootProps()}
-      className="col-span-4 cursor-pointer rounded-md border-2 border-dashed border-gray-300 p-4 text-center transition-colors hover:border-gray-400"
-    >
-      <input {...getInputProps()} />
-      <Upload className="mt-2 mb-6 h-8 w-8 place-self-center text-gray-400" />
-      {isDragActive ? (
-        <div className="font-medium">Drop your JSON file here...</div>
-      ) : (
-        <div className="font-medium">Upload a JSON file</div>
-      )}
-    </div>
   );
 }
