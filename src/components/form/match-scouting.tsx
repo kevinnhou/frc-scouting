@@ -1,5 +1,5 @@
-/* eslint-disable react-web-api/no-leaked-event-listener */
 /* eslint-disable react-hooks-extra/no-direct-set-state-in-use-effect */
+/* eslint-disable react-web-api/no-leaked-event-listener */
 
 "use client";
 
@@ -19,6 +19,7 @@ import { NotesField } from "./notes-field";
 import { StopwatchField } from "./stopwatch-field";
 
 import { submit } from "@/app/actions/submit";
+import { FieldDialog } from "@/components/dialogs/field";
 import { autonomous, misc, teleop } from "@/lib/match-scouting";
 import { Button } from "~/button";
 import { Form } from "~/form";
@@ -181,6 +182,11 @@ export function MatchScoutingForm() {
   const [activeTab, setActiveTab] = useState<
     "autonomous" | "misc" | "teleop" | string
   >("autonomous");
+
+  useEffect(() => {
+    const event = new CustomEvent("tabChange", { detail: activeTab });
+    window.dispatchEvent(event);
+  }, [activeTab]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -557,8 +563,10 @@ export function MatchScoutingForm() {
           {activeTab === "misc" && renderFields(misc)}
           <NotesField label="Extra Notes" name="Extra Notes" />
         </div>
-        <div className="flex justify-between gap-y-4 pb-8 lg:flex-row">
-          <div className="flex w-full items-center"></div>
+        <div className="flex justify-end gap-y-4 pb-8 xl:justify-between">
+          <div className="hidden w-full items-center xl:flex">
+            <FieldDialog />
+          </div>
           <div className="flex items-center justify-between space-x-4">
             <ReleaseButton
               onClick={resetForm}
