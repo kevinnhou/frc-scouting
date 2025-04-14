@@ -6,16 +6,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "~/form";
+} from "~/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "~/select";
+} from "~/ui/select";
 
-interface TDropdownFieldProps {
+interface DropdownFieldProps {
   label: string;
   name: string;
   options: string[];
@@ -27,7 +27,7 @@ export function DropdownField({
   name,
   options,
   placeholder,
-}: TDropdownFieldProps) {
+}: DropdownFieldProps) {
   const { control } = useFormContext();
 
   return (

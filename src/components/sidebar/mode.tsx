@@ -7,7 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { cn } from "@/lib/utils";
-import { SidebarGroup, SidebarGroupContent, useSidebar } from "~/sidebar";
+import { SidebarGroup, SidebarGroupContent, useSidebar } from "~/ui/sidebar";
 
 export function ModeSwitcher() {
   const router = useRouter();

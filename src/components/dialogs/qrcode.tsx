@@ -2,7 +2,7 @@
 
 import { QRCodeSVG } from "qrcode.react";
 
-import { Button } from "~/button";
+import { Button } from "~/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -10,9 +10,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "~/dialog";
+} from "~/ui/dialog";
 
-interface TQRCodeProps {
+interface QRCodeProps {
   onOpenChange: (open: boolean) => void;
   open: boolean;
   QRBgColour: string;
@@ -28,7 +28,7 @@ export function QRCode({
   QRCodeData,
   QRFgColour,
   submissionsCount,
-}: TQRCodeProps) {
+}: QRCodeProps) {
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent className="sm:max-w-md">

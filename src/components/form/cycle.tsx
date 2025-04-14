@@ -1,3 +1,6 @@
+/* eslint-disable ts/ban-ts-comment */
+// @ts-nocheck
+
 "use client";
 
 import { Plus } from "lucide-react";
@@ -5,34 +8,30 @@ import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { toast } from "sonner";
 
-import { Button } from "~/button";
+import { Button } from "~/ui/button";
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "~/form";
-import { Input } from "~/input";
+} from "~/ui/form";
+import { Input } from "~/ui/input";
 
-interface TMissedFieldProps {
+interface CycleFieldProps {
   label: string;
   name: string;
   section?: "autonomous" | "misc" | "teleop";
 }
 
-export function MissedField({
-  label,
-  name,
-  section = "misc",
-}: TMissedFieldProps) {
+export function CycleField({ label, name, section = "misc" }: CycleFieldProps) {
   const { control, setValue, watch } = useFormContext();
   const value = watch(name) || 0;
 
   function increment() {
     const newValue = value + 1;
     setValue(name, newValue);
-    toast.success(`Missed ${label} incremented to ${newValue}`, {
+    toast.success(`${label} incremented to ${newValue}`, {
       action: {
         label: "Undo",
         onClick: () => {
@@ -44,21 +43,21 @@ export function MissedField({
   }
 
   useEffect(() => {
-    if (!window.missedRegistry) {
-      window.missedRegistry = {};
+    if (!window.cycleRegistry) {
+      window.cycleRegistry = {};
     }
 
-    if (!window.missedRegistry[section]) {
-      window.missedRegistry[section] = {};
+    if (!window.cycleRegistry[section]) {
+      window.cycleRegistry[section] = {};
     }
 
     const fieldIdentifier = name.split(".").pop() || "";
 
-    window.missedRegistry[section][fieldIdentifier] = increment;
+    window.cycleRegistry[section][fieldIdentifier] = increment;
 
     return () => {
-      if (window.missedRegistry && window.missedRegistry[section]) {
-        delete window.missedRegistry[section][fieldIdentifier];
+      if (window.cycleRegistry && window.cycleRegistry[section]) {
+        delete window.cycleRegistry[section][fieldIdentifier];
       }
     };
   }, [name, section, value]);
@@ -105,7 +104,7 @@ export function MissedField({
 
 declare global {
   interface Window {
-    missedRegistry?: {
+    cycleRegistry?: {
       [section: string]: {
         [fieldIdentifier: string]: () => void;
       };

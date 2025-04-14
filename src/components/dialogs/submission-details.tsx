@@ -13,27 +13,24 @@ import {
 import { useMemo } from "react";
 import { toast } from "sonner";
 
-import {
-  getFieldOptions,
-  validateValue,
-} from "@/components/dialogs/view-submissions";
-import { Alert, AlertDescription, AlertTitle } from "~/alert";
-import { Button } from "~/button";
-import { DialogDescription, DialogHeader, DialogTitle } from "~/dialog";
+import { getFieldOptions, validateValue } from "~/dialogs/submissions-view";
+import { Alert, AlertDescription, AlertTitle } from "~/ui/alert";
+import { Button } from "~/ui/button";
+import { DialogDescription, DialogHeader, DialogTitle } from "~/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "~/dropdown-menu";
-import { Input } from "~/input";
+} from "~/ui/dropdown-menu";
+import { Input } from "~/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "~/select";
+} from "~/ui/select";
 import {
   Table,
   TableBody,
@@ -41,7 +38,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "~/table";
+} from "~/ui/table";
 
 interface ActionCellProps {
   editingRow: null | string;

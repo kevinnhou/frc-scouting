@@ -13,18 +13,18 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "~/form";
-import { TagSelector } from "~/tag-selector";
-import { Textarea } from "~/textarea";
+} from "~/ui/form";
+import { TagSelector } from "~/ui/tag-selector";
+import { Textarea } from "~/ui/textarea";
 
-interface TNotesFieldProps {
+interface NotesFieldProps {
   label: string;
   name: string;
 }
 
 const predefinedTags = ["Penalties", "Defense", "Scoring Behind Reef"];
 
-export function NotesField({ label, name }: TNotesFieldProps) {
+export function NotesField({ label, name }: NotesFieldProps) {
   const { control, setValue, watch } = useFormContext();
   const [availableTags, setAvailableTags] = useState<string[]>([
     ...predefinedTags,

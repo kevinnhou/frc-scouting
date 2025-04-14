@@ -2,17 +2,17 @@
 
 import { Search } from "lucide-react";
 
-import { Badge } from "~/badge";
-import { Button } from "~/button";
+import { Badge } from "~/ui/badge";
+import { Button } from "~/ui/button";
 import {
   Card,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
-} from "~/card";
-import { DialogDescription, DialogHeader, DialogTitle } from "~/dialog";
-import { Input } from "~/input";
+} from "~/ui/card";
+import { DialogDescription, DialogHeader, DialogTitle } from "~/ui/dialog";
+import { Input } from "~/ui/input";
 
 interface SubmissionCardProps {
   handleFormLoad: (index: number) => void;

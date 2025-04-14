@@ -11,14 +11,14 @@ import { useEffect, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { toast } from "sonner";
 
-import { Button } from "~/button";
+import { Button } from "~/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "~/dialog";
+} from "~/ui/dialog";
 
 interface FieldPositions {
   id: string;
@@ -398,9 +398,10 @@ export function FieldDialog() {
             ))}
           </div>
           <div className="mt-2 text-center text-sm text-muted-foreground">
-            Record game elements by clicking on the corresponding locations on
-            the field image. <br /> Note: Always use the blue alliance's
-            perspective, regardless of which alliance you are scouting.
+            Record scored game elements by clicking on the corresponding
+            locations on the field. <br /> Note: Always scout from the blue
+            alliance's perspective, regardless of which alliance you are
+            scouting.
           </div>
         </>
       );

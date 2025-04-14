@@ -9,8 +9,8 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { site } from "@/config/site";
-import { Button } from "~/button";
-import ThemedImage from "~/themed-image";
+import { Button } from "~/ui/button";
+import ThemedImage from "~/ui/themed-image";
 
 export default function Home() {
   const [stats, setStats] = useState({

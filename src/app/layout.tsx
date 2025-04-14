@@ -5,9 +5,9 @@ import type { Viewport } from "next";
 import { JetBrains_Mono, Poppins } from "next/font/google";
 import { cookies } from "next/headers";
 
-import Providers from "@/components/providers/providers";
 import { metadata } from "@/config/metadata";
 import { cn } from "@/lib/utils";
+import { Providers } from "~/providers/providers";
 
 export { metadata };
 
