@@ -6,7 +6,13 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "~/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "~/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "~/ui/dialog";
 import { Input } from "~/ui/input";
 import { Label } from "~/ui/label";
 import { Textarea } from "~/ui/textarea";
@@ -43,14 +49,14 @@ function Dropzone({
   return (
     <div
       {...getRootProps()}
-      className="col-span-4 cursor-pointer rounded-md border-2 border-dashed border-gray-300 p-4 text-center transition-colors hover:border-gray-400"
+      className="cursor-pointer rounded-md border border-dashed border-input p-4 text-center transition-colors hover:bg-accent/50"
     >
       <input {...getInputProps()} />
-      <Upload className="mt-2 mb-6 h-8 w-8 place-self-center text-gray-400" />
+      <Upload className="mx-auto mb-2 h-6 w-6 text-muted-foreground" />
       {isDragActive ? (
-        <div className="font-medium">Drop your JSON file here...</div>
+        <div className="text-sm font-medium">Drop your JSON file here...</div>
       ) : (
-        <div className="font-medium">Upload a JSON file</div>
+        <div className="text-sm font-medium">Upload a JSON file</div>
       )}
     </div>
   );
@@ -199,15 +205,17 @@ export function FormConfig({
 
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent className="flex max-h-[80vh] flex-col sm:max-w-[425px]">
-        <DialogHeader className="flex-shrink-0">
+      <DialogContent className="max-h-[90vh] max-w-md overflow-hidden p-0 sm:max-w-lg md:max-w-xl">
+        <DialogHeader className="px-4 pt-5 sm:px-6">
           <DialogTitle>Form Configuration</DialogTitle>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto pr-1">
-          <div className="grid gap-4 py-4">
-            <div className="grid items-center gap-4">
-              <Label className="w-full">Spreadsheet ID or URL</Label>
+        <div className="flex flex-col space-y-4 px-4 py-2 sm:px-6">
+          <div className="grid gap-4">
+            <div className="grid items-center gap-2">
+              <Label className="text-sm font-medium">
+                Spreadsheet ID or URL
+              </Label>
               <Input
                 onChange={(e) => {
                   const { value } = e.target;
@@ -232,26 +240,26 @@ export function FormConfig({
                 value={spreadsheetID}
               />
             </div>
-            <div className="grid items-center gap-4">
-              <Label className="w-full">Sheet ID</Label>
+            <div className="grid items-center gap-2">
+              <Label className="text-sm font-medium">Sheet ID</Label>
               <Input
                 onChange={(e) => setSheetID(e.target.value)}
                 placeholder="Enter Sheet ID"
                 value={sheetID}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="col-span-4">Teams</Label>
+            <div className="grid gap-2">
+              <Label className="text-sm font-medium">Teams</Label>
               <Textarea
-                className="col-span-4 max-h-[200px] overflow-y-auto"
+                className="max-h-[200px] overflow-y-auto"
                 onChange={(e) => setJSONInput(e.target.value)}
                 placeholder='{"teamNumber":"teamName","11146":"Barker Redbacks",...}'
                 rows={4}
                 value={JSONInput}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="col-span-4">Upload JSON</Label>
+            <div className="grid gap-2">
+              <Label className="text-sm font-medium">Upload JSON</Label>
               <Dropzone
                 accept={{ "application/json": [".json"] }}
                 onDrop={handleFileDrop}
@@ -260,13 +268,21 @@ export function FormConfig({
           </div>
         </div>
 
-        <div className="mt-2 flex flex-shrink-0 justify-between border-t pt-4">
-          <Button onClick={formatJSON} variant="outline">
-            <FileTextIcon className="mr-2 h-4 w-4" />
-            Format JSON
-          </Button>
-          <Button onClick={handleConfigSave}>Save</Button>
-        </div>
+        <DialogFooter className="border-t p-4 sm:px-6">
+          <div className="flex w-full flex-col-reverse gap-2 sm:flex-row sm:justify-between">
+            <Button
+              onClick={formatJSON}
+              variant="outline"
+              className="sm:w-auto"
+            >
+              <FileTextIcon className="mr-2 h-4 w-4" />
+              Format JSON
+            </Button>
+            <Button onClick={handleConfigSave} className="sm:w-auto">
+              Save
+            </Button>
+          </div>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
