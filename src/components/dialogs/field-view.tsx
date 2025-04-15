@@ -305,14 +305,12 @@ export function FieldDialog() {
             {
               label: "Cage: Deep",
               onClick: () => handleCageSelection("Deep"),
-              className:
-                "h-20 flex-1 basis-[calc(50%-0.5rem)] bg-blue-100 text-lg",
+              className: "h-20 flex-1 basis-[calc(50%-0.5rem)] text-lg",
             },
             {
               label: "Cage: Shallow",
               onClick: () => handleCageSelection("Shallow"),
-              className:
-                "h-20 flex-1 basis-[calc(50%-0.5rem)] bg-blue-50 text-lg",
+              className: "h-20 flex-1 basis-[calc(50%-0.5rem)] text-lg",
             },
             {
               label: "Cage: None",

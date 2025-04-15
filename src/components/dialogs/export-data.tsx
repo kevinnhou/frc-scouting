@@ -1,8 +1,10 @@
 "use client";
 
-import { Download, FileTextIcon, QrCode } from "lucide-react";
+import { Download, FileTextIcon, QrCode, Sheet } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 
+import { exportToGoogleSheets } from "@/app/actions/export-sheets";
 import { Button } from "~/ui/button";
 import {
   Dialog,
@@ -13,13 +15,15 @@ import {
   DialogTitle,
 } from "~/ui/dialog";
 import { Label } from "~/ui/label";
+import { RadioGroup, RadioGroupItem } from "~/ui/radio-group";
+import { ScrollArea } from "~/ui/scroll-area";
 
 interface ExportDataProps {
-  exportMethod: "clipboard" | "json" | "qrcode";
+  exportMethod: "clipboard" | "json" | "qrcode" | "sheets";
   onOpenChange: (open: boolean) => void;
   open: boolean;
   selectedSubmissions: number[];
-  setExportMethod: (method: "clipboard" | "json" | "qrcode") => void;
+  setExportMethod: (method: "clipboard" | "json" | "qrcode" | "sheets") => void;
   setQRCodeData: (data: string) => void;
   setSelectedSubmissions: (indices: number[]) => void;
   setShowQRModal: (show: boolean) => void;
@@ -39,7 +43,11 @@ export function ExportData({
   setShowQRModal,
   storedSubmissions,
 }: ExportDataProps) {
-  function handleMethodChange(method: "clipboard" | "json" | "qrcode") {
+  const [isExporting, setIsExporting] = useState(false);
+
+  function handleMethodChange(
+    method: "clipboard" | "json" | "qrcode" | "sheets",
+  ) {
     setExportMethod(method);
   }
 
@@ -69,7 +77,7 @@ export function ExportData({
     return new Blob([JSON.stringify(data)]).size;
   }
 
-  function exportData() {
+  async function exportData() {
     const selectedData = getSelectedData();
 
     if (selectedData.length === 0) {
@@ -112,93 +120,174 @@ export function ExportData({
         setQRCodeData(JSON.stringify(selectedData));
         setShowQRModal(true);
         break;
+      case "sheets":
+        setIsExporting(true);
+        try {
+          const spreadsheetID = localStorage.getItem("spreadsheetID") || "";
+          const sheetID = localStorage.getItem("sheetID") || "";
+
+          if (!spreadsheetID || !sheetID) {
+            toast.error(
+              "Spreadsheet details are missing. Please configure your spreadsheet ID and sheet ID in settings.",
+            );
+            setIsExporting(false);
+            return;
+          }
+
+          const result = await exportToGoogleSheets({
+            submissions: selectedData,
+            spreadsheetID,
+            sheetID,
+          });
+
+          if (result.success) {
+            toast.success(
+              result.message || "Data exported to Google Sheets successfully",
+            );
+          } else {
+            toast.error(
+              result.message || "Failed to export data to Google Sheets",
+            );
+          }
+        } catch (error) {
+          console.error("Export to Google Sheets failed:", error);
+          toast.error("Failed to export data to Google Sheets");
+        } finally {
+          setIsExporting(false);
+        }
+        break;
     }
 
-    onOpenChange(false);
+    if (exportMethod !== "sheets") {
+      onOpenChange(false);
+    }
   }
+
+  const exportMethods = [
+    {
+      id: "qrcode",
+      label: "QR Code",
+      icon: <QrCode className="h-4 w-4" />,
+    },
+    {
+      id: "clipboard",
+      label: "Copy to Clipboard",
+      icon: <FileTextIcon className="h-4 w-4" />,
+    },
+    {
+      id: "json",
+      label: "Download JSON",
+      icon: <Download className="h-4 w-4" />,
+    },
+    {
+      id: "sheets",
+      label: "Google Sheets",
+      icon: <Sheet className="h-4 w-4" />,
+    },
+  ];
 
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent className="overflow-x-scroll xl:min-w-xl">
-        <DialogHeader>
+      <DialogContent className="max-h-[90vh] max-w-md overflow-hidden p-0 sm:max-w-lg md:max-w-xl">
+        <DialogHeader className="px-4 pt-5 sm:px-6">
           <DialogTitle>Export Data</DialogTitle>
-          <DialogDescription className="font-sans tracking-wide">
+          <DialogDescription>
             Select submissions and export method
           </DialogDescription>
         </DialogHeader>
-        <div className="py-4">
-          <div className="mb-4">
-            <Label>Export Method</Label>
-            <div className="mt-2 flex gap-2">
-              <Button
-                className="flex-1"
-                onClick={() => handleMethodChange("qrcode")}
-                variant={exportMethod === "qrcode" ? "default" : "outline"}
-              >
-                <QrCode className="mr-2 h-4 w-4" />
-                QR Code
-              </Button>
-              <Button
-                className="flex-1"
-                onClick={() => handleMethodChange("clipboard")}
-                variant={exportMethod === "clipboard" ? "default" : "outline"}
-              >
-                <FileTextIcon className="mr-2 h-4 w-4" />
-                Copy to Clipboard
-              </Button>
-              <Button
-                className="flex-1"
-                onClick={() => handleMethodChange("json")}
-                variant={exportMethod === "json" ? "default" : "outline"}
-              >
-                <Download className="mr-2 h-4 w-4" />
-                Download JSON
-              </Button>
-            </div>
+
+        <div className="flex flex-col space-y-4 px-4 py-2 sm:px-6">
+          <div>
+            <Label className="text-sm font-medium">Export Method</Label>
+            <RadioGroup
+              value={exportMethod}
+              onValueChange={(value) => handleMethodChange(value as any)}
+              className="mt-2 grid gap-2 sm:grid-cols-2"
+            >
+              {exportMethods.map((method) => (
+                <div
+                  key={method.id}
+                  className={`flex items-center space-x-2 rounded-md border transition-colors hover:bg-accent ${
+                    exportMethod === method.id
+                      ? "border-primary bg-accent/40"
+                      : "border-input"
+                  }`}
+                >
+                  <RadioGroupItem
+                    value={method.id}
+                    id={method.id}
+                    className="sr-only"
+                  />
+                  <div
+                    className="flex w-full cursor-pointer items-center justify-between p-3"
+                    onClick={() => handleMethodChange(method.id as any)}
+                  >
+                    <div className="flex items-center space-x-2">
+                      {method.icon}
+                      <Label
+                        htmlFor={method.id}
+                        className="cursor-pointer font-medium"
+                      >
+                        {method.label}
+                      </Label>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </RadioGroup>
+            {exportMethod === "qrcode" && (
+              <p className="mt-4 text-xs text-muted-foreground">
+                QR codes have limited capacity. Select fewer submissions if
+                export fails.
+              </p>
+            )}
           </div>
 
-          <div className="mb-4">
+          <div>
             <div className="mb-2 flex items-center justify-between">
-              <Label>Submissions</Label>
-              <Button onClick={handleSelectAll} size="sm" variant="outline">
+              <Label className="text-sm font-medium">Submissions</Label>
+              <Button
+                onClick={handleSelectAll}
+                size="sm"
+                variant="outline"
+                className="h-8 px-2 text-xs"
+              >
                 {selectedSubmissions.length === storedSubmissions.length
                   ? "Deselect All"
                   : "Select All"}
               </Button>
             </div>
-            <div className="max-h-60 overflow-y-auto rounded-md border p-2">
+
+            <ScrollArea className="h-[180px] rounded-md border">
               {storedSubmissions.length > 0 ? (
-                storedSubmissions.map((submission, index) => (
-                  <div
-                    className="flex cursor-pointer items-center space-x-2 rounded-md p-2 hover:bg-accent"
-                    key={index}
-                    onClick={() => handleSelection(index)}
-                  >
-                    <input
-                      checked={selectedSubmissions.includes(index)}
-                      className="h-4 w-4"
-                      onChange={() => handleSelection(index)}
-                      type="checkbox"
-                    />
-                    <span>
-                      Team {String(submission["Team Number"])} - Match{" "}
-                      {String(submission["Qualification Number"])}
-                    </span>
-                  </div>
-                ))
+                <div className="p-1">
+                  {storedSubmissions.map((submission, index) => (
+                    <div
+                      className="flex cursor-pointer items-center space-x-2 rounded-md p-2 hover:bg-accent"
+                      key={index}
+                      onClick={() => handleSelection(index)}
+                    >
+                      <input
+                        checked={selectedSubmissions.includes(index)}
+                        className="h-4 w-4"
+                        onChange={() => handleSelection(index)}
+                        type="checkbox"
+                      />
+                      <span className="text-sm">
+                        Team {String(submission["Team Number"])} - Match{" "}
+                        {String(submission["Qualification Number"])}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               ) : (
-                <div className="py-4 text-center text-muted-foreground">
+                <div className="flex h-full items-center justify-center p-4 text-center text-sm text-muted-foreground">
                   No submissions available
                 </div>
               )}
-            </div>
-            {exportMethod === "qrcode" && (
-              <div className="mt-2 text-xs text-muted-foreground">
-                QR codes have limited capacity. Select fewer submissions if
-                export fails.
-              </div>
-            )}
-            <div className="mt-2 text-sm">
+            </ScrollArea>
+
+            <div className="mt-2 text-xs">
               Selected: {selectedSubmissions.length} of{" "}
               {storedSubmissions.length} submissions
               {selectedSubmissions.length > 0 && (
@@ -209,11 +298,24 @@ export function ExportData({
             </div>
           </div>
         </div>
-        <DialogFooter>
-          <Button onClick={() => onOpenChange(false)} variant="outline">
-            Cancel
-          </Button>
-          <Button onClick={exportData}>Export</Button>
+
+        <DialogFooter className="border-t p-4 sm:px-6">
+          <div className="flex w-full flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <Button
+              onClick={() => onOpenChange(false)}
+              variant="outline"
+              className="sm:w-auto"
+            >
+              Cancel
+            </Button>
+            <Button
+              disabled={isExporting || selectedSubmissions.length === 0}
+              onClick={exportData}
+              className="sm:w-auto"
+            >
+              {isExporting ? "Exporting..." : "Export"}
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

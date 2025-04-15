@@ -50,7 +50,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [storedSubmissions, setStoredSubmissions] = useState<any[]>([]);
   const [selectedSubmissions, setSelectedSubmissions] = useState<number[]>([]);
   const [exportMethod, setExportMethod] = useState<
-    "clipboard" | "json" | "qrcode"
+    "clipboard" | "json" | "qrcode" | "sheets"
   >("qrcode");
 
   const loadSubmissions = useCallback(() => {
