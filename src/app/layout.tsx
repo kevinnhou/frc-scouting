@@ -4,12 +4,13 @@ import { Analytics } from "@vercel/analytics/next";
 import type { Viewport } from "next";
 import { JetBrains_Mono, Poppins } from "next/font/google";
 import { cookies } from "next/headers";
+import Script from "next/script";
 
-import { metadata } from "@/config/metadata";
+import { generateSEOMetadata, generateStructuredData } from "@/config/metadata";
 import { cn } from "@/lib/utils";
 import { Providers } from "~/providers/providers";
 
-export { metadata };
+export const metadata = generateSEOMetadata();
 
 export const viewport: Viewport = {
   themeColor: "#FFFFFF",
@@ -50,6 +51,11 @@ export default async function RootLayout({
         )}
       >
         <Providers>
+          <Script
+            type="application/ld+json"
+            // eslint-disable-next-line react-dom/no-dangerously-set-innerhtml
+            dangerouslySetInnerHTML={generateStructuredData()}
+          />
           {children}
           <Analytics />
         </Providers>
