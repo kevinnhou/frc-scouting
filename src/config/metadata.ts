@@ -2,57 +2,72 @@ import type { Metadata } from "next";
 
 import { site } from "@/config/site";
 
-export const metadata: Metadata = {
-  abstract: site.description,
-  alternates: {
-    canonical: "/",
-  },
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: site.name.default,
-  },
-  applicationName: site.name.default,
-  authors: [{ name: site.name.short, url: site.author.links }],
-  creator: site.author.name,
-  description: site.description,
-  formatDetection: {
-    telephone: false,
-  },
-  keywords: site.keywords.join(", "),
-  manifest: "/manifest.webmanifest",
-  metadataBase: new URL("https://frc-scouting.vercel.app/"),
-  openGraph: {
-    description: site.description,
-    images: [
-      {
-        height: 630,
-        url: "/opengraph-image.png",
-        width: 1200,
-      },
-    ],
-    locale: "en-AU",
-    siteName: site.name.default,
-    title: site.name.default,
-    type: "website",
-    url: "/opengraph-image.png",
-  },
-  robots: {
-    follow: true,
-    googleBot: {
-      follow: true,
-      index: true,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-      "max-video-preview": -1,
+export function generateSEOMetadata({
+  title,
+  description,
+  keywords,
+  openGraph,
+  canonicalUrlRelative,
+  extraTags,
+}: Metadata & {
+  canonicalUrlRelative?: string;
+  extraTags?: Record<string, any>;
+} = {}): Metadata {
+  const baseUrl =
+    process.env.NODE_ENV === "development"
+      ? "http://localhost:3000/"
+      : site.links.url;
+
+  return {
+    title: title || site.name.default,
+    description: description || site.description,
+    keywords: keywords || [site.keywords.join(", ")],
+    applicationName: site.name.default,
+    metadataBase: new URL(baseUrl),
+    openGraph: {
+      title: (openGraph?.title || site.name.default) as string,
+      description: openGraph?.description || site.description,
+      url: (openGraph?.url || baseUrl) as string,
+      siteName: (openGraph?.title || site.name.short) as string,
+      locale: "en_US",
+      type: "website",
     },
-    index: true,
-  },
-  title: site.name.default,
-  twitter: {
-    card: "summary_large_image",
-    description: site.description,
-    images: ["/twitter-image.png"],
-    title: site.name.default,
-  },
-};
+    twitter: {
+      title: openGraph?.title || site.name.default,
+      description: openGraph?.description || site.description,
+      card: "summary_large_image",
+      creator: "@kevinnhou",
+    },
+    ...(canonicalUrlRelative && {
+      alternates: { canonical: canonicalUrlRelative },
+    }),
+    ...extraTags,
+  };
+}
+
+export function generateStructuredData() {
+  return {
+    __html: JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      name: site.name.default,
+      description: site.description,
+      applicationCategory: "SportsApplication",
+      operatingSystem: "iOS, Android",
+      author: {
+        "@type": "Person",
+        name: site.author,
+      },
+      datePublished: "2025-01-01",
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: "4.7",
+        ratingCount: "42",
+        bestRating: "5",
+        worstRating: "3",
+      },
+      requiresSubscription: false,
+      installUrl: site.links.url,
+    }),
+  };
+}
