@@ -53,7 +53,7 @@ export function generateStructuredData() {
       name: site.name.default,
       description: site.description,
       applicationCategory: "SportsApplication",
-      operatingSystem: "iOS, Android",
+      operatingSystem: "iOS, Android, Windows, macOS, Linux",
       author: {
         "@type": "Person",
         name: site.author,
@@ -65,6 +65,10 @@ export function generateStructuredData() {
         ratingCount: "42",
         bestRating: "5",
         worstRating: "3",
+      },
+      offers: {
+        "@type": "Offer",
+        price: 0,
       },
       requiresSubscription: false,
       installUrl: site.links.url,
